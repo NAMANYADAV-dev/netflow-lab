@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <!-- The NetFlow Lab mark — a hub, three links, three nodes, with the hub
+       struck in three process plates out of register. Node centres sit 120°
+       apart on a radius of 9 from (12,12), starting at the top.
+
+       Colours are the design system's inks, written out literally because a
+       favicon has no page to read custom properties from, and isolation keeps
+       the multiply on the paper square rather than on whatever the browser
+       chrome puts behind it. -->
+  <rect width="24" height="24" fill="#f3f2f2"/>
+  <g stroke="#201e1d" stroke-opacity="0.5" stroke-width="1.2" stroke-linecap="round">
+    <line x1="12" y1="12" x2="12" y2="3"/>
+    <line x1="12" y1="12" x2="19.794" y2="16.5"/>
+    <line x1="12" y1="12" x2="4.206" y2="16.5"/>
+  </g>
+  <g fill="#201e1d">
+    <rect x="10.2" y="1.2" width="3.6" height="3.6"/>
+    <rect x="17.994" y="14.7" width="3.6" height="3.6"/>
+    <rect x="2.406" y="14.7" width="3.6" height="3.6"/>
+  </g>
+  <g style="isolation:isolate">
+    <rect x="7.6" y="7.6" width="7" height="7" fill="#edbb00" style="mix-blend-mode:multiply"/>
+    <rect x="8.5" y="8.5" width="7" height="7" fill="#0088b0" style="mix-blend-mode:multiply"/>
+    <rect x="9.4" y="9.4" width="7" height="7" fill="#d6006c" style="mix-blend-mode:multiply"/>
+  </g>
+</svg>

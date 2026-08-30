@@ -1,0 +1,84 @@
+/* The per-step callout: a speech bubble anchored beside whichever actor is
+   doing something on this step, saying in six plain words what the arrow
+   beside it means. Shared by every lab so the device reads identically
+   wherever a learner meets it.
+
+   It lives inside a foreignObject because SVG has no text wrapping, no border
+   radius on text, and no box shadow — and because the bubble should keep the
+   page's own type rather than SVG's. */
+
+.host { overflow: visible; pointer-events: none; }
+.layer { position: relative; }
+
+.anchor {
+  position: absolute;
+  pointer-events: none;
+}
+
+/* the bubble sits to the left of the anchor when the actor is on the left of
+   the diagram, so it never covers the arrow it is describing */
+.anchor[data-side='left'] { transform: translate(-100%, -50%); }
+.anchor[data-side='right'] { transform: translate(0, -50%); }
+/* above the anchor, centred on it — for map diagrams where the actor is a box
+   rather than a lifeline and there is no obvious left or right */
+.anchor[data-side='up'] { transform: translate(-50%, -100%); }
+
+.bubble {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  padding: 6px 11px;
+  border: 1.5px solid var(--tone);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--tone);
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 650;
+  box-shadow: 0 8px 20px -8px rgb(0 0 0 / 55%);
+  animation: calloutPop 350ms ease;
+}
+
+/* a rotated square makes the tail: two of its borders show, so it reads as a
+   continuation of the bubble's outline rather than a separate triangle */
+.tail {
+  position: absolute;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  background: var(--surface);
+}
+
+.anchor[data-side='left'] .tail {
+  right: -5px;
+  border-top: 1.5px solid var(--tone);
+  border-right: 1.5px solid var(--tone);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.anchor[data-side='right'] .tail {
+  left: -5px;
+  border-left: 1.5px solid var(--tone);
+  border-bottom: 1.5px solid var(--tone);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.anchor[data-side='up'] .tail {
+  top: auto;
+  bottom: -5px;
+  left: 50%;
+  border-bottom: 1.5px solid var(--tone);
+  border-right: 1.5px solid var(--tone);
+  transform: translateX(-50%) rotate(45deg);
+}
+
+@keyframes calloutPop {
+  0% { opacity: 0; transform: scale(0.6); }
+  70% { opacity: 1; transform: scale(1.08); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bubble { animation: none; }
+}

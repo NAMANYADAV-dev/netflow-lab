@@ -1,0 +1,918 @@
+/* The "How it works" plate on a protocol page. Geometry ported from the
+   design's `Protocol *.dc.html` pages: the same surface and padding as the
+   device plate, but holding an exchange between two lanes and a bit-field map
+   of the header rather than a box with an endpoint either side. */
+
+.plate {
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  padding: 38px 40px 30px;
+}
+
+.caption {
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  margin-bottom: 26px;
+}
+
+/* ── two lanes side by side, when the point is the contrast ─────────────── */
+
+.panels {
+  max-width: 720px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.panel {
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-bg);
+}
+.panelOn {
+  border-color: var(--color-accent);
+}
+
+.panelHead {
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--color-divider);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 13px;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+}
+.panelHeadOn {
+  background: var(--color-accent-100);
+  color: var(--color-accent-700);
+}
+
+.panelBody {
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lane {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.laneName {
+  flex: none;
+  width: 38px;
+  font-family: var(--font-heading);
+  font-size: 11px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+/* a unit of data on the lane. The height differs between a single stream and a
+   stack of them in the design; one size reads consistently across both. */
+.block {
+  flex: 1;
+  height: 16px;
+  border-radius: 2px;
+}
+
+.blockOk {
+  background: var(--color-accent-200);
+}
+
+/* the one that is held up — outlined so it reads as stalled rather than absent */
+.blockStuck {
+  background: var(--color-accent-2-300);
+  border: 1px solid var(--color-accent-2);
+}
+
+/* queued behind, not yet moving */
+.blockIdle {
+  background: color-mix(in srgb, var(--color-text) 12%, transparent);
+}
+
+.panelNote {
+  font-family: var(--font-heading);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+/* ── an address taken apart ─────────────────────────────────────────────── */
+
+.anatomy {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* the specimen itself, set large and split by ink at the point the halves
+   describe — so the two cards below need only name what is already visible */
+.specimen {
+  text-align: center;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 22px;
+  letter-spacing: 0.02em;
+  word-break: break-all;
+}
+
+.specimenSep {
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+.halves {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--color-divider);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-top: 18px;
+}
+
+.halfA,
+.halfB {
+  padding: 14px 18px;
+}
+.halfA {
+  background: var(--color-accent-100);
+}
+.halfB {
+  background: var(--color-accent-2-100);
+}
+
+.halfKickerA,
+.halfKickerB {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.halfKickerA {
+  color: var(--color-accent-700);
+}
+.halfKickerB {
+  color: var(--color-accent-2-700);
+}
+
+.halfTitle {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.halfText {
+  font-size: 13px;
+  color: color-mix(in srgb, var(--color-text) 62%, transparent);
+  margin-top: 2px;
+}
+
+.anatomyNote {
+  font-size: 12.5px;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+  margin: 10px 0 0;
+  text-align: center;
+}
+
+/* ── a protocol built in tiers ──────────────────────────────────────────── */
+
+.layers {
+  max-width: 660px;
+  margin: 0 auto;
+}
+
+/* the cards carry their own top margin here, since each is wrapped with its
+   fall — the exchange's flex gap doesn't apply */
+.layers .card {
+  margin-top: 0;
+}
+
+.fall {
+  text-align: center;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  font-size: 16px;
+  padding: 10px 0;
+}
+
+/* every gloss row inside a layer card is ruled, so the tier reads as a list */
+.layers .cardGloss + .cardGloss {
+  border-top: 1px solid var(--color-divider);
+}
+
+/* ── a lookup delegated, then walked down a tree ────────────────────────── */
+
+.resolve {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* the question and the answer are the same shape — two parties with the wire
+   between — so the drawing brackets the walk in the middle */
+.askRow {
+  display: grid;
+  grid-template-columns: 1fr 40px 1fr;
+  align-items: center;
+  gap: 14px;
+}
+
+.answerRow {
+  margin-top: 16px;
+}
+
+.panelet {
+  font-family: var(--font-heading);
+  font-size: 13px;
+  border: 1px solid;
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  padding: 10px 14px;
+}
+
+.paneletA {
+  border-color: var(--color-accent);
+}
+.paneletB {
+  border-color: var(--color-accent-2);
+}
+.paneletFilled.paneletA {
+  background: var(--color-accent-100);
+}
+.paneletFilled.paneletB {
+  background: var(--color-accent-2-100);
+}
+
+.paneletTitle {
+  font-weight: 600;
+}
+.paneletA .paneletTitle {
+  color: var(--color-accent-700);
+}
+.paneletB .paneletTitle {
+  color: var(--color-accent-2-700);
+}
+
+.paneletText {
+  color: color-mix(in srgb, var(--color-text) 65%, transparent);
+}
+
+.bridge {
+  text-align: center;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  padding: 10px 0 6px;
+  font-style: italic;
+}
+
+.referrals {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* the level's name is set right against the arrow, so the column of names reads
+   as the tree being descended */
+.referral {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  align-items: center;
+  gap: 14px;
+}
+
+.refFrom {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 14px;
+  text-align: right;
+}
+
+.refBody {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* short and fixed: it points back at the name, it isn't spanning a distance */
+.refWire {
+  flex: none;
+  width: 42px;
+}
+.refWire .shaft {
+  flex: 1;
+}
+
+.refText {
+  font-size: 13px;
+  color: color-mix(in srgb, var(--color-text) 72%, transparent);
+}
+
+/* ── an announcement passed along, growing as it goes ───────────────────── */
+
+.relay {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+}
+
+.stopCol {
+  flex: 1;
+  text-align: center;
+  min-width: 0;
+}
+
+.stopName {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.stopNote {
+  font-size: 12px;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+  margin-top: 2px;
+  white-space: pre-line;
+}
+
+/* what the stop is holding after it has had its turn — the growing path */
+.chip {
+  display: inline-block;
+  margin-top: 10px;
+  font-family: var(--font-heading);
+  font-size: 11px;
+  padding: 5px 8px;
+  border: 1px solid var(--color-divider);
+  border-radius: 2px;
+  background: var(--color-bg);
+}
+
+.chipOn {
+  border-color: var(--color-accent);
+  background: var(--color-accent-100);
+  color: var(--color-accent-700);
+}
+
+/* the arrows sit between the columns and centre on the names, not the chips */
+.relayLeg {
+  flex: none;
+  width: 56px;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  margin-top: -18px;
+}
+
+.relayLeg .wire {
+  width: 100%;
+}
+
+/* what carries this leg — a port number, a protocol name */
+.relayLegLabel {
+  font-family: var(--font-heading);
+  font-size: 9px;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+/* ── the conversation, transcribed ──────────────────────────────────────── */
+
+/* who spoke sits in its own fixed column, so the commands line up down the page
+   and the two voices can be told apart at a glance */
+.dialog {
+  max-width: 560px;
+  margin: 26px auto 0;
+  font-family: var(--font-heading);
+  font-size: 13px;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-bg);
+}
+
+.dialogHead {
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--color-divider);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+.dialogRow {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 10px;
+  padding: 7px 14px;
+}
+.dialogRow + .dialogRow {
+  border-top: 1px solid var(--color-divider);
+}
+
+/* ── the journey a packet makes ─────────────────────────────────────────── */
+
+/* the two ends keep their size and the legs share what's left, so adding a hop
+   shortens the arrows rather than squeezing the labels */
+.path {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+}
+
+.stop {
+  flex: none;
+  text-align: center;
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  min-width: 120px;
+}
+
+.stopFrom {
+  border: 1px solid var(--color-accent);
+  background: var(--color-accent-100);
+}
+
+.stopTo {
+  border: 1px solid var(--color-accent-2);
+  background: var(--color-accent-2-100);
+}
+
+.stopTitle {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.stopSub {
+  font-size: 12.5px;
+  margin-top: 2px;
+}
+
+.leg {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+  min-width: 0;
+}
+
+.legLabel {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+/* the leg centres its children, so the wire has to claim the width itself */
+.leg .wire {
+  width: 100%;
+}
+
+/* a box the packet passes through — heavier than the endpoints, because it is
+   the thing doing the work */
+.hop {
+  flex: none;
+  text-align: center;
+  border: 2px solid var(--color-text);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  padding: 12px 14px;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 15px;
+}
+
+/* ── properties named rather than drawn ─────────────────────────────────── */
+
+.facets {
+  max-width: 720px;
+  margin: 24px auto 0;
+  border-top: 1px solid var(--color-divider);
+  padding-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.facetTitle {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-accent-700);
+  margin-bottom: 3px;
+}
+
+.facetText {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--color-text) 72%, transparent);
+}
+
+/* ── the two ends of the conversation ───────────────────────────────────── */
+
+/* the lane names sit over the ends of the wires, each in its own ink, so the
+   arrows below need no labelling of who is who */
+.lanes {
+  display: flex;
+  justify-content: space-between;
+  max-width: 640px;
+  margin: 0 auto 6px;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.laneLeft {
+  color: var(--color-accent-700);
+}
+.laneRight {
+  color: var(--color-accent-2-700);
+}
+
+.exchange {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.msgLabel {
+  text-align: center;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+/* the gloss is the same line at ordinary weight: what the message means, as
+   against what it is called */
+.msgGloss {
+  font-weight: 400;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  margin-left: 8px;
+}
+
+/* the far lane, when the other end is the whole segment rather than one peer */
+.laneMuted {
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+.inkA {
+  color: var(--color-accent-700);
+}
+.inkB {
+  color: var(--color-accent-2-700);
+}
+.inkPlain {
+  color: var(--color-text);
+}
+
+.wire {
+  display: flex;
+  align-items: center;
+}
+
+.shaft {
+  flex: 1;
+  height: 2px;
+}
+
+.headRight,
+.headLeft {
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+}
+
+.wireA .shaft {
+  background: var(--color-accent);
+}
+.wireA .headRight {
+  border-left: 9px solid var(--color-accent);
+}
+
+.wireB .shaft {
+  background: var(--color-accent-2);
+}
+.wireB .headLeft {
+  border-right: 9px solid var(--color-accent-2);
+}
+/* the second accent also heads rightward, for the leg of a path that arrives */
+.wireB .headRight {
+  border-left: 9px solid var(--color-accent-2);
+}
+.wireA .headLeft {
+  border-right: 9px solid var(--color-accent);
+}
+
+/* a line running both ways — traffic now flowing freely, owned by neither end */
+.wirePlain .shaft {
+  background: var(--color-text);
+}
+.wirePlain .headRight {
+  border-left: 9px solid var(--color-text);
+}
+.wirePlain .headLeft {
+  border-right: 9px solid var(--color-text);
+}
+
+/* ── what was actually said on the wire ─────────────────────────────────── */
+
+/* the message quoted, with a line under it saying what it means. Ruled in the
+   ink of the message it belongs to, so a question and its answer are told
+   apart by colour before either is read. */
+.card {
+  margin-top: 14px;
+  font-family: var(--font-heading);
+  font-size: 13px;
+  border: 1px solid;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-bg);
+}
+
+.cardQuote {
+  padding: 9px 14px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.cardGloss {
+  padding: 7px 14px;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+}
+
+/* the message transcribed, one line per line, as it goes on the wire */
+.cardLine {
+  padding: 7px 14px;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+}
+.cardLine + .cardLine {
+  border-top: 1px solid var(--color-divider);
+}
+
+/* the message's contents, field by field, ruled like the reference tables */
+.cardRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 14px;
+}
+.cardRow + .cardRow {
+  border-top: 1px solid var(--color-divider);
+}
+.cardQuote + .cardRow {
+  border-top: 0;
+}
+
+.cardRowVal {
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+  text-align: right;
+}
+
+.cardA {
+  border-color: var(--color-accent);
+}
+.cardA .cardQuote {
+  background: var(--color-accent-100);
+  color: var(--color-accent-700);
+}
+
+.cardB {
+  border-color: var(--color-accent-2);
+}
+.cardB .cardQuote {
+  background: var(--color-accent-2-100);
+  color: var(--color-accent-2-700);
+}
+
+/* neither side's claim — a consequence both ends live with. Ruled in the text
+   colour with no tint, so it doesn't read as anyone's message. */
+.cardPlain {
+  border-color: var(--color-text);
+}
+
+/* a card that is only a list — no one said it, it simply is. Ruled in the
+   divider so it recedes behind the messages above it. */
+.cardQuiet {
+  border-color: var(--color-divider);
+}
+.cardPlain .cardQuote {
+  color: var(--color-text);
+  font-weight: 400;
+  border-bottom: 0;
+}
+
+/* an outcome rather than a message: the tint runs the whole card and the quote
+   loses its rule, because there is nothing under it to divide from */
+.cardFilled .cardQuote {
+  border-bottom: 0;
+}
+.cardFilled.cardA {
+  background: var(--color-accent-100);
+}
+.cardFilled.cardB {
+  background: var(--color-accent-2-100);
+}
+
+/* a datagram that never arrived: the run breaks up and ends in a cross rather
+   than an arrowhead, so a loss reads as a loss and not as a quieter message */
+.shaftLost {
+  flex: 1;
+  height: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-text) 40%, transparent) 0 6px,
+    transparent 6px 12px
+  );
+}
+
+.cross {
+  font-size: 15px;
+  line-height: 1;
+  color: var(--color-accent-2-700);
+}
+
+/* what the exchange leaves behind. Dashed, because it is a state rather than a
+   message — nothing is on the wire at this point. */
+.settled {
+  text-align: center;
+  border: 1px dashed color-mix(in srgb, var(--color-text) 35%, transparent);
+  border-radius: var(--radius-md);
+  padding: 10px 16px;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* ── the line under the drawing ─────────────────────────────────────────── */
+
+.note {
+  text-align: center;
+  font-size: 13px;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+  margin: 24px auto 0;
+  font-style: italic;
+  max-width: 64ch;
+}
+
+/* ── the header, drawn as a bit field ───────────────────────────────────── */
+
+.headerWrap {
+  max-width: 640px;
+  margin: 34px auto 0;
+}
+
+.headerLabel {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+/* the bit ruler over the map — 0 at the left edge, 31 at the right */
+.ruler {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-heading);
+  font-size: 10px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  padding: 0 2px 4px;
+}
+
+.fields {
+  font-family: var(--font-heading);
+  font-size: 12.5px;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-bg);
+}
+
+.fieldRow {
+  display: flex;
+}
+.fieldRow + .fieldRow {
+  border-top: 1px solid var(--color-divider);
+}
+
+.field {
+  padding: 9px 10px;
+  text-align: center;
+  min-width: 0;
+}
+.field + .field {
+  border-left: 1px solid var(--color-divider);
+}
+
+.fieldSmall {
+  font-size: 11px;
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+/* the fields this page turns on */
+.fieldHi {
+  background: var(--color-accent-100);
+  color: var(--color-accent-700);
+  font-weight: 600;
+}
+
+/* named in the second ink: present and worth seeing, but not the subject */
+.fieldAlt {
+  color: var(--color-accent-2-700);
+}
+
+/* options, padding — there, but not what anyone reads the map for */
+.fieldFaint {
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+/* the bytes the header is wrapped around. Dashed and outside the ruled box,
+   because it is the cargo rather than part of the header. */
+.payload {
+  margin-top: 5px;
+  padding: 12px 10px;
+  text-align: center;
+  font-family: var(--font-heading);
+  font-size: 12.5px;
+  border: 1px dashed color-mix(in srgb, var(--color-text) 35%, transparent);
+  border-radius: var(--radius-md);
+  color: color-mix(in srgb, var(--color-text) 65%, transparent);
+}
+
+/* ── breakpoints ────────────────────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .plate {
+    padding: 28px 22px 24px;
+  }
+  /* the two panels are a comparison, so they stack rather than shrink — side by
+     side at this width the lanes get too short to read as lanes */
+  .panels {
+    grid-template-columns: 1fr;
+  }
+  .facets {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  /* the hop path runs off the measure at this width, so it turns the corner and
+     reads downward — the arrows rotate to follow */
+  .path {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .stop,
+  .hop {
+    min-width: 0;
+  }
+  .leg {
+    padding: 0;
+  }
+  .leg .wire {
+    width: 60px;
+    align-self: center;
+    transform: rotate(90deg);
+  }
+  .halves {
+    grid-template-columns: 1fr;
+  }
+  .specimen {
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 560px) {
+  .plate {
+    padding: 22px 14px 20px;
+  }
+  .caption {
+    font-size: 11px;
+  }
+  .msgGloss {
+    display: block;
+    margin-left: 0;
+  }
+  .field {
+    padding: 8px 5px;
+    font-size: 11px;
+  }
+  .fieldSmall {
+    font-size: 10px;
+  }
+}

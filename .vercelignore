@@ -1,0 +1,11 @@
+.git/
+.next/
+node_modules/
+.claude/
+.tmp_*/
+_ds/
+photo/
+support.js
+*.tsbuildinfo
+AGENTS.md
+CLAUDE.md

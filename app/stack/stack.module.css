@@ -1,0 +1,548 @@
+/* Layout for The Stack page. Chrome comes from shell.module.css. */
+
+/* ── hero ───────────────────────────────────────────────────────────────── */
+
+.hero {
+  padding-top: 44px;
+  padding-bottom: 8px;
+}
+
+.kicker {
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+  margin-bottom: 18px;
+}
+
+.title {
+  margin: 0;
+  font-size: 58px;
+  line-height: 1.03;
+  letter-spacing: -0.025em;
+  max-width: 17ch;
+}
+
+.lede {
+  font-size: 20px;
+  line-height: 1.6;
+  max-width: 60ch;
+  margin: 24px 0 0;
+  color: color-mix(in srgb, var(--color-text) 82%, transparent);
+  text-wrap: pretty;
+}
+
+.osiWord {
+  font-weight: 600;
+  color: var(--color-accent-700);
+}
+.tcpWord {
+  font-weight: 600;
+  color: var(--color-accent-2-700);
+}
+
+/* ── the two models, side by side ───────────────────────────────────────── */
+
+.chartSection {
+  padding-top: 34px;
+  padding-bottom: 20px;
+}
+
+.chartLabels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+.labelOsi,
+.labelTcp {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.labelOsi { color: var(--color-accent-700); }
+.labelTcp { color: var(--color-accent-2-700); }
+
+/* Seven equal rows carry both models: the OSI column fills one row each, and
+   the TCP/IP column spans the rows its bands cover — which is the whole point
+   of the chart, so the row grid is what makes the correspondence readable. The
+   1px gap is the rule between cells; the grid's own background shows through. */
+.chart {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(7, minmax(84px, auto));
+  gap: 1px;
+  background: var(--color-divider);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.osiCell {
+  grid-column: 1;
+  grid-row: var(--row);
+  background: var(--color-bg);
+  padding: 16px 20px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.osiNum {
+  flex: none;
+  width: 24px;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 22px;
+  color: var(--color-accent-700);
+}
+
+.osiName {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.osiBlurb {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--color-text) 72%, transparent);
+  margin-top: 2px;
+}
+
+.osiExamples {
+  font-size: 12px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  margin-top: 6px;
+}
+
+.deviceLink {
+  color: var(--color-accent-700);
+  text-decoration: none;
+}
+.deviceLink:hover {
+  text-decoration: underline;
+}
+
+.tcpCell {
+  grid-column: 2;
+  grid-row: var(--row-start) / span var(--row-span);
+  background: var(--color-accent-2-100);
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.tcpName {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--color-accent-2-700);
+}
+
+.tcpBlurb {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--color-text) 78%, transparent);
+  margin-top: 4px;
+  max-width: 38ch;
+}
+
+.tcpProtos {
+  font-size: 12px;
+  color: var(--color-accent-2-700);
+  margin-top: 8px;
+}
+
+/* only shown once the chart stacks — see the breakpoint */
+.stackedLabel {
+  display: none;
+}
+
+.caption {
+  font-size: 13px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  margin: 16px 0 0;
+  font-style: italic;
+}
+
+/* ── the seven layers, in detail ────────────────────────────────────────── */
+
+.detailSection {
+  padding-top: 36px;
+  padding-bottom: 20px;
+}
+
+.detailHead {
+  border-top: 2px solid var(--color-text);
+  padding-top: 18px;
+  margin-bottom: 26px;
+}
+
+.detailList {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+.detailRow {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 28px;
+  align-items: baseline;
+}
+
+.detailName {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 20px;
+}
+.detailNum {
+  color: var(--color-accent-700);
+}
+
+.detailExamples {
+  font-size: 12px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  margin-top: 3px;
+}
+
+.detailLead {
+  font-size: 16px;
+  font-style: italic;
+  margin-bottom: 4px;
+}
+.detailLead strong {
+  color: var(--color-accent-700);
+}
+
+.detailBody {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: color-mix(in srgb, var(--color-text) 80%, transparent);
+}
+
+/* ── sender and receiver ────────────────────────────────────────────────── */
+
+.flowSection {
+  padding-top: 36px;
+  padding-bottom: 20px;
+}
+
+.flowHead {
+  border-top: 2px solid var(--color-text);
+  padding-top: 18px;
+  margin-bottom: 8px;
+}
+
+.flowIntro {
+  font-size: 16px;
+  line-height: 1.55;
+  max-width: 64ch;
+  margin: 0 0 26px;
+  color: color-mix(in srgb, var(--color-text) 80%, transparent);
+}
+
+.flowGrid {
+  display: grid;
+  grid-template-columns: 1fr 150px 1fr;
+  align-items: stretch;
+}
+
+.flowCap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 4px 12px;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.02em;
+}
+.flowCapSender { color: var(--color-accent-700); }
+.flowCapReceiver { color: var(--color-accent-2-700); }
+.flowArrow { font-size: 18px; }
+
+/* the stack of layer plates: each row borders its own box but drops the bottom
+   edge, so consecutive rows share one rule and the column reads as one stack */
+.flowCell {
+  padding: 11px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  border-bottom: none;
+}
+.flowCellSender {
+  background: var(--color-accent-100);
+  border: 1px solid var(--color-accent);
+  border-bottom: none;
+}
+.flowCellReceiver {
+  background: var(--color-accent-2-100);
+  border: 1px solid var(--color-accent-2);
+  border-bottom: none;
+}
+/* the bottom plate closes the stack */
+.flowCellLast {
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+}
+
+.flowLayerName {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 15px;
+}
+.flowNumSender { font-size: 12px; color: var(--color-accent-700); }
+.flowNumReceiver { font-size: 12px; color: var(--color-accent-2-700); }
+
+.pduCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-size: 12px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  border-bottom: 1px solid var(--color-divider);
+}
+/* the first PDU cell also draws the top edge, so the middle column is ruled
+   consistently with the plates either side of it */
+.pduCellFirst {
+  border-top: 1px solid var(--color-divider);
+}
+
+.wire {
+  grid-column: 1 / span 3;
+  margin-top: 14px;
+  border: 1px dashed color-mix(in srgb, var(--color-text) 40%, transparent);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  padding: 12px 16px;
+  text-align: center;
+  font-family: var(--font-heading);
+  font-size: 13px;
+  color: color-mix(in srgb, var(--color-text) 65%, transparent);
+}
+
+/* ── how the data gets wrapped ──────────────────────────────────────────── */
+
+.encapSection {
+  padding-top: 36px;
+  padding-bottom: 20px;
+}
+
+.encapList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-family: var(--font-heading);
+  font-size: 13px;
+}
+
+.encapRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.encapLayer {
+  flex: none;
+  width: 112px;
+  font-weight: 600;
+}
+
+.encapBoxes {
+  flex: 1;
+  display: flex;
+  gap: 4px;
+}
+
+.encapResult {
+  flex: none;
+  width: 96px;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+.encapResultNamed {
+  color: var(--color-accent-700);
+}
+
+/* the payload is the box that stretches; the headers stay their own width, so
+   the row reads as wrapping rather than as a table */
+.boxData {
+  flex: 1;
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: 2px;
+  padding: 11px 12px;
+  text-align: center;
+}
+.boxHeader {
+  flex: none;
+  background: var(--color-accent-100);
+  border: 1px solid var(--color-accent);
+  border-radius: 2px;
+  padding: 11px 12px;
+  color: var(--color-accent-700);
+  font-weight: 600;
+  white-space: nowrap;
+}
+/* a header added by a layer above — same box, quieter fill, so the row shows
+   which one is new at this layer */
+.boxCarried {
+  flex: none;
+  background: color-mix(in srgb, var(--color-accent-100) 55%, transparent);
+  border: 1px solid var(--color-accent);
+  border-radius: 2px;
+  padding: 11px 12px;
+  color: var(--color-accent-700);
+  white-space: nowrap;
+}
+
+.bits {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  letter-spacing: 0.18em;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  padding: 6px 2px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* ── why two models ─────────────────────────────────────────────────────── */
+
+.whySection {
+  padding-top: 36px;
+  padding-bottom: 20px;
+}
+
+.whyHead {
+  border-top: 2px solid var(--color-text);
+  padding-top: 18px;
+  margin-bottom: 22px;
+}
+
+.whyGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px 40px;
+}
+
+.whyTitle {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+.whyTitleOsi { color: var(--color-accent-700); }
+.whyTitleTcpip { color: var(--color-accent-2-700); }
+
+.whyBody {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: color-mix(in srgb, var(--color-text) 80%, transparent);
+}
+
+/* ── breakpoints ────────────────────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .title {
+    font-size: 40px;
+  }
+  /* the chart stacks: OSI's seven, then TCP/IP's four, each under its own
+     heading. `order` sequences them because the desktop layout places every
+     cell explicitly and so ignores it. */
+  .chart {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+  }
+  .chartLabels {
+    display: none;
+  }
+  .stackedLabel {
+    display: block;
+    background: var(--color-bg);
+    padding: 16px 20px 4px;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .stackedLabelOsi {
+    order: 1;
+    color: var(--color-accent-700);
+  }
+  .stackedLabelTcp {
+    order: 3;
+    color: var(--color-accent-2-700);
+  }
+  .osiCell {
+    grid-column: 1;
+    grid-row: auto;
+    order: 2;
+  }
+  .tcpCell {
+    grid-column: 1;
+    grid-row: auto;
+    order: 4;
+  }
+  .whyGrid {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+}
+
+@media (max-width: 700px) {
+  .detailRow {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  /* the PDU column is the first thing to go — the same names are spelled out
+     in "how the data gets wrapped" just below, and the sender/receiver
+     comparison is what this figure is actually for */
+  .flowGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .pduCell {
+    display: none;
+  }
+  .wire {
+    grid-column: 1 / span 2;
+  }
+  .encapRow {
+    flex-wrap: wrap;
+    gap: 8px 16px;
+  }
+  .encapLayer {
+    width: auto;
+  }
+  .encapBoxes {
+    flex: 1 0 100%;
+    order: 3;
+  }
+}
+
+@media (max-width: 560px) {
+  .title {
+    font-size: 30px;
+  }
+  .lede {
+    font-size: 17px;
+  }
+  .flowCap {
+    font-size: 12px;
+  }
+  .flowLayerName {
+    font-size: 13px;
+  }
+  .flowCell {
+    padding: 9px 10px;
+  }
+}

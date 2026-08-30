@@ -1,0 +1,346 @@
+/* The "How it works" plate. Geometry ported from the design's device pages —
+   the five-column flow, the two endpoint cards in opposing inks, and the small
+   consulted table beneath it. */
+
+.plate {
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  padding: 38px 40px 30px;
+}
+
+.caption {
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  margin-bottom: 28px;
+}
+
+/* sender · arrow · device · arrow · receiver. The device column is widest
+   because it is the subject; the arrow columns are fixed so the two halves of
+   the drawing stay symmetric whatever the labels do. */
+.flow {
+  display: grid;
+  /* the arrow columns are wider than the design's 78px so that a label like
+     "frame in · port 1" fits on one line: wrapped, it pushed its arrow out of
+     line with the other one and collided with the endpoint cards */
+  grid-template-columns: 1fr 100px 1.15fr 100px 1fr;
+  align-items: center;
+}
+
+/* ── the two endpoints ──────────────────────────────────────────────────── */
+
+.end {
+  text-align: center;
+  border-radius: var(--radius-md);
+  padding: 16px 10px;
+}
+.endLeft {
+  border: 1px solid var(--color-accent);
+  background: var(--color-accent-100);
+}
+.endRight {
+  border: 1px solid var(--color-accent-2);
+  background: var(--color-accent-2-100);
+}
+
+.glyph {
+  height: 52px;
+  margin: 0 auto;
+  border-radius: 4px;
+  background: var(--color-bg);
+  display: flex;
+}
+
+/* three ruled lines — a screen, a document, something already legible */
+.glyphLines {
+  width: 64px;
+  border: 2px solid var(--color-accent-700);
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 10px;
+}
+.glyphLines span {
+  height: 3px;
+  background: var(--color-accent);
+  border-radius: 1px;
+}
+/* the middle rule is short, so the glyph reads as text rather than as a grille */
+.glyphLines span:nth-child(2) {
+  width: 70%;
+}
+
+/* a disc — the far side, drawn as a thing rather than as contents */
+.glyphDisc {
+  width: 60px;
+  border: 2px solid var(--color-accent-2-700);
+  align-items: center;
+  justify-content: center;
+}
+.glyphDisc span {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--color-accent-2);
+  border-radius: 50%;
+}
+
+.endTitle {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 17px;
+  margin-top: 12px;
+}
+
+.endSub {
+  font-size: 12.5px;
+  margin-top: 2px;
+}
+
+.endTag {
+  font-size: 11px;
+  margin-top: 5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.inkA { color: var(--color-accent-700); }
+.inkB { color: var(--color-accent-2-700); }
+
+/* ── the arrows ─────────────────────────────────────────────────────────── */
+
+.arrowCell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.arrow {
+  display: flex;
+  align-items: center;
+}
+
+.shaft {
+  width: 46px;
+  height: 2px;
+}
+
+/* the head is a CSS triangle, so it takes the shaft's ink without an asset */
+.head {
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+}
+
+.arrowA .shaft { background: var(--color-accent); }
+.arrowA .head { border-left: 9px solid var(--color-accent); }
+.arrowB .shaft { background: var(--color-accent-2); }
+.arrowB .head { border-left: 9px solid var(--color-accent-2); }
+
+/* the interface name, set over the arrow rather than under it, so the pair reads
+   as "this port · this traffic" top to bottom */
+.port {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.arrowLabel {
+  font-size: 11px;
+  font-style: italic;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* ── the device ─────────────────────────────────────────────────────────── */
+
+.device {
+  text-align: center;
+  border: 2px solid var(--color-text);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  padding: 18px 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.deviceName {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+}
+
+.deviceSub {
+  font-size: 12.5px;
+  font-style: italic;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+  margin-top: 4px;
+}
+
+/* the address the box owns, ruled off from the description above it */
+.deviceBadge {
+  font-family: var(--font-heading);
+  font-size: 12px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--color-divider);
+}
+
+/* ── the table it consults ──────────────────────────────────────────────── */
+
+.tableWrap {
+  max-width: 480px;
+  margin: 34px auto 0;
+}
+
+.tableLabel {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.table {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 9px 16px;
+  background: var(--color-bg);
+}
+.row + .row {
+  border-top: 1px solid var(--color-divider);
+}
+
+.rowRight {
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  text-align: right;
+}
+
+/* the row the worked example turns on */
+.rowHi {
+  background: var(--color-accent-100);
+  font-weight: 600;
+}
+.rowHi,
+.rowHi .rowRight {
+  color: var(--color-accent-700);
+}
+
+/* ── the frame it builds ────────────────────────────────────────────────── */
+
+/* laid out left to right because that is the order the fields go onto the wire —
+   the picture is the packet, not a list of its parts */
+.frameWrap {
+  max-width: 520px;
+  margin: 34px auto 0;
+}
+
+.frame {
+  display: flex;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.cell {
+  padding: 10px 12px;
+  text-align: center;
+  background: var(--color-bg);
+}
+.cell + .cell {
+  border-left: 1px solid var(--color-divider);
+}
+
+.cellHi {
+  background: var(--color-accent-100);
+}
+.cellHi .cellKey,
+.cellHi .cellVal {
+  color: var(--color-accent-700);
+}
+
+.cellKey {
+  font-family: var(--font-heading);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.cellVal {
+  font-size: 10.5px;
+  font-style: italic;
+  margin-top: 3px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+/* ── the line under the drawing ─────────────────────────────────────────── */
+
+.note {
+  text-align: center;
+  font-size: 13px;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+  margin: 22px auto 0;
+  font-style: italic;
+  max-width: 64ch;
+}
+
+/* ── breakpoints ────────────────────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .plate {
+    padding: 28px 22px 24px;
+  }
+  /* the five columns will not fit; the flow becomes a single column reading
+     top to bottom, and the arrows turn to point down it */
+  .flow {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    justify-items: center;
+  }
+  .end,
+  .device {
+    width: min(320px, 100%);
+  }
+  .arrow {
+    transform: rotate(90deg);
+  }
+  .arrowCell {
+    gap: 10px;
+  }
+}
+
+@media (max-width: 560px) {
+  .plate {
+    padding: 22px 14px 20px;
+  }
+  .caption {
+    font-size: 11px;
+  }
+  .row {
+    font-size: 12.5px;
+    padding: 8px 12px;
+  }
+  /* the three fields will not sit side by side at this width; they stack, which
+     still reads as a frame because the rules stay between them */
+  .frame {
+    flex-direction: column;
+  }
+  .cell + .cell {
+    border-left: 0;
+    border-top: 1px solid var(--color-divider);
+  }
+}

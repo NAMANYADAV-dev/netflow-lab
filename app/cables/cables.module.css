@@ -1,0 +1,256 @@
+.hero {
+  padding-top: 52px;
+  padding-bottom: 48px;
+  display: grid;
+  grid-template-columns: 1.55fr 1fr;
+  gap: 56px;
+  align-items: end;
+}
+
+.kicker {
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+  margin-bottom: 22px;
+}
+
+.title {
+  font-size: 58px;
+  line-height: 1.03;
+  letter-spacing: -0.025em;
+  margin: 0;
+  max-width: 16ch;
+}
+
+.lede {
+  font-size: 19px;
+  line-height: 1.6;
+  max-width: 55ch;
+  margin: 26px 0 0;
+  color: color-mix(in srgb, var(--color-text) 82%, transparent);
+  text-wrap: pretty;
+}
+
+.count {
+  text-align: right;
+}
+
+.countRow {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.countNum {
+  display: inline-block;
+  font-size: 130px;
+  font-weight: 600;
+}
+
+.countLabel {
+  position: relative;
+  z-index: 1;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 58%, transparent);
+  margin-top: 10px;
+}
+
+.catalogue {
+  padding-top: 20px;
+  padding-bottom: 72px;
+}
+
+.catalogue + .catalogue {
+  padding-top: 0;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+}
+
+.connectorCards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.card {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  color: inherit;
+  text-decoration: none;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.card:hover {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.cardImage {
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--color-bg);
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  font-style: italic;
+}
+
+.cardImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.cardBody {
+  padding: 22px 24px 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.cardSpec {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+  margin-bottom: 8px;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 30px;
+}
+
+.cardText {
+  margin: 12px 0 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: color-mix(in srgb, var(--color-text) 78%, transparent);
+}
+
+.cardLink {
+  margin-top: auto;
+  padding-top: 18px;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  color: var(--color-accent-700);
+}
+
+.figureWrap {
+  margin: 0;
+}
+
+.figure {
+  aspect-ratio: 16 / 9;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.figureImage {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+.figureMissing {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  font-style: italic;
+}
+
+.compareCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 20px;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  color: inherit;
+  text-decoration: none;
+  background: var(--color-surface);
+}
+
+.compareCard:hover {
+  border-color: var(--color-accent);
+}
+
+.compareCard strong {
+  font-family: var(--font-heading);
+  font-size: 19px;
+  color: var(--color-accent-700);
+}
+
+.compareCard span {
+  font-size: 14px;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--color-text) 72%, transparent);
+}
+
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+  .title {
+    font-size: 42px;
+  }
+  .count {
+    text-align: left;
+  }
+  .countRow {
+    justify-content: flex-start;
+  }
+  .countNum {
+    font-size: 92px;
+  }
+  .connectorCards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .cards,
+  .connectorCards {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .title {
+    font-size: 34px;
+  }
+  .lede {
+    font-size: 16px;
+  }
+  .countNum {
+    font-size: 68px;
+  }
+  .cardTitle {
+    font-size: 25px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+}

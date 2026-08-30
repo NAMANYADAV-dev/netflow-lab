@@ -1,0 +1,586 @@
+/* Layout for the Protocol Atlas landing page. The chrome it sits in — measure,
+   masthead, sticky nav, section furniture, footer — is in shell.module.css.
+
+   The design source carried all of this as inline styles and had to claw
+   responsiveness back with attribute selectors ([style*="repeat(3,1fr)"]); as
+   real classes the breakpoints below are just media queries. */
+
+/* ── hero ───────────────────────────────────────────────────────────────── */
+
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.heroCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+/* the field does not stop, it sinks into the paper */
+.heroFade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 180px;
+  z-index: 1;
+  background: linear-gradient(to bottom, transparent, var(--color-bg));
+  pointer-events: none;
+}
+
+.heroInner {
+  position: relative;
+  z-index: 2;
+}
+
+.heroBody {
+  padding-top: 78px;
+  padding-bottom: 96px;
+}
+
+.kicker {
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+  margin-bottom: 26px;
+}
+
+.headline {
+  font-size: 66px;
+  line-height: 1;
+  letter-spacing: -0.025em;
+  margin: 0;
+  /* the press coming up to register on load: the plates start well out and
+     converge. Driving the same custom properties the pointer lean uses means
+     the two never fight — the entrance simply hands over to the driver. */
+  animation: atlas-register 1.05s cubic-bezier(0.16, 0.84, 0.3, 1) both;
+}
+
+@keyframes atlas-register {
+  from {
+    --press-nx: 5.5;
+    --press-ny: 5.5;
+  }
+  to {
+    --press-nx: 0;
+    --press-ny: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .headline { animation: none; }
+}
+
+.lede {
+  font-size: 20px;
+  line-height: 1.6;
+  max-width: 54ch;
+  margin: 28px 0 0;
+  color: color-mix(in srgb, var(--color-text) 82%, transparent);
+  text-wrap: pretty;
+}
+
+.ctaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 34px;
+}
+
+/* ── stat row ───────────────────────────────────────────────────────────── */
+
+.statRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 56px;
+  margin-top: 64px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.statNum {
+  display: inline-block;
+  font-size: 64px;
+  font-weight: 600;
+}
+
+.statLabel {
+  /* above the numeral's own paper ground, which bleeds past its layout box */
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-neutral-800);
+  margin-top: 18px;
+  max-width: 18ch;
+  line-height: 1.35;
+}
+
+/* ── what this is ───────────────────────────────────────────────────────── */
+
+.about {
+  padding-top: 70px;
+  padding-bottom: 70px;
+}
+
+.aboutGrid {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.aboutLabel {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+  padding-top: 8px;
+}
+
+.aboutLede {
+  font-size: 26px;
+  line-height: 1.45;
+  margin: 0;
+  max-width: 40ch;
+  text-wrap: pretty;
+}
+
+.aboutPoints {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 36px;
+  margin-top: 34px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: color-mix(in srgb, var(--color-text) 78%, transparent);
+}
+
+.aboutPoint {
+  max-width: 30ch;
+}
+.aboutPoint strong {
+  font-family: var(--font-heading);
+}
+
+/* ── the stack, at a glance ─────────────────────────────────────────────── */
+
+.stackGrid {
+  display: grid;
+  grid-template-columns: 1fr 260px;
+  gap: 28px;
+  align-items: start;
+}
+
+.stackRows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* each row steps in by its depth, so the encapsulation is the layout */
+.stackRow {
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  padding: 16px 20px;
+  margin-left: calc(var(--depth, 0) * 26px);
+}
+
+.stackRowHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.stackKicker {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  margin-bottom: 4px;
+}
+
+.stackName {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+}
+
+.stackProtos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.protoChip {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 12px;
+  padding: 3px 9px;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+}
+
+.crossCol {
+  padding-top: 4px;
+}
+
+.crossLabel {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent-2-700);
+  margin-bottom: 12px;
+}
+
+.crossList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.crossName {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.crossBody {
+  font-size: 13px;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--color-text) 66%, transparent);
+}
+
+/* ── protocol categories ───────────────────────────────────────────────── */
+
+.catGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.catCard {
+  text-decoration: none;
+  color: var(--color-text);
+  gap: 10px;
+  padding: 18px 20px;
+}
+.catCard:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.catHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.catName {
+  margin: 0;
+  font-size: 20px;
+}
+
+.catCount {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--color-accent-700);
+}
+
+.catBody {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+  flex: 1;
+}
+
+.catTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.catTag {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 11px;
+  padding: 2px 8px;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+}
+
+/* ── start here ─────────────────────────────────────────────────────────── */
+
+/* the 1px gap IS the rule between cells — the grid's own background shows
+   through, so there are no double borders to reconcile at the seams */
+.featGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--color-divider);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.featCell {
+  text-decoration: none;
+  color: var(--color-text);
+  background: var(--color-bg);
+  padding: 26px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.featCell:hover {
+  background: var(--color-surface);
+}
+
+.featCat {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+}
+
+.featHead {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.featAbbr {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 30px;
+  letter-spacing: -0.02em;
+}
+
+.featName {
+  font-size: 15px;
+  font-style: italic;
+  color: color-mix(in srgb, var(--color-text) 64%, transparent);
+}
+
+.featLine {
+  margin: 2px 0 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--color-text) 80%, transparent);
+}
+
+/* ── bench teaser ───────────────────────────────────────────────────────── */
+
+.benchSection {
+  padding-top: 20px;
+  padding-bottom: 80px;
+}
+
+.bench {
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  padding: 44px 48px;
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+
+.benchKicker {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent-2-700);
+  margin-bottom: 14px;
+}
+
+.benchTitle {
+  margin: 0 0 14px;
+  font-size: 34px;
+  max-width: 18ch;
+}
+
+.benchBody {
+  margin: 0 0 24px;
+  font-size: 17px;
+  line-height: 1.6;
+  max-width: 46ch;
+  color: color-mix(in srgb, var(--color-text) 80%, transparent);
+}
+
+/* the sample chip, laid flat the way the Bench lays one out */
+.benchCard {
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  padding: 22px;
+}
+
+.benchCardKicker {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+  margin-bottom: 8px;
+}
+
+.benchCardHead {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.benchAbbr {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 40px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.benchName {
+  font-size: 16px;
+  font-style: italic;
+  color: color-mix(in srgb, var(--color-text) 64%, transparent);
+}
+
+.benchCardBody {
+  margin: 0 0 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--color-text) 82%, transparent);
+}
+
+.benchWorksLabel {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  margin-bottom: 8px;
+}
+
+.benchTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.benchTags .tag {
+  font-family: var(--font-heading);
+  font-weight: 600;
+}
+
+/* ── closing call ───────────────────────────────────────────────────────── */
+
+.ctaSection {
+  padding-bottom: 90px;
+}
+
+.cta {
+  border-top: 4px solid var(--color-text);
+  padding-top: 44px;
+  text-align: center;
+}
+
+.ctaTitle {
+  margin: 0 auto 16px;
+  font-size: 44px;
+  letter-spacing: -0.02em;
+  max-width: 20ch;
+  text-wrap: balance;
+}
+
+.ctaBody {
+  margin: 0 auto 30px;
+  font-size: 18px;
+  line-height: 1.6;
+  max-width: 50ch;
+  color: color-mix(in srgb, var(--color-text) 78%, transparent);
+}
+
+.ctaBtns {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ── breakpoints ────────────────────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .aboutGrid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .stackGrid {
+    grid-template-columns: 1fr;
+  }
+  .bench {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .catGrid,
+  .featGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .headline {
+    font-size: 46px;
+  }
+  /* the indent reads as clutter once the rows are near full width */
+  .stackRow {
+    margin-left: calc(var(--depth, 0) * 12px);
+  }
+}
+
+@media (max-width: 560px) {
+  .catGrid,
+  .featGrid {
+    grid-template-columns: 1fr;
+  }
+  .headline {
+    font-size: 34px;
+  }
+  .ctaTitle {
+    font-size: 30px;
+  }
+  .statRow {
+    gap: 30px;
+  }
+  .bench {
+    padding: 26px 20px;
+  }
+  .heroBody {
+    padding-top: 40px;
+    padding-bottom: 52px;
+  }
+  .stackRow {
+    margin-left: 0;
+  }
+  .stackRowHead {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .stackProtos {
+    justify-content: flex-start;
+  }
+}

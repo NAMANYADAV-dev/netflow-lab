@@ -1,0 +1,113 @@
+/* Layout for The Bench page. Chrome comes from shell.module.css and the reading
+   table brings its own module. */
+
+.hero {
+  padding-top: 56px;
+  padding-bottom: 40px;
+  display: grid;
+  grid-template-columns: 1.55fr 1fr;
+  gap: 56px;
+  /* the count sits on the same baseline the headline block ends on */
+  align-items: end;
+}
+
+.kicker {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+  margin-bottom: 22px;
+}
+
+.title {
+  font-size: 64px;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.lede {
+  font-size: 19px;
+  line-height: 1.6;
+  max-width: 52ch;
+  margin: 26px 0 0;
+  color: color-mix(in srgb, var(--color-text) 82%, transparent);
+  text-wrap: pretty;
+}
+
+.ctaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.btn {
+  text-decoration: none;
+  font-size: 15px;
+  padding: 11px 20px;
+}
+.btnPrimary {
+  color: var(--color-bg);
+}
+
+.count {
+  text-align: right;
+}
+
+.countRow {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.countNum {
+  font-size: 150px;
+  font-weight: 600;
+}
+
+.countLabel {
+  /* .cmyk-num paints its own paper ground on a padding box that bleeds 0.12em
+     past the glyphs — at 150px that is 18px, which lands straight on this line.
+     Lifting the label puts it above the bleed. */
+  position: relative;
+  z-index: 1;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 58%, transparent);
+  margin-top: 10px;
+}
+
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+  .title {
+    font-size: 44px;
+  }
+  /* the numeral leads the row rather than hanging off the right edge once the
+     two columns are stacked */
+  .count {
+    text-align: left;
+  }
+  .countRow {
+    justify-content: flex-start;
+  }
+  .countNum {
+    font-size: 100px;
+  }
+}
+
+@media (max-width: 560px) {
+  .title {
+    font-size: 32px;
+  }
+  .lede {
+    font-size: 16px;
+  }
+  .countNum {
+    font-size: 72px;
+  }
+}

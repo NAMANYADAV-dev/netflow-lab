@@ -1,0 +1,25 @@
+.body {
+  padding-top: 80px;
+}
+
+.title {
+  margin: 0 0 16px;
+  font-size: 44px;
+  letter-spacing: -0.02em;
+  max-width: 20ch;
+  text-wrap: balance;
+}
+
+.note {
+  margin: 0 0 30px;
+  font-size: 18px;
+  line-height: 1.6;
+  max-width: 50ch;
+  color: color-mix(in srgb, var(--color-text) 78%, transparent);
+}
+
+@media (max-width: 560px) {
+  .title {
+    font-size: 30px;
+  }
+}

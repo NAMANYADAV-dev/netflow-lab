@@ -1,0 +1,423 @@
+/* The publication's chrome — the measure, the masthead, the sticky nav, the
+   section furniture and the footer. Everything here is shared by every page in
+   the site; page-specific layout lives in that page's own module. */
+
+.page {
+  background: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+  /* clip, not hidden: `overflow-x: hidden` computes overflow-y to auto, which
+     makes this element a scroll container — and then the sticky nav below has
+     nothing to stick to (it would scroll away with the page, silently). `clip`
+     leaves the other axis visible, so it still stops the plate offsets and the
+     wide menus from producing a horizontal scrollbar. */
+  overflow-x: clip;
+}
+
+/* the page measure — every band shares it, so the rules line up down the page */
+.wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 48px;
+  padding-right: 48px;
+}
+
+/* ── editorial masthead + application header ───────────────────────────── */
+
+.headerWrap {
+  width: 100%;
+  padding-left: 27px;
+  padding-right: 15px;
+}
+
+.mastheadRule {
+  border-top: 4px solid var(--color-text);
+}
+
+.mastheadBand {
+  border-bottom: 1px solid var(--color-text);
+}
+
+.mastheadBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 62%, transparent);
+}
+
+.mastheadMotto {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--color-text);
+}
+
+.navBand {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-divider);
+}
+
+/* ── nav ────────────────────────────────────────────────────────────────── */
+
+/* the band already carries the page measure's padding */
+.nav {
+  padding-top: 11px;
+  padding-bottom: 11px;
+  padding-left: 0;
+  padding-right: 0;
+  min-height: 64px;
+  gap: 34px;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* .nav-brand (design system) already supplies the type and the margin-right:auto
+   that pushes the rest of the nav right; this only sets the mark beside it */
+.nav .brand.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+/* The brand remains the visual home anchor; hovering it must not make it look
+   like the currently selected navigation section. */
+.nav .brand.brand:hover,
+.nav .brand.brand:focus-visible {
+  color: inherit;
+}
+
+.brandMark {
+  width: 30px;
+  height: 30px;
+  flex: none;
+  display: block;
+}
+
+.nav > a:not(.brand):not(.navCta),
+.nav .menuTrigger.menuTrigger {
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.navCta {
+  text-decoration: none;
+  color: var(--color-bg);
+  min-width: 152px;
+  min-height: 42px;
+  padding: 10px 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  font-family: inherit;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.themeToggle {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: 2px;
+  box-shadow: var(--shadow-sm);
+  transition: color 160ms ease, background 160ms ease, border-color 160ms ease,
+    transform 160ms ease;
+}
+
+.themeToggle:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+  transform: translateY(-1px);
+}
+
+.themeToggle:active {
+  transform: translateY(0);
+}
+
+.themeIcon {
+  font-family: system-ui, sans-serif;
+  font-size: 18px;
+  line-height: 1;
+  transform: translateY(-1px);
+}
+
+.themeSun {
+  display: none;
+}
+
+:global(html[data-theme='dark']) .themeMoon {
+  display: none;
+}
+
+:global(html[data-theme='dark']) .themeSun {
+  display: inline;
+}
+
+.menuHost {
+  position: relative;
+}
+
+.menuTrigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.caret {
+  font-size: 10px;
+}
+
+.menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 560px;
+  max-width: 78vw;
+  background: var(--color-bg);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 26px 20px 18px;
+  z-index: 40;
+}
+
+/* the later triggers sit near the right of the measure — hang their panels off
+   the right edge or they run past it */
+.menuRight {
+  left: auto;
+  right: 0;
+  width: 480px;
+}
+
+.menuHint {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  margin-bottom: 12px;
+}
+
+.menuGrid4,
+.menuGrid3,
+.menuGrid2 {
+  display: grid;
+  gap: 8px;
+}
+.menuGrid4 { grid-template-columns: repeat(4, 1fr); }
+.menuGrid3 { grid-template-columns: repeat(3, 1fr); }
+.menuGrid2 { grid-template-columns: repeat(2, 1fr); }
+
+.cableMenu {
+  width: 400px;
+}
+
+.chip {
+  text-decoration: none;
+  color: var(--color-text);
+  cursor: grab;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  padding: 9px 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--color-bg);
+}
+.chip:hover {
+  border-color: var(--color-accent);
+  background: var(--color-accent-100);
+}
+.chip:active { cursor: grabbing; }
+
+.chipAbbr {
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+}
+.chipDevice {
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+}
+.chipName {
+  font-size: 11px;
+  color: color-mix(in srgb, var(--color-text) 62%, transparent);
+}
+.chipLayer {
+  font-size: 10.5px;
+  color: color-mix(in srgb, var(--color-text) 62%, transparent);
+}
+
+.menuMore {
+  display: inline-block;
+  margin-top: 14px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--color-accent-700);
+  text-decoration: none;
+}
+
+/* ── section furniture ──────────────────────────────────────────────────── */
+
+.section {
+  padding-top: 20px;
+  padding-bottom: 70px;
+  /* sections are jump targets — clear the stuck nav so a section's rule and
+     heading are not parked underneath it on arrival */
+  scroll-margin-top: 72px;
+}
+
+.sectionHead {
+  border-top: 2px solid var(--color-text);
+  padding-top: 18px;
+  margin-bottom: 34px;
+}
+
+.sectionHeadRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 34px;
+}
+
+.sectionNote {
+  font-size: 15px;
+  font-style: italic;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+}
+.sectionNoteWide {
+  max-width: 44ch;
+  text-align: right;
+}
+
+/* ── buttons at page scale ──────────────────────────────────────────────── */
+
+.btnLg {
+  text-decoration: none;
+  font-size: 15px;
+  padding: 12px 22px;
+  white-space: nowrap;
+}
+.btnLgPrimary { color: var(--color-bg); }
+
+.btnXl {
+  text-decoration: none;
+  font-size: 16px;
+  padding: 13px 26px;
+  white-space: nowrap;
+}
+
+/* ── breakpoints ────────────────────────────────────────────────────────── */
+
+@media (max-width: 1100px) {
+  .nav {
+    gap: 18px;
+  }
+  .nav .brand.brand {
+    font-size: 17px;
+    gap: 10px;
+  }
+  .brandMark {
+    width: 28px;
+    height: 28px;
+  }
+  .nav > a:not(.brand):not(.navCta),
+  .nav .menuTrigger.menuTrigger {
+    font-size: 13px;
+  }
+  .navCta {
+    min-width: 132px;
+    padding-left: 16px;
+    padding-right: 16px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 900px) {
+  .wrap {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+  .menuGrid4,
+  .menuGrid3,
+  .menuGrid2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .sectionNoteWide {
+    text-align: left;
+  }
+  .nav {
+    flex-wrap: wrap;
+    row-gap: 8px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+  .headerWrap {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+  .brand {
+    width: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .wrap {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .menuGrid4,
+  .menuGrid3,
+  .menuGrid2 {
+    grid-template-columns: 1fr;
+  }
+  .sectionTitle {
+    font-size: 26px;
+  }
+  .nav {
+    column-gap: 18px;
+  }
+  .headerWrap {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .nav > a:not(.brand):not(.navCta),
+  .nav .menuTrigger.menuTrigger {
+    font-size: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .themeToggle {
+    transition: none;
+  }
+}

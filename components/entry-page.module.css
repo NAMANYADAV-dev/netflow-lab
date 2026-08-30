@@ -1,0 +1,767 @@
+/* Layout for a single catalogue entry's page — one device, or one protocol.
+   Ported from the design's `Device *.dc.html` and `Protocol *.dc.html` pages,
+   which set the identical geometry: the same hero, the same four-point strip,
+   the same steps, security grid, two-column footer block and pager. Only the
+   plate in the middle differs, and each brings its own module for that.
+
+   Chrome (measure, masthead, nav, footer) comes from shell.module.css. */
+
+/* ── breadcrumb ─────────────────────────────────────────────────────────── */
+
+.crumbs {
+  padding-top: 22px;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 13px;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+}
+
+.crumbLink {
+  color: var(--color-accent-700);
+  text-decoration: none;
+}
+.crumbLink:hover {
+  text-decoration: underline;
+}
+
+.crumbSep {
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+.crumbHere {
+  color: var(--color-text);
+}
+
+/* ── hero ───────────────────────────────────────────────────────────────── */
+
+.hero {
+  padding-top: 20px;
+  padding-bottom: 12px;
+}
+
+.kicker {
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+  margin-bottom: 16px;
+}
+
+/* the name and its apposition share a baseline, the way a masthead sets a title
+   and its subtitle */
+.titleRow {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.title {
+  margin: 0;
+  font-size: 68px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.sub {
+  font-size: 23px;
+  font-style: italic;
+  color: color-mix(in srgb, var(--color-text) 62%, transparent);
+}
+
+.lede {
+  font-size: 21px;
+  line-height: 1.55;
+  max-width: 60ch;
+  margin: 22px 0 0;
+  text-wrap: pretty;
+}
+
+/* ── the line to keep ───────────────────────────────────────────────────── */
+
+.takeawaySection {
+  padding-top: 14px;
+  padding-bottom: 6px;
+}
+
+.takeawayRow {
+  display: flex;
+  gap: 22px;
+  align-items: stretch;
+}
+
+/* a printed marginal rule, not a border: it runs the height of the quote */
+.takeawayBar {
+  flex: none;
+  width: 5px;
+  background: var(--color-accent);
+  border-radius: 2px;
+}
+
+.takeaway {
+  margin: 0;
+  font-size: 29px;
+  line-height: 1.34;
+  font-style: italic;
+  max-width: 28ch;
+  text-wrap: pretty;
+}
+
+/* ── the four points ────────────────────────────────────────────────────── */
+
+.pointsSection {
+  padding-top: 34px;
+  padding-bottom: 34px;
+}
+
+/* the 1px gap over a divider-coloured ground is what draws the rules between
+   the cells — cheaper than four borders that would double up */
+.points {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--color-divider);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.point {
+  background: var(--color-bg);
+  padding: 18px 20px;
+}
+
+.pointKey {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+  margin-bottom: 8px;
+}
+
+.pointVal {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 19px;
+}
+
+.pointNote {
+  font-size: 13px;
+  color: color-mix(in srgb, var(--color-text) 62%, transparent);
+}
+
+/* ── section furniture ──────────────────────────────────────────────────── */
+
+.section {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.head {
+  border-top: 2px solid var(--color-text);
+  padding-top: 18px;
+  margin-bottom: 28px;
+}
+
+.headTitle {
+  margin: 0;
+  font-size: 32px;
+}
+
+.headLede {
+  margin: 12px 0 0;
+  font-size: 17px;
+  line-height: 1.55;
+  max-width: 66ch;
+  color: color-mix(in srgb, var(--color-text) 80%, transparent);
+  text-wrap: pretty;
+}
+
+/* ── the steps ──────────────────────────────────────────────────────────── */
+
+.steps {
+  margin-top: 36px;
+}
+
+.stepsKicker {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+  margin-bottom: 4px;
+}
+
+.stepsTitle {
+  margin: 0 0 24px;
+  font-size: 22px;
+}
+
+.stepGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px 48px;
+}
+
+.step {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 16px;
+  align-items: baseline;
+}
+
+.stepNum {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 26px;
+  color: var(--color-accent-700);
+}
+
+.stepTitle {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.stepText {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: color-mix(in srgb, var(--color-text) 80%, transparent);
+}
+
+/* ── in cybersecurity ───────────────────────────────────────────────────── */
+
+.secGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px 40px;
+}
+
+.secTitle {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+
+.secText {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: color-mix(in srgb, var(--color-text) 80%, transparent);
+}
+
+/* ── what it runs, what it sits beside, the photo well ──────────────────── */
+
+.metaSection {
+  padding-top: 20px;
+  padding-bottom: 40px;
+}
+
+.metaCols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+}
+
+.metaHead {
+  border-top: 2px solid var(--color-text);
+  padding-top: 18px;
+  margin-bottom: 18px;
+}
+.metaHeadSecond {
+  margin-top: 36px;
+}
+
+.metaTitle {
+  margin: 0;
+  font-size: 26px;
+}
+
+.metaNone {
+  margin: 0;
+  font-size: 15px;
+  font-style: italic;
+  color: color-mix(in srgb, var(--color-text) 62%, transparent);
+}
+
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.protoChip {
+  text-decoration: none;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 6px 13px;
+  border: 1px solid var(--color-divider);
+  border-radius: 2px;
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+.protoChip:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent-700);
+}
+
+.besideChip {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 6px 13px;
+  text-decoration: none;
+}
+.besideChip:hover {
+  background: var(--color-accent-100);
+}
+
+/* the photo well: a ruled 4:3 frame that keeps its place in the grid whether or
+   not there is art in it */
+.photo {
+  aspect-ratio: 4 / 3;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.photoNote {
+  font-size: 13px;
+  font-style: italic;
+  text-align: center;
+  max-width: 30ch;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+/* the padding exists to inset the placeholder line; a photograph wants the
+   whole plate instead */
+.photoFilled {
+  padding: 0;
+}
+
+/* a real photograph fills the well edge to edge, cropped to the 4:3 the grid
+   expects — whatever shape the file happens to be */
+.photoImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── protocol pages only: where it rides, and its header ────────────────── */
+
+/* the encapsulation chain — what wraps this protocol, then what it carries.
+   Read left to right as the packet is built, outermost first. */
+.chain {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* each link carries its own leading arrow, so the pair never breaks across a
+   line with the arrow stranded at the end of the one above */
+.chainStep {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chainChip {
+  padding: 6px 13px;
+  border: 1px solid var(--color-divider);
+  border-radius: 2px;
+  background: var(--color-bg);
+  text-decoration: none;
+  color: var(--color-text);
+}
+a.chainChip:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent-700);
+}
+
+/* the one link in the chain this page is about */
+.chainChipOn {
+  border-color: var(--color-accent);
+  background: var(--color-accent-100);
+  color: var(--color-accent-700);
+}
+
+.chainArrow {
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+/* a line under the chain, where the chain alone would mislead */
+.chainNote {
+  margin: 14px 0 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--color-text) 65%, transparent);
+  max-width: 40ch;
+}
+
+/* the case a protocol makes against the one it replaces: six short claims on
+   the same ruled ground as the four-point strip up the page */
+.beats {
+  margin-top: 34px;
+}
+
+.beatsGrid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--color-divider);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.beat {
+  background: var(--color-bg);
+  padding: 12px 16px;
+}
+
+.beatTitle {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--color-accent-700);
+}
+
+.beatText {
+  font-size: 13px;
+  color: color-mix(in srgb, var(--color-text) 65%, transparent);
+}
+
+/* two reference tables abreast */
+.pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.pairHead {
+  padding: 8px 12px;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-divider);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+.pairRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 12px;
+  font-size: 13.5px;
+  background: var(--color-bg);
+}
+.pairRow + .pairRow {
+  border-top: 1px solid var(--color-divider);
+}
+
+.pairKeyHi {
+  color: var(--color-accent-700);
+}
+
+/* the header summarised as fields and what each is for */
+.kv {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+/* the example set large at the head of the table, its parts in the two inks so
+   the rows underneath can name them without repeating the whole thing */
+.specimen {
+  padding: 14px 16px;
+  text-align: center;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-divider);
+  font-size: 20px;
+  letter-spacing: 0.02em;
+}
+
+.inkA {
+  color: var(--color-accent-700);
+}
+.inkB {
+  color: var(--color-accent-2-700);
+}
+
+.asideNote {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+.kvRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 16px;
+  background: var(--color-bg);
+}
+.kvRow + .kvRow {
+  border-top: 1px solid var(--color-divider);
+}
+
+.kvVal {
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  text-align: right;
+}
+
+/* the comparison form of the same box: three even columns, so the two answers
+   line up under their headings and the eye reads straight down a column */
+.cmpRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 9px 14px;
+  gap: 8px;
+  background: var(--color-bg);
+}
+.cmpRow + .cmpRow {
+  border-top: 1px solid var(--color-divider);
+}
+
+.cmpHead {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.cmpKey {
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+}
+
+/* the column for the protocol whose page this is */
+.cmpMine {
+  color: var(--color-accent-700);
+}
+
+/* the fields the page's explanation turns on */
+.kvRowHi {
+  background: var(--color-accent-100);
+}
+.kvRowHi,
+.kvRowHi .kvVal {
+  color: var(--color-accent-700);
+}
+
+/* ── pager ──────────────────────────────────────────────────────────────── */
+
+.pager {
+  border-top: 1px solid var(--color-divider);
+  padding-top: 20px;
+  padding-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.pagerLink,
+.pagerAll {
+  text-decoration: none;
+  color: var(--color-accent-700);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 15px;
+}
+.pagerLink:hover,
+.pagerAll:hover {
+  text-decoration: underline;
+}
+
+/* the middle link is furniture, not a destination — it steps back */
+.pagerAll {
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  font-size: 13px;
+}
+
+.pagerNext {
+  text-align: right;
+}
+
+/* ── breakpoints ────────────────────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .title {
+    font-size: 46px;
+  }
+  .sub {
+    font-size: 19px;
+  }
+  .lede {
+    font-size: 18px;
+  }
+  .takeaway {
+    font-size: 23px;
+    max-width: none;
+  }
+  .points {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .stepGrid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .secGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .metaCols {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .headTitle {
+    font-size: 26px;
+  }
+  .beatsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .pair {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .title {
+    font-size: 36px;
+  }
+  .sub {
+    font-size: 17px;
+  }
+  .lede {
+    font-size: 16px;
+  }
+  .takeaway {
+    font-size: 19px;
+  }
+  .points {
+    grid-template-columns: 1fr;
+  }
+  .secGrid {
+    grid-template-columns: 1fr;
+  }
+  .beatsGrid {
+    grid-template-columns: 1fr;
+  }
+  /* three even columns leave no room for the words at this width */
+  .cmpRow {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 2px;
+  }
+  .cmpKey {
+    grid-column: 1 / -1;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .step {
+    grid-template-columns: 32px 1fr;
+    gap: 10px;
+  }
+  .stepNum {
+    font-size: 21px;
+  }
+  /* the pager stacks; the middle link goes under the two page turns */
+  .pager {
+    justify-content: flex-start;
+    gap: 12px;
+  }
+  .pagerNext {
+    text-align: left;
+  }
+}
+
+/* ── the hands-on half ─────────────────────────────────────────────────
+   Ten of the forty-eight protocols also have a lab. This strip is how a
+   reader finds out, and it sits right after the takeaway because that is
+   the moment the idea has landed and "now go try it" actually lands too.
+
+   Deliberately drawn in the broadsheet's own language — a rule, a kicker,
+   serif display type — rather than in the labs' instrument style. It is a
+   pointer from this page, not a piece of the lab pasted in. */
+.labBridge {
+  display: flex;
+  align-items: baseline;
+  gap: 22px;
+  flex-wrap: wrap;
+  padding: 18px 0 20px;
+  border-top: 2px solid var(--color-text);
+  border-bottom: 1px solid var(--color-divider);
+  text-decoration: none;
+  color: inherit;
+}
+
+.labBridgeMain { flex: 1 1 30ch; min-width: 0; }
+
+.labBridgeKicker {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+  margin-bottom: 8px;
+}
+
+.labBridgeTitle {
+  font-family: var(--font-heading);
+  font-size: 25px;
+  line-height: 1.2;
+  margin: 0 0 6px;
+}
+
+/* the arrow leads on hover the way a printed "continued on" mark would */
+.labBridge:hover .labBridgeTitle,
+.labBridge:focus-visible .labBridgeTitle { color: var(--color-accent-700); }
+.labBridge:hover .labBridgeArrow { transform: translateX(3px); }
+.labBridgeArrow { display: inline-block; transition: transform 0.15s ease; }
+
+.labBridgeDesc {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  max-width: 58ch;
+  color: var(--color-text);
+  opacity: 0.82;
+}
+
+.labBridgeMeta {
+  flex: none;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.labBridgeDiff { color: var(--color-accent-700); }
+
+@media (max-width: 700px) {
+  .labBridge { gap: 12px; }
+  .labBridgeTitle { font-size: 21px; }
+  .labBridgeMeta { flex-basis: 100%; }
+}

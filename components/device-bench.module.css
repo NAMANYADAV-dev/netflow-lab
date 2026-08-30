@@ -1,0 +1,358 @@
+/* The reading table and the device index. */
+
+.benchSection {
+  padding-top: 36px;
+  padding-bottom: 20px;
+  scroll-margin-top: 72px;
+}
+
+.benchHead {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.benchNote {
+  font-size: 15px;
+  font-style: italic;
+  color: color-mix(in srgb, var(--color-text) 62%, transparent);
+}
+
+/* the table holds its height whether or not anything is on it, so dropping
+   something does not shove the index down the page */
+.table {
+  margin-top: 20px;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  min-height: 240px;
+}
+
+/* ── empty state ────────────────────────────────────────────────────────── */
+
+.empty {
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  padding: 40px;
+}
+
+.emptyMark {
+  width: 44px;
+  height: 44px;
+  border: 1.5px dashed color-mix(in srgb, var(--color-text) 40%, transparent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+.emptyTitle {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 20px;
+}
+
+.emptyBody {
+  margin: 0;
+  max-width: 42ch;
+  font-size: 14px;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+}
+
+/* ── filled state ───────────────────────────────────────────────────────── */
+
+.filled {
+  padding: 28px 32px;
+}
+
+.filledHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.filledGroup {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+  margin-bottom: 8px;
+}
+
+.filledTitle {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.filledAbbr {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 46px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.filledName {
+  font-size: 19px;
+  font-style: italic;
+  color: color-mix(in srgb, var(--color-text) 66%, transparent);
+}
+
+.clear {
+  flex: none;
+  font-size: 13px;
+  padding: 7px 12px;
+}
+
+.filledFn {
+  font-size: 18px;
+  line-height: 1.55;
+  max-width: 62ch;
+  margin: 18px 0 0;
+}
+
+.operatesAt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.metaLabel {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+.layerTag {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.filledCols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 36px;
+  margin-top: 26px;
+}
+.filledCols .metaLabel {
+  display: block;
+  margin-bottom: 12px;
+}
+
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.protoChip {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 5px 12px;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+}
+
+.besideTag {
+  cursor: pointer;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 5px 12px;
+  background: transparent;
+}
+.besideTag:hover {
+  background: var(--color-accent-100);
+}
+
+.readMore {
+  display: inline-block;
+  margin-top: 26px;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-accent-700);
+  text-decoration: none;
+}
+.readMore:hover {
+  text-decoration: underline;
+}
+
+/* ── the index ──────────────────────────────────────────────────────────── */
+
+.indexSection {
+  padding-top: 52px;
+  padding-bottom: 30px;
+  scroll-margin-top: 72px;
+}
+
+.groups {
+  display: flex;
+  flex-direction: column;
+  gap: 44px;
+}
+
+.group {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+/* clears the stuck nav, so a layer's name is pinned under it rather than
+   underneath it */
+.groupLabel {
+  position: sticky;
+  top: 76px;
+}
+
+.groupName {
+  margin: 0 0 6px;
+  font-size: 23px;
+}
+
+.groupBlurb {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--color-text) 62%, transparent);
+  max-width: 26ch;
+}
+
+.groupItems {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+/* the card body and its "Open" link are siblings; the shell is what makes them
+   look like one card, and what the link is positioned against */
+.cardShell {
+  position: relative;
+  display: grid;
+}
+
+/* a button so the keyboard can reach it; the card look comes from the design
+   system's .card, and the button defaults are what needs undoing. The bottom
+   padding is the room the Open link sits in. */
+.deviceCard {
+  cursor: grab;
+  gap: 8px;
+  padding: 14px 16px 34px;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  border: 0;
+  height: 100%;
+}
+.deviceCard:hover {
+  box-shadow: var(--shadow-md);
+}
+.deviceCard:active {
+  cursor: grabbing;
+}
+.deviceCard[aria-pressed='true'] {
+  box-shadow: inset 0 0 0 1px var(--color-accent);
+}
+
+.deviceCardHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.deviceAbbr {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 19px;
+  letter-spacing: -0.01em;
+}
+
+.deviceLayer {
+  font-size: 11px;
+  font-family: var(--font-heading);
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  white-space: nowrap;
+}
+
+.deviceFn {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--color-text) 80%, transparent);
+}
+
+/* sits in the padding the card body leaves at its foot — over the card, but
+   never over its text */
+.cardOpen {
+  position: absolute;
+  left: 16px;
+  bottom: 12px;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--color-accent-700);
+  text-decoration: none;
+}
+.cardOpen:hover {
+  text-decoration: underline;
+}
+
+/* ── breakpoints ────────────────────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .group {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  /* stacked, the label is above its own cards and has nothing to stick to */
+  .groupLabel {
+    position: static;
+  }
+  .groupBlurb {
+    max-width: 60ch;
+  }
+  .groupItems {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .filledCols {
+    gap: 24px;
+  }
+}
+
+@media (max-width: 560px) {
+  .groupItems {
+    grid-template-columns: 1fr;
+  }
+  .filled {
+    padding: 20px 18px;
+  }
+  .filledAbbr {
+    font-size: 32px;
+  }
+  .filledFn {
+    font-size: 16px;
+  }
+  .filledCols {
+    grid-template-columns: 1fr;
+  }
+}

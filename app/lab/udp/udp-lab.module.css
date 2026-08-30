@@ -1,0 +1,438 @@
+/* The UDP lab, built to the Protocol Lab UDP design.
+
+   Same palette and token names as the other labs — the stream diagram sets its
+   colours from JavaScript and reads them out of this cascade. */
+.lab {
+  --bg: #edf1f4;
+  --surface: #ffffff;
+  --surface2: #f4f7f9;
+  --line: #c9d3db;
+  --text: #182027;
+  --text2: #3e4c57;
+  --text3: #6e8090;
+  --a: #9a5f02;
+  --b: #0b6b80;
+  --rst: #b8322a;
+  --sim: #5b3fd6;
+  --ok: #22874e;
+
+  --sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  min-height: 100vh;
+  position: relative;
+  padding-bottom: 44px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+}
+
+:global(html[data-theme='dark']) .lab {
+  --bg: #0c1116;
+  --surface: #131a21;
+  --surface2: #0f151b;
+  --line: #253039;
+  --text: #e9eef2;
+  --text2: #a3b3c0;
+  --text3: #6e8090;
+  --a: #f2a93b;
+  --b: #56c7dc;
+  --rst: #ff6b5e;
+  --sim: #b39cff;
+  --ok: #5fd08a;
+}
+
+.grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 46px 46px;
+  mask-image: radial-gradient(120% 80% at 50% 0%, #000 0%, transparent 70%);
+}
+
+.lab button { font: inherit; color: inherit; }
+.lab button:focus-visible,
+.lab a:focus-visible { outline: 2px solid var(--b); outline-offset: 2px; }
+
+/* ---------- mission bar ---------- */
+.missionBar {
+  position: relative;
+  z-index: 1;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 22px 40px 6px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.missionTag {
+  padding: 4px 8px;
+  border: 1px solid var(--a);
+  border-radius: 3px;
+  color: var(--a);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.missionLine { margin: 0; font-size: 17px; font-weight: 550; color: var(--text); }
+
+.modeTabs { margin-left: auto; display: flex; gap: 6px; }
+
+.modeTabs button {
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text2);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.modeTabs button[data-active='true'] { border-color: var(--b); background: var(--b); color: var(--bg); }
+
+/* ---------- workspace ---------- */
+.workspace {
+  position: relative;
+  z-index: 1;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 14px 40px;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+  align-items: start;
+}
+
+.column { display: flex; flex-direction: column; gap: 20px; }
+.side { position: sticky; top: 76px; }
+
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.panelHead {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface2);
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+.live {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--sim);
+  font-size: 10px;
+  animation: pulse 1.8s ease-in-out infinite;
+}
+
+.headNote { margin-left: auto; color: var(--text3); font-size: 10px; }
+
+/* ---------- stream ---------- */
+.stageBody { padding: 16px 18px 20px; }
+.stageBody svg { display: block; width: 100%; }
+
+/* ---------- udp vs tcp ---------- */
+.contrast {
+  padding: 14px 18px 18px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.traitLabel {
+  margin-bottom: 8px;
+  font-size: 9.5px;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.traitLabel[data-tone='a'] { color: var(--a); }
+.traitLabel[data-tone='b'] { color: var(--b); }
+
+.trait {
+  margin-bottom: 6px;
+  display: flex;
+  gap: 8px;
+  color: var(--text2);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.trait span { font-family: var(--mono); }
+.trait span[data-tone='a'] { color: var(--a); }
+.trait span[data-tone='b'] { color: var(--b); }
+
+.tcpLink {
+  display: inline-block;
+  margin-top: 8px;
+  color: var(--b);
+  text-decoration: none;
+  font-family: var(--mono);
+  font-size: 11.5px;
+}
+
+.tcpLink:hover { text-decoration: underline; }
+
+/* ---------- header fields ---------- */
+.fields {
+  margin: 0;
+  padding: 14px 18px 18px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.field {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface2);
+}
+
+.field dt {
+  margin-bottom: 5px;
+  color: var(--text3);
+  font-size: 9.5px;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.field dd { margin: 0; font-family: var(--mono); font-size: 13px; }
+.field p { margin: 4px 0 0; color: var(--text3); font-size: 11px; line-height: 1.4; }
+
+/* ---------- network conditions ---------- */
+.toolBody { padding: 16px; }
+
+.toolLabel {
+  margin-bottom: 7px;
+  color: var(--text3);
+  font-size: 9.5px;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.wires { margin-bottom: 14px; display: flex; gap: 6px; }
+
+.wires button {
+  flex: 1;
+  padding: 7px 12px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text2);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.wires button[data-active='true'][data-tone='b'] { border-color: var(--b); background: var(--b); color: var(--bg); }
+.wires button[data-active='true'][data-tone='rst'] { border-color: var(--rst); background: var(--rst); color: var(--bg); }
+
+.stateRow { margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+
+.stateDot {
+  width: 9px;
+  height: 9px;
+  flex: none;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.stateRow strong { font-size: 13px; font-weight: 650; letter-spacing: 0.06em; text-transform: uppercase; }
+
+.walk { margin-bottom: 16px; display: flex; flex-direction: column; gap: 7px; }
+
+.walk > div {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  color: var(--text3);
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+.walk > div[data-state='done'] { color: var(--ok); }
+.walk > div[data-state='current'] { color: var(--b); }
+/* the dropped datagram stays red once it is behind you — it never "completed" */
+.walk > div[data-state='lost'] { color: var(--rst); }
+
+.walk i {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  margin-top: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-style: normal;
+  font-size: 10px;
+}
+
+.walk span { flex: 1; min-width: 0; }
+
+.advance {
+  width: 100%;
+  height: 44px;
+  border: 0;
+  border-radius: 5px;
+  background: var(--b);
+  color: var(--bg);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.advance:hover:not(:disabled) { filter: brightness(1.08); }
+.advance:disabled { background: var(--surface2); color: var(--text3); cursor: default; }
+
+.reset {
+  width: 100%;
+  margin-top: 8px;
+  height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text2);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.reset:hover { border-color: var(--rst); color: var(--rst); }
+
+/* ---------- what the app hears ---------- */
+.appLog {
+  padding: 14px;
+  min-height: 96px;
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.appLog > div { animation: rowIn 300ms ease both; }
+.logEmpty { color: var(--text3); }
+
+/* ---------- explain ---------- */
+.explainBody { padding: 14px; }
+.explainBody > p { margin: 0 0 12px; color: var(--text2); font-size: 13.5px; line-height: 1.62; }
+
+.footNote {
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  color: var(--text3);
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+/* ---------- result banner ---------- */
+.winWrap {
+  position: relative;
+  z-index: 1;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 6px 40px 0;
+}
+
+.win {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  border: 1px solid var(--ok);
+  border-radius: 8px;
+  animation: pop 400ms ease both;
+}
+
+.win strong { display: block; font-size: 15px; font-weight: 650; color: var(--text); }
+.win span { display: block; margin-top: 2px; font-size: 13px; color: var(--text2); }
+
+/* ---------- footer ---------- */
+.footer { position: relative; z-index: 1; margin-top: 20px; border-top: 1px solid var(--line); }
+
+.footer > div {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 24px 40px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.footer svg { width: 22px; height: 22px; flex: none; }
+.footerTile { fill: var(--text); }
+.footerLine { stroke: var(--bg); stroke-width: 1.6; }
+.footerCircle { fill: var(--b); }
+.footerSquare { fill: var(--a); }
+.footer strong { font-size: 14px; font-weight: 650; }
+.footer a { color: var(--text3); text-decoration: none; font-size: 13px; }
+.footer a:hover { color: var(--b); }
+.footer code { margin-left: auto; color: var(--text3); font-family: var(--mono); font-size: 12px; }
+
+/* ---------- diagram pieces ---------- */
+.travel { offset-rotate: 0deg; animation: travel 1.1s ease-out both; }
+/* the lost one fades out where it dies rather than landing anywhere */
+.lost { offset-rotate: 0deg; animation: lost 1.1s ease-in both; }
+.dropMark { animation: pop 400ms 950ms ease both; }
+.dropNote { animation: pop 400ms 1s ease both; }
+
+@keyframes travel { 0% { offset-distance: 0%; opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { offset-distance: 100%; opacity: 1; } }
+@keyframes lost { 0% { offset-distance: 0%; opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { offset-distance: 100%; opacity: 0; } }
+@keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+@keyframes rowIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pop { 0% { opacity: 0; transform: scale(0.6); } 70% { opacity: 1; transform: scale(1.08); } 100% { opacity: 1; transform: scale(1); } }
+
+@media (max-width: 1100px) {
+  .workspace { grid-template-columns: 1fr; padding-inline: 22px; }
+  .side { position: static; }
+  .missionBar,
+  .winWrap { padding-inline: 22px; }
+  .footer > div { padding-inline: 22px; }
+}
+
+@media (max-width: 560px) {
+  .workspace,
+  .missionBar,
+  .winWrap { padding-inline: 15px; }
+  .footer > div { padding-inline: 15px; }
+  .missionLine { font-size: 15px; }
+  .modeTabs { width: 100%; }
+  .modeTabs button { flex: 1; }
+  .contrast { grid-template-columns: 1fr; }
+  .footer code { margin-left: 0; flex-basis: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lab svg *,
+  .appLog > div,
+  .win { animation: none !important; }
+}
