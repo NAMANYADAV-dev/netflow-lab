@@ -1,5 +1,6 @@
 import MastheadDate from '@/components/MastheadDate';
 import SiteNav, { type NavSection } from '@/components/SiteNav';
+import { protocolPageSlugs } from '@/lib/protocol-pages';
 import styles from '@/app/shell.module.css';
 
 /* Every page shares the slim editorial masthead and the application navbar. */
@@ -30,7 +31,7 @@ export default function SiteHeader({
 
       <div className={styles.navBand}>
         <div className={styles.headerWrap}>
-          <SiteNav current={current} />
+          <SiteNav current={current} pageSlugs={protocolPageSlugs} />
         </div>
       </div>
     </>

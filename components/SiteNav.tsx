@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   BENCH_HREF,
   CABLES_HREF,
@@ -13,7 +13,6 @@ import {
 import { cableHref, cableMenu } from '@/lib/cable-data';
 import { deviceHref, deviceMenu } from '@/lib/device-data';
 import { protocolById, protocolHref, protocolSlug } from '@/lib/protocol-data';
-import { protocolPages } from '@/lib/protocol-pages';
 import NetFlowMark from '@/components/NetFlowMark';
 import styles from '@/app/shell.module.css';
 
@@ -24,9 +23,9 @@ export type NavSection = MenuName | 'home' | 'stack' | 'bench' | 'labs';
 
 /* Every catalogued protocol has a page; a chip for one that somehow doesn't
    falls back to the Bench rather than to a 404. */
-function protocolPageHref(id: string) {
+function protocolPageHref(id: string, pages: Set<string>) {
   const p = protocolById[id];
-  return p && protocolPages[protocolSlug(p)] ? protocolHref(p) : BENCH_HREF;
+  return p && pages.has(protocolSlug(p)) ? protocolHref(p) : BENCH_HREF;
 }
 
 /** the payload the Bench reads off a dropped chip */
@@ -39,7 +38,15 @@ const startDrag = (id: string) => (e: React.DragEvent) => {
   }
 };
 
-export default function SiteNav({ current }: { current?: NavSection }) {
+export default function SiteNav({
+  current,
+  pageSlugs,
+}: {
+  current?: NavSection;
+  /** the protocol slugs that have a page, handed down by the server header */
+  pageSlugs: string[];
+}) {
+  const pages = useMemo(() => new Set(pageSlugs), [pageSlugs]);
   const [open, setOpen] = useState<MenuName | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const navRef = useRef<HTMLElement>(null);
@@ -134,7 +141,7 @@ export default function SiteNav({ current }: { current?: NavSection }) {
             {menuProtos.map((m) => (
               <Link
                 key={m.id}
-                href={protocolPageHref(m.id)}
+                href={protocolPageHref(m.id, pages)}
                 draggable
                 onDragStart={startDrag(m.id)}
                 title={m.name}

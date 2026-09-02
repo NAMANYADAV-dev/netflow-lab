@@ -5797,3 +5797,12 @@ export const protocolPages: Record<string, ProtocolPage> = {
       'Written at Berkeley in the 1980s with no specification at all — and still what almost every device logs with.',
   },
 };
+
+/* Which protocols have a page, as slugs alone.
+
+   The navbar only ever asks whether a protocol has a page, and it used to ask
+   by importing protocolPages — which put every one of these entries, prose and
+   all, into the client bundle of every page on the site. The answer is 48 short
+   strings; the question was costing 222 KB of JavaScript. Server components
+   read this and hand it down, so the bodies above stay on the server. */
+export const protocolPageSlugs: string[] = Object.keys(protocolPages);

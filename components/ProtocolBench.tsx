@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   protocolById,
   protocolCategories,
@@ -9,7 +9,6 @@ import {
   protocolSlug,
   protocolsByCategory,
 } from '@/lib/protocol-data';
-import { protocolPages } from '@/lib/protocol-pages';
 import shell from '@/app/shell.module.css';
 import styles from './protocol-bench.module.css';
 
@@ -17,7 +16,11 @@ import styles from './protocol-bench.module.css';
    share one piece of state — which protocol is on the table — so they are one
    component. A tray chip, an index card and a "works with" tag all put something
    there, and the nav's Protocols menu drags ids onto it from another page. */
-export default function ProtocolBench() {
+export default function ProtocolBench({ pageSlugs }: {
+  /** the protocol slugs that have a page, handed down by the server page */
+  pageSlugs: string[];
+}) {
+  const pages = useMemo(() => new Set(pageSlugs), [pageSlugs]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>('all');
   const selected = selectedId ? protocolById[selectedId] : null;
@@ -229,7 +232,7 @@ export default function ProtocolBench() {
                         <span className={styles.protoName}>{p.name}</span>
                         <span className={styles.protoFn}>{p.fn}</span>
                       </button>
-                      {protocolPages[protocolSlug(p)] && (
+                      {pages.has(protocolSlug(p)) && (
                         <Link href={protocolHref(p)} className={styles.cardOpen}>
                           Open &rarr;
                         </Link>

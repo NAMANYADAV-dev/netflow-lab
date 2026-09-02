@@ -1,6 +1,7 @@
 import { pageMeta } from '@/lib/seo';
 import Link from 'next/link';
 import ProtocolBench from '@/components/ProtocolBench';
+import { protocolPageSlugs } from '@/lib/protocol-pages';
 import SiteFooter from '@/components/SiteFooter';
 import SiteHeader from '@/components/SiteHeader';
 import { PlateLine, PlateNumber } from '@/components/PlateText';
@@ -56,7 +57,7 @@ export default function BenchPage() {
         </div>
       </section>
 
-      <ProtocolBench />
+      <ProtocolBench pageSlugs={protocolPageSlugs} />
       </main>
 
       <SiteFooter note="A learning instrument — ports and numbers are the common defaults, not the whole story." />
