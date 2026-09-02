@@ -272,55 +272,35 @@ body {
 }
 .cmyk-num .plate-c { color: var(--color-accent); }
 
-/* The plate headline — the same three-plate construction as .cmyk-num at HALF
-   the numeral's offsets: the serif's display hairlines are thinner than the
-   numeral strokes the spread was measured on, and the full offsets swallow them
-   whole. Recut for display headlines that sit in running text blocks on the
-   page's own paper: no ground painting and no padding bleed (a headline on the
-   page multiplies straight onto the sheet), no width:fit-content and no
-   line-height override (the host display class owns its metrics — apply this to
-   each .line, which is position:relative for its plates), and the plates are
-   inert to the hand (pointer-events/user-select none, so a triple-click selects
-   the headline once, not four times). */
-.cmyk-head { position: relative; }
-/* one line of the headline — relative so its own plates inset to this box, and
-   nowrap so the plate repeats break identically to the paper union (a plate that
-   wrapped one word earlier would tear the registration apart). Below the
-   headline's own breakpoint the lines are allowed to wrap: at that size the
-   measure matters more than the nowrap, and all four copies still agree because
-   they share the box. */
+/* The headline — set solid in the page's own text colour: black on the paper
+   edition, the paper white on the night one.
+
+   It used to print as three misregistered process plates multiplying over a
+   hidden paper union, the same construction .cmyk-num above still uses. At
+   numeral size that construction is safe. At headline size it had three ways
+   to fail, and all three showed:
+
+   - the plates were aligned to the union with `text-box: trim-both`, which no
+     engine outside Chromium ships yet, so everywhere else the three inked
+     copies sat a half-leading off the text and the headline read doubled;
+   - the Atlas entrance tweened --press-nx from 5.5 to 0, and an engine without
+     registered custom properties cannot interpolate a bare string, so the
+     plates jumped their whole travel in one frame instead of converging;
+   - at that travel the plates were far outside the union's text-shadow backing
+     and multiplied straight onto the hero canvas behind them, printing the
+     headline into the artwork for the first moment of every load.
+
+   The numerals keep their plates: they are short, they sit on flat paper
+   rather than over the canvas, and nothing animates their offsets. */
+.cmyk-head { color: var(--color-text); }
+/* one line of the headline — nowrap so a two-line headline breaks where it was
+   written to break. Below its own breakpoint the measure matters more. */
 .cmyk-head .line {
-  position: relative;
   display: block;
   white-space: nowrap;
 }
 @media (max-width: 900px) {
   .cmyk-head .line { white-space: normal; }
-}
-/* the union's copies sit at the construction's halved plate offsets PLUS the
-   full lean, so the union still backs the plates at viewport-edge lean —
-   invisible on the page's own paper, load-bearing on any other ground */
-.cmyk-head .paper {
-  color: var(--color-bg);
-  text-shadow: 0.027em 0.0185em 0 var(--color-bg), -0.0245em -0.0175em 0 var(--color-bg);
-}
-.cmyk-head .plate {
-  position: absolute;
-  inset: 0;
-  mix-blend-mode: multiply;
-  pointer-events: none;
-  user-select: none;
-  /* match the host's trim, or the plates sit a half-leading below the union */
-  text-box: trim-both cap alphabetic;
-}
-.cmyk-head .plate-c { color: var(--color-accent); }
-.cmyk-head .plate-m {
-  color: var(--color-accent-2);
-  translate: calc(0.018em + 0.009em * var(--press-nx, 0)) calc(0.0125em + 0.006em * var(--press-ny, 0));
-}
-.cmyk-head .plate-y {
-  color: var(--color-process-yellow);
-  translate: calc(-0.0155em + 0.009em * var(--press-nx, 0)) calc(-0.0115em + 0.006em * var(--press-ny, 0));
 }
 .cmyk-num .plate-m {
   color: var(--color-accent-2);
@@ -334,15 +314,13 @@ body {
 /* Multiply ink needs pale paper beneath it. On the dark sheet, keep the same
    misregistration character as colored shadows around a solid light glyph;
    multiplying the process plates into a dark ground would otherwise erase the
-   headline and numerals. */
-:root[data-theme='dark'] .cmyk-head .paper,
+   numerals. */
 :root[data-theme='dark'] .cmyk-num .paper {
   color: var(--color-text);
   text-shadow: 0.025em 0.018em 0 var(--color-accent-2),
     -0.023em -0.017em 0 var(--color-accent);
 }
 
-:root[data-theme='dark'] .cmyk-head .plate,
 :root[data-theme='dark'] .cmyk-num .plate {
   display: none;
 }

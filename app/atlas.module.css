@@ -55,25 +55,6 @@
   line-height: 1;
   letter-spacing: -0.025em;
   margin: 0;
-  /* the press coming up to register on load: the plates start well out and
-     converge. Driving the same custom properties the pointer lean uses means
-     the two never fight — the entrance simply hands over to the driver. */
-  animation: atlas-register 1.05s cubic-bezier(0.16, 0.84, 0.3, 1) both;
-}
-
-@keyframes atlas-register {
-  from {
-    --press-nx: 5.5;
-    --press-ny: 5.5;
-  }
-  to {
-    --press-nx: 0;
-    --press-ny: 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .headline { animation: none; }
 }
 
 .lede {
