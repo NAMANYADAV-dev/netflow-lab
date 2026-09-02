@@ -14,6 +14,8 @@ import { cableHref, cableMenu } from '@/lib/cable-data';
 import { deviceHref, deviceMenu } from '@/lib/device-data';
 import { protocolById, protocolHref, protocolSlug } from '@/lib/protocol-data';
 import NetFlowMark from '@/components/NetFlowMark';
+import SiteSearch from '@/components/SiteSearch';
+import type { SearchEntry } from '@/lib/search-index';
 import styles from '@/app/shell.module.css';
 
 type MenuName = 'protocols' | 'devices' | 'cables';
@@ -41,10 +43,16 @@ const startDrag = (id: string) => (e: React.DragEvent) => {
 export default function SiteNav({
   current,
   pageSlugs,
+  searchEntries,
+  searchDefaults,
 }: {
   current?: NavSection;
   /** the protocol slugs that have a page, handed down by the server header */
   pageSlugs: string[];
+  /** everything the palette can reach, built on the server */
+  searchEntries: SearchEntry[];
+  /** what the palette offers before anything is typed */
+  searchDefaults: SearchEntry[];
 }) {
   const pages = useMemo(() => new Set(pageSlugs), [pageSlugs]);
   const [open, setOpen] = useState<MenuName | null>(null);
@@ -250,6 +258,8 @@ export default function SiteNav({
       <Link href={BENCH_HREF} aria-current={mark('bench')}>
         The Bench
       </Link>
+      <SiteSearch entries={searchEntries} defaults={searchDefaults} />
+
       <button
         type="button"
         className={styles.themeToggle}
