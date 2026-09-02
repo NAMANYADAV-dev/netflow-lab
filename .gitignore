@@ -9,5 +9,5 @@ next-env.d.ts
 .claude/
 .tmp_*/
 _ds/
-photo/
+/photo/
 support.js
