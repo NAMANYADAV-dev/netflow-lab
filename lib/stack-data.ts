@@ -91,6 +91,16 @@ export const tcpIpLayers: TcpIpLayer[] = [
   },
 ];
 
+/* The chart puts OSI layer n on grid row 8 - n, and a TCP/IP band is written
+   as the run of rows it covers. Inverting that gives the OSI layers a band
+   speaks for — which is what lets choosing a layer in one column light the
+   band beside it. */
+export function bandLayers(band: TcpIpLayer): number[] {
+  const out: number[] = [];
+  for (let row = band.rowStart; row < band.rowStart + band.rowSpan; row++) out.push(8 - row);
+  return out;
+}
+
 export type LayerDetail = {
   n: number;
   name: string;
@@ -176,6 +186,8 @@ export type EncapCell = {
 
 export type EncapRow = {
   layer: string;
+  /** the OSI layer doing the wrapping, so the row can be traced with the rest */
+  n: number;
   cells: EncapCell[];
   result: string;
   /** the result reads as a named PDU rather than a plain gloss */
@@ -185,12 +197,14 @@ export type EncapRow = {
 export const encapRows: EncapRow[] = [
   {
     layer: 'Application',
+    n: 7,
     cells: [{ label: 'Data', kind: 'data' }],
     result: 'the message',
     named: false,
   },
   {
     layer: 'Transport',
+    n: 4,
     cells: [
       { label: 'TCP hdr', kind: 'header' },
       { label: 'Data', kind: 'data' },
@@ -200,6 +214,7 @@ export const encapRows: EncapRow[] = [
   },
   {
     layer: 'Network',
+    n: 3,
     cells: [
       { label: 'IP hdr', kind: 'header' },
       { label: 'TCP hdr', kind: 'carried' },
@@ -210,6 +225,7 @@ export const encapRows: EncapRow[] = [
   },
   {
     layer: 'Data Link',
+    n: 2,
     cells: [
       { label: 'Frame hdr', kind: 'header' },
       { label: 'IP hdr', kind: 'carried' },

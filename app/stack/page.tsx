@@ -1,9 +1,9 @@
 import { pageMeta } from '@/lib/seo';
-import Link from 'next/link';
 import { Fragment } from 'react';
 import SiteFooter from '@/components/SiteFooter';
 import SiteHeader from '@/components/SiteHeader';
 import {
+  bandLayers,
   bitStream,
   encapRows,
   layerDetails,
@@ -11,8 +11,10 @@ import {
   pduByLayer,
   tcpIpLayers,
   whyTwoModels,
-  type DeviceLink,
 } from '@/lib/stack-data';
+import DeviceLinks from './DeviceLinks';
+import LayerFocus from './LayerFocus';
+import OsiChartCells from './OsiChartCells';
 import shell from '../shell.module.css';
 import styles from './stack.module.css';
 
@@ -30,29 +32,17 @@ const BOX_CLASS = {
   data: styles.boxData,
 } as const;
 
-function DeviceLinks({ devices }: { devices?: DeviceLink[] }) {
-  if (!devices?.length) return null;
-  return (
-    <>
-      {' · '}
-      {devices.map((d, i) => (
-        <Fragment key={d.label}>
-          {i > 0 && ', '}
-          <Link href={d.href} className={styles.deviceLink}>
-            {d.label}
-          </Link>
-        </Fragment>
-      ))}
-    </>
-  );
-}
-
 export default function StackPage() {
   return (
     <div className={shell.page}>
       <SiteHeader motto="The reference section" current="stack" />
 
+      {/* Every figure below carries data-layers, and choosing a layer in the
+          chart lights all of them at once — see LayerFocus. That wrapper is the
+          only client boundary on the page; the sections inside it stay
+          server-rendered and are passed through as its children. */}
       <main>
+      <LayerFocus>
       {/* ── hero ─────────────────────────────────────────────────────── */}
       <section className={`${shell.wrap} ${styles.hero}`}>
         <div className={styles.kicker}>The two models, side by side</div>
@@ -68,6 +58,13 @@ export default function StackPage() {
 
       {/* ── the chart ────────────────────────────────────────────────── */}
       <section className={`${shell.wrap} ${styles.chartSection}`}>
+        <p className={styles.chartHint}>
+          Choose a layer to trace it through the page — its band in TCP/IP, its entry in the
+          detail list, its plate in both stacks and the box it adds when the data is wrapped all
+          light together. Choose it again, or press <span className={styles.key}>Esc</span>, to let
+          go.
+        </p>
+
         <div className={styles.chartLabels}>
           <div className={styles.labelOsi}>OSI · 7 layers</div>
           <div className={styles.labelTcp}>TCP/IP · 4 layers</div>
@@ -76,23 +73,7 @@ export default function StackPage() {
         <div className={styles.chart}>
           <div className={`${styles.stackedLabel} ${styles.stackedLabelOsi}`}>OSI · 7 layers</div>
 
-          {osiLayers.map((L) => (
-            <div
-              key={L.n}
-              className={styles.osiCell}
-              style={{ '--row': 8 - L.n } as React.CSSProperties}
-            >
-              <div className={styles.osiNum}>{L.n}</div>
-              <div>
-                <div className={styles.osiName}>{L.name}</div>
-                <div className={styles.osiBlurb}>{L.blurb}</div>
-                <div className={styles.osiExamples}>
-                  {L.examples}
-                  <DeviceLinks devices={L.devices} />
-                </div>
-              </div>
-            </div>
-          ))}
+          <OsiChartCells />
 
           <div className={`${styles.stackedLabel} ${styles.stackedLabelTcp}`}>TCP/IP · 4 layers</div>
 
@@ -100,6 +81,7 @@ export default function StackPage() {
             <div
               key={T.name}
               className={styles.tcpCell}
+              data-layers={bandLayers(T).join(' ')}
               style={
                 { '--row-start': T.rowStart, '--row-span': T.rowSpan } as React.CSSProperties
               }
@@ -126,7 +108,7 @@ export default function StackPage() {
 
         <div className={styles.detailList}>
           {layerDetails.map((L) => (
-            <div className={styles.detailRow} key={L.n}>
+            <div className={styles.detailRow} data-layers={L.n} key={L.n}>
               <div>
                 <div className={styles.detailName}>
                   <span className={styles.detailNum}>{L.n}</span>&nbsp; {L.name}
@@ -178,17 +160,22 @@ export default function StackPage() {
               <Fragment key={L.n}>
                 <div
                   className={`${styles.flowCell} ${styles.flowCellSender} ${last ? styles.flowCellLast : ''}`}
+                  data-layers={L.n}
                 >
                   <span className={styles.flowLayerName}>{L.name}</span>
                   <span className={styles.flowNumSender}>{L.n}</span>
                 </div>
 
-                <div className={`${styles.pduCell} ${i === 0 ? styles.pduCellFirst : ''}`}>
+                <div
+                  className={`${styles.pduCell} ${i === 0 ? styles.pduCellFirst : ''}`}
+                  data-layers={L.n}
+                >
                   {pduByLayer[L.n]}
                 </div>
 
                 <div
                   className={`${styles.flowCell} ${styles.flowCellReceiver} ${last ? styles.flowCellLast : ''}`}
+                  data-layers={L.n}
                 >
                   <span className={styles.flowNumReceiver}>{L.n}</span>
                   <span className={styles.flowLayerName}>{L.name}</span>
@@ -223,7 +210,7 @@ export default function StackPage() {
 
         <div className={styles.encapList}>
           {encapRows.map((row) => (
-            <div className={styles.encapRow} key={row.layer}>
+            <div className={styles.encapRow} data-layers={row.n} key={row.layer}>
               <div className={styles.encapLayer}>{row.layer}</div>
               <div className={styles.encapBoxes}>
                 {row.cells.map((c, i) => (
@@ -240,7 +227,7 @@ export default function StackPage() {
             </div>
           ))}
 
-          <div className={styles.encapRow}>
+          <div className={styles.encapRow} data-layers={1}>
             <div className={styles.encapLayer}>Physical</div>
             <div className={styles.bits}>{bitStream}</div>
             <div className={styles.encapResult}>= Bits</div>
@@ -277,6 +264,7 @@ export default function StackPage() {
           ))}
         </div>
       </section>
+      </LayerFocus>
       </main>
 
       <SiteFooter note="Two models, one network — filed by the layer each protocol and device works at." />

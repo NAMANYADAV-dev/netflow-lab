@@ -80,6 +80,10 @@
 }
 
 .osiCell {
+  cursor: pointer;
+  --focus-wash: var(--color-accent-100);
+  --focus-ink: var(--color-accent);
+  --focus-rule: 3px;
   grid-column: 1;
   grid-row: var(--row);
   background: var(--color-bg);
@@ -99,9 +103,22 @@
 }
 
 .osiName {
+  appearance: none;
+  background: none;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
   font-family: var(--font-heading);
   font-weight: 600;
   font-size: 18px;
+}
+
+.osiName:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
 }
 
 .osiBlurb {
@@ -126,6 +143,9 @@
 }
 
 .tcpCell {
+  --focus-wash: var(--color-accent-2-200);
+  --focus-ink: var(--color-accent-2);
+  --focus-rule: 3px;
   grid-column: 2;
   grid-row: var(--row-start) / span var(--row-span);
   background: var(--color-accent-2-100);
@@ -188,6 +208,7 @@
 }
 
 .detailRow {
+  --focus-wash: transparent;
   display: grid;
   grid-template-columns: 150px 1fr;
   gap: 28px;
@@ -278,11 +299,13 @@
   border-bottom: none;
 }
 .flowCellSender {
+  --focus-wash: var(--color-accent-200);
   background: var(--color-accent-100);
   border: 1px solid var(--color-accent);
   border-bottom: none;
 }
 .flowCellReceiver {
+  --focus-wash: var(--color-accent-2-200);
   background: var(--color-accent-2-100);
   border: 1px solid var(--color-accent-2);
   border-bottom: none;
@@ -302,6 +325,7 @@
 .flowNumReceiver { font-size: 12px; color: var(--color-accent-2-700); }
 
 .pduCell {
+  --focus-wash: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -345,6 +369,7 @@
 }
 
 .encapRow {
+  --focus-wash: transparent;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -449,6 +474,66 @@
   font-size: 15px;
   line-height: 1.6;
   color: color-mix(in srgb, var(--color-text) 80%, transparent);
+}
+
+/* ── tracing one layer through the page ─────────────────────────────────── */
+
+/* A layer speaks in four separate figures here — the chart, the detail list,
+   the sender and receiver stacks, the encapsulation rows — and nothing used to
+   tie them together. Choosing one in the chart writes its number onto the
+   wrapper LayerFocus renders; every element that belongs to a layer names that
+   layer in data-layers, and the rules below do the rest: all participants fade,
+   then the ones the chosen number appears in come back with their own wash and
+   rule. Each element declares that wash itself, which is why seven figures that
+   look nothing alike share one rule set.
+
+   The seven selectors are spelled out because CSS cannot compare one attribute
+   against another. `~=` is what lets a TCP/IP band work: it carries the whole
+   run of OSI layers it covers ("7 6 5") and matches on any one of them. */
+.focusRoot [data-layers] {
+  transition: opacity 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+}
+
+.focusRoot[data-active-layer] [data-layers] {
+  opacity: 0.32;
+}
+
+.focusRoot[data-active-layer='1'] [data-layers~='1'],
+.focusRoot[data-active-layer='2'] [data-layers~='2'],
+.focusRoot[data-active-layer='3'] [data-layers~='3'],
+.focusRoot[data-active-layer='4'] [data-layers~='4'],
+.focusRoot[data-active-layer='5'] [data-layers~='5'],
+.focusRoot[data-active-layer='6'] [data-layers~='6'],
+.focusRoot[data-active-layer='7'] [data-layers~='7'] {
+  opacity: 1;
+  background-color: var(--focus-wash);
+  box-shadow: inset var(--focus-rule, 0) 0 0 var(--focus-ink, transparent);
+}
+
+/* the trace is a reading aid, not an effect: for a reader who has asked for no
+   motion the states still change, they just stop easing into each other */
+@media (prefers-reduced-motion: reduce) {
+  .focusRoot [data-layers] {
+    transition: none;
+  }
+}
+
+/* the chart is a control now, and nothing else on the page says so */
+.chartHint {
+  font-size: 13.5px;
+  line-height: 1.55;
+  max-width: 68ch;
+  margin: 0 0 18px;
+  color: color-mix(in srgb, var(--color-text) 68%, transparent);
+}
+
+.key {
+  font-family: var(--font-heading);
+  font-size: 12px;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  padding: 1px 5px;
 }
 
 /* ── breakpoints ────────────────────────────────────────────────────────── */
