@@ -2,9 +2,11 @@
 
    A reference site with ninety-odd entries needs a way in that is not the
    navbar's dropdowns, and the palette is the one people already know how to
-   use. It is set like the rest of the paper — one serif, ruled edges, the
-   process inks for state — rather than like the product-shaped thing it is
-   modelled on. */
+   use. It is set like the rest of the paper — ruled edges, the process inks for
+   state, the serif for anything that reads as a name — rather than like the
+   product-shaped thing it is modelled on. The chrome around it (the trigger,
+   the filters, the key hints) takes the navbar's sans, because that is what the
+   rest of the application furniture is set in. */
 
 /* ── the way in, sitting in the navbar ─────────────────────────────────── */
 
@@ -12,33 +14,46 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 3px 8px 3px 10px;
+  height: 38px;
+  padding: 0 8px 0 11px;
   border: 1px solid var(--color-divider);
   border-radius: var(--radius-md);
-  background: none;
+  background: var(--color-surface);
   color: color-mix(in srgb, var(--color-text) 62%, transparent);
-  font-family: var(--font-body);
+  font-family: inherit;
   font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
   cursor: pointer;
-  transition: border-color 140ms ease, color 140ms ease;
+  transition: border-color 140ms ease, color 140ms ease, background-color 140ms ease;
 }
 .trigger:hover {
   border-color: var(--color-accent);
   color: var(--color-accent-700);
+  background: var(--color-accent-100);
 }
 .trigger:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
 
+.triggerIcon {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  opacity: 0.85;
+}
+
 .triggerKey {
-  font-family: var(--font-heading);
   font-size: 11px;
+  font-weight: 600;
   line-height: 1;
-  padding: 3px 6px;
+  padding: 4px 6px;
+  min-width: 19px;
+  text-align: center;
   border: 1px solid var(--color-divider);
   border-radius: var(--radius-sm);
-  background: var(--color-surface);
+  background: var(--color-bg);
 }
 
 /* ── the palette ───────────────────────────────────────────────────────── */
@@ -50,27 +65,57 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 12vh 20px 20px;
-  background: color-mix(in srgb, #101416 62%, transparent);
+  padding: 11vh 20px 20px;
+  background: color-mix(in srgb, #101416 58%, transparent);
+  backdrop-filter: blur(2px);
+  animation: fade 130ms ease-out;
 }
 
 .panel {
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  max-width: 620px;
+  max-width: 640px;
+  /* the list scrolls inside; the panel itself never outgrows the window */
+  max-height: min(72vh, 620px);
   background: var(--color-bg);
   border: 1px solid var(--color-text);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
   overflow: hidden;
+  animation: lift 150ms cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+@keyframes fade {
+  from { opacity: 0; }
+}
+@keyframes lift {
+  from { opacity: 0; transform: translateY(-8px) scale(0.99); }
+}
+
+/* ── the field ─────────────────────────────────────────────────────────── */
+
+.fieldRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: none;
+  padding: 0 18px;
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.fieldIcon {
+  width: 19px;
+  height: 19px;
+  flex: none;
+  color: color-mix(in srgb, var(--color-text) 45%, transparent);
 }
 
 .field {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-  padding: 18px 22px;
+  flex: 1;
+  min-width: 0;
+  padding: 17px 0;
   border: 0;
-  border-bottom: 1px solid var(--color-divider);
   background: none;
   color: var(--color-text);
   font-family: var(--font-heading);
@@ -78,34 +123,146 @@
   line-height: 1.3;
 }
 .field::placeholder {
-  color: color-mix(in srgb, var(--color-text) 42%, transparent);
+  color: color-mix(in srgb, var(--color-text) 40%, transparent);
 }
 .field:focus {
   outline: none;
+}
+/* the rule under the field is what shows the field has the caret */
+.fieldRow:focus-within {
   border-bottom-color: var(--color-accent);
+  box-shadow: inset 0 -1px 0 var(--color-accent);
 }
 
+.clear {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: color-mix(in srgb, var(--color-text) 62%, transparent);
+  font-family: inherit;
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+}
+.clear:hover {
+  background: var(--color-accent-100);
+  color: var(--color-accent-700);
+}
+.clear:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+/* ── the shelves ───────────────────────────────────────────────────────── */
+
+/* One row of the six kinds, each carrying its count for the query as typed.
+   It doubles as the browse affordance: with the field empty, a chip opens that
+   whole shelf rather than filtering nothing. */
+.filters {
+  display: flex;
+  flex: none;
+  gap: 6px;
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.filters::-webkit-scrollbar {
+  display: none;
+}
+
+.filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  padding: 4px 9px;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  color: color-mix(in srgb, var(--color-text) 68%, transparent);
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color 120ms ease, color 120ms ease, background-color 120ms ease;
+}
+.filter:hover:not(:disabled) {
+  border-color: var(--color-accent);
+  color: var(--color-accent-700);
+}
+.filter:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+.filter[data-on='true'] {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-bg);
+}
+.filter:disabled {
+  opacity: 0.38;
+  cursor: default;
+}
+
+.filterCount {
+  font-variant-numeric: tabular-nums;
+  font-size: 10px;
+  opacity: 0.72;
+}
+.filter[data-on='true'] .filterCount {
+  opacity: 0.85;
+}
+
+/* ── the results ───────────────────────────────────────────────────────── */
+
 .results {
-  list-style: none;
-  margin: 0;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 6px;
 }
 
-/* three columns: the name, what it is, and which shelf it came off — the
-   third right-aligned so the eye can filter by kind down a single edge */
+/* the shelf a run of rows came off, ruled off from the run above it */
+.groupLabel {
+  padding: 12px 14px 5px;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 48%, transparent);
+}
+[role='group'] + [role='group'] .groupLabel {
+  margin-top: 4px;
+  border-top: 1px solid var(--color-divider);
+  padding-top: 12px;
+}
+
+/* four columns: the name, what it is, which shelf it came off, and the return
+   arrow that only the highlighted row shows — the kind right-aligned against
+   the arrow so the eye can filter by kind down a single edge */
 .result {
   display: grid;
-  grid-template-columns: minmax(0, auto) minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr) auto 12px;
   align-items: baseline;
   gap: 12px;
   width: 100%;
   padding: 10px 14px;
-  border: 0;
   border-radius: var(--radius-sm);
-  background: none;
-  color: inherit;
   text-align: left;
   cursor: pointer;
+  scroll-margin: 8px;
   box-shadow: inset 0 0 0 var(--color-accent);
   transition: background-color 120ms ease, box-shadow 120ms ease;
 }
@@ -118,6 +275,7 @@
   font-family: var(--font-heading);
   font-weight: 600;
   font-size: 16px;
+  white-space: nowrap;
 }
 
 .resultDetail {
@@ -128,56 +286,210 @@
   white-space: nowrap;
 }
 
+/* the query, where it landed — the accent ink, not a highlighter block */
+.mark {
+  background: none;
+  color: var(--color-accent-700);
+  font-weight: 700;
+}
+.result[data-active='true'] .mark {
+  color: var(--color-accent-800);
+}
+
 .resultKind {
-  font-size: 10px;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 9px;
+  font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 45%, transparent);
+}
+.result[data-active='true'] .resultKind {
   color: var(--color-accent-700);
 }
 
-.empty {
-  padding: 18px 20px;
-  font-size: 14px;
-  font-style: italic;
-  color: color-mix(in srgb, var(--color-text) 62%, transparent);
+/* what Enter would do, shown on the row Enter would do it to */
+.resultGo {
+  font-size: 13px;
+  line-height: 1;
+  color: var(--color-accent-700);
+  opacity: 0;
 }
-.empty strong {
-  font-style: normal;
+.result[data-active='true'] .resultGo {
+  opacity: 1;
+}
+
+/* ── nothing found ─────────────────────────────────────────────────────── */
+
+.empty {
+  padding: 26px 20px 30px;
+  text-align: center;
+}
+
+.emptyLine {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 16px;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+}
+.emptyLine strong {
   color: var(--color-text);
 }
 
+.emptyHint {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+.emptyAction {
+  margin-top: 12px;
+  padding: 6px 12px;
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--color-accent-700);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.emptyAction:hover {
+  background: var(--color-accent-100);
+}
+.emptyAction:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+/* ── the footer ────────────────────────────────────────────────────────── */
+
 .footer {
   display: flex;
-  gap: 18px;
-  padding: 9px 20px;
+  align-items: center;
+  gap: 16px;
+  flex: none;
+  padding: 9px 18px;
   border-top: 1px solid var(--color-divider);
   background: var(--color-surface);
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 11px;
   color: color-mix(in srgb, var(--color-text) 55%, transparent);
 }
+
+.hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.count {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
 .footer kbd {
-  font-family: var(--font-heading);
-  font-size: 11px;
-  padding: 1px 5px;
-  margin-right: 3px;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  min-width: 17px;
+  padding: 2px 4px;
+  text-align: center;
   border: 1px solid var(--color-divider);
+  border-bottom-width: 2px;
   border-radius: var(--radius-sm);
   background: var(--color-bg);
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .trigger,
-  .result {
-    transition: none;
-  }
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
-/* the label goes before the key does — a lone "/" still reads as search */
-@media (max-width: 700px) {
+/* ── smaller screens ───────────────────────────────────────────────────── */
+
+/* the label goes before the key does — a lone glyph still reads as search */
+@media (max-width: 860px) {
   .triggerLabel {
     display: none;
   }
+  .trigger {
+    padding: 0 8px;
+  }
+}
+
+/* At phone width the palette stops being a card floating over the page and
+   becomes the page: full height, no border to waste, and rows tall enough to
+   be hit with a thumb. */
+@media (max-width: 640px) {
   .backdrop {
-    padding-top: 8vh;
+    padding: 0;
+  }
+  .panel {
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    border: 0;
+    border-radius: 0;
+    animation: none;
+  }
+  .field {
+    padding: 15px 0;
+    font-size: 19px;
+  }
+  .result {
+    /* the detail drops under the name rather than being clipped to nothing */
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 11px 14px;
+    gap: 3px 10px;
+  }
+  .resultTitle {
+    grid-column: 1;
+  }
+  .resultKind {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+  }
+  .resultDetail {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .resultGo {
+    display: none;
+  }
+  .footer {
+    gap: 12px;
+  }
+  /* the hardware key hints mean nothing on a touchscreen */
+  .hint {
+    display: none;
+  }
+  .count {
+    margin-left: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backdrop,
+  .panel {
+    animation: none;
+  }
+  .trigger,
+  .filter,
+  .result {
+    transition: none;
   }
 }
