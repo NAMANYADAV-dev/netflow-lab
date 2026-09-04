@@ -28,21 +28,6 @@
   font-family: var(--sans);
 }
 
-:global(html[data-theme='dark']) .lab {
-  --bg: #0c1116;
-  --surface: #131a21;
-  --surface2: #0f151b;
-  --line: #253039;
-  --text: #e9eef2;
-  --text2: #a3b3c0;
-  --text3: #6e8090;
-  --a: #f2a93b;
-  --b: #56c7dc;
-  --rst: #ff6b5e;
-  --sim: #b39cff;
-  --ok: #5fd08a;
-}
-
 .grid {
   position: absolute;
   inset: 0;

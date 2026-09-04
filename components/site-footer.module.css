@@ -22,16 +22,6 @@
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-:global(html[data-theme='dark']) .footer {
-  --footer-bg: #0c1116;
-  --footer-line: #253039;
-  --footer-text: #e9eef2;
-  --footer-muted: #a3b3c0;
-  --footer-soft: #8293a0;
-  --footer-accent: #56c7dc;
-  --footer-accent-2: #f2a93b;
-}
-
 .inner {
   max-width: 1500px;
   margin: 0 auto;

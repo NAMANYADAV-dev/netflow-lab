@@ -59,17 +59,6 @@ export default function SiteNav({
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const navRef = useRef<HTMLElement>(null);
 
-  const toggleTheme = () => {
-    const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-    document.documentElement.dataset.theme = nextTheme;
-    document.documentElement.style.colorScheme = nextTheme;
-    try {
-      localStorage.setItem('netflow-theme', nextTheme);
-    } catch {
-      // A locked-down browser can deny storage; the theme still changes now.
-    }
-  };
-
   const show = (name: MenuName) => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
     setOpen(name);
@@ -260,20 +249,6 @@ export default function SiteNav({
       </Link>
       <SiteSearch entries={searchEntries} defaults={searchDefaults} />
 
-      <button
-        type="button"
-        className={styles.themeToggle}
-        onClick={toggleTheme}
-        aria-label="Toggle color theme"
-        title="Toggle color theme"
-      >
-        <span className={`${styles.themeIcon} ${styles.themeMoon}`} aria-hidden="true">
-          {'\u263E'}
-        </span>
-        <span className={`${styles.themeIcon} ${styles.themeSun}`} aria-hidden="true">
-          {'\u2600'}
-        </span>
-      </button>
       <Link
         className={`btn btn-primary ${styles.navCta}`}
         href={LABS_HREF}

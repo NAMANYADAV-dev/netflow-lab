@@ -7,8 +7,7 @@ type Packet = { a: Node; b: Node; p: number; c: 'cyan' | 'mag' };
 
 /** ink RGB triples, as the canvas wants them. The canvas cannot consume CSS
     custom properties directly, so it mirrors the light/dark design tokens. */
-const LIGHT_COL = { ink: '32,30,29', cyan: '0,136,176', mag: '214,0,108' } as const;
-const DARK_COL = { ink: '238,234,227', cyan: '57,191,231', mag: '255,79,155' } as const;
+const COL = { ink: '32,30,29', cyan: '0,136,176', mag: '214,0,108' } as const;
 /** the run of node kinds — mostly ink, one cyan and one magenta per eight */
 const KINDS: Node['t'][] = ['ink', 'ink', 'ink', 'ink', 'cyan', 'ink', 'ink', 'mag'];
 /** links are drawn between nodes closer than this, fading out toward it */
@@ -65,7 +64,7 @@ export default function AtlasCanvas({
     build();
 
     const draw = (animate: boolean) => {
-      const col = document.documentElement.dataset.theme === 'dark' ? DARK_COL : LIGHT_COL;
+      const col = COL;
       const sp = animate ? 0.55 + pace * 0.4 : 0;
       ctx.clearRect(0, 0, W, H);
 
@@ -130,13 +129,6 @@ export default function AtlasCanvas({
     });
     ro.observe(el);
 
-    // A still canvas also needs to repaint when the navbar changes theme.
-    const themeObserver = new MutationObserver(() => draw(false));
-    themeObserver.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['data-theme'],
-    });
-
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     // one still frame is the whole treatment when motion is unwelcome or the
@@ -144,7 +136,6 @@ export default function AtlasCanvas({
     if (!showAnimation || reduce) {
       draw(false);
       return () => {
-        themeObserver.disconnect();
         ro.disconnect();
       };
     }
@@ -174,7 +165,6 @@ export default function AtlasCanvas({
     return () => {
       halt();
       io.disconnect();
-      themeObserver.disconnect();
       ro.disconnect();
     };
   }, [showAnimation, pace]);

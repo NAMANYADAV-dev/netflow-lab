@@ -82,72 +82,6 @@
   --shadow-lg: 0 12px 32px color-mix(in srgb, #2d2b2b 22%, transparent);
 }
 
-/* The night edition keeps the same cyan/magenta press identity, but reverses
-   the paper and ink tokens. Components already read these roles, so every page
-   changes together instead of accumulating one-off dark overrides. */
-:root[data-theme='dark'] {
-  color-scheme: dark;
-  --color-bg: #101416;
-  --color-surface: #191f22;
-  --color-text: #eeeae3;
-  --color-accent: #39bfe7;
-  --color-accent-2: #ff4f9b;
-  --color-divider: color-mix(in srgb, #eeeae3 18%, transparent);
-
-  --color-neutral-100: #1b2023;
-  --color-neutral-200: #252b2e;
-  --color-neutral-300: #343b3f;
-  --color-neutral-400: #51595d;
-  --color-neutral-500: #747c80;
-  --color-neutral-600: #9aa1a3;
-  --color-neutral-700: #bcc1c1;
-  --color-neutral-800: #d9dcda;
-  --color-neutral-900: #eeeae3;
-
-  --color-accent-100: #102a33;
-  --color-accent-200: #153b47;
-  --color-accent-300: #1f5666;
-  --color-accent-400: #277b91;
-  --color-accent-500: #31a2bf;
-  --color-accent-600: #51c8e7;
-  --color-accent-700: #78d8ef;
-  --color-accent-800: #a6e7f5;
-  --color-accent-900: #d1f4fa;
-
-  --color-accent-2-100: #30131f;
-  --color-accent-2-200: #46192b;
-  --color-accent-2-300: #69233f;
-  --color-accent-2-400: #99305c;
-  --color-accent-2-500: #d43e7d;
-  --color-accent-2-600: #ff63a7;
-  --color-accent-2-700: #ff86ba;
-  --color-accent-2-800: #ffb0d0;
-  --color-accent-2-900: #ffd8e8;
-
-  --color-process-yellow: #f2c94c;
-  --logo-tile-bg: #f3f2f2;
-  --logo-path: #343133;
-  --logo-center: #1c1b1d;
-  --shadow-sm: 0 1px 2px rgb(0 0 0 / 36%);
-  --shadow-md: 0 4px 12px rgb(0 0 0 / 42%);
-  --shadow-lg: 0 14px 36px rgb(0 0 0 / 54%);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) {
-    color-scheme: dark;
-    --color-bg: #101416;
-    --color-surface: #191f22;
-    --color-text: #eeeae3;
-    --color-accent: #39bfe7;
-    --color-accent-2: #ff4f9b;
-    --color-divider: color-mix(in srgb, #eeeae3 18%, transparent);
-    --logo-tile-bg: #f3f2f2;
-    --logo-path: #343133;
-    --logo-center: #1c1b1d;
-  }
-}
-
 body {
   background: var(--color-bg);
   color: var(--color-text);
@@ -313,17 +247,6 @@ body {
 
 /* Multiply ink needs pale paper beneath it. On the dark sheet, keep the same
    misregistration character as colored shadows around a solid light glyph;
-   multiplying the process plates into a dark ground would otherwise erase the
-   numerals. */
-:root[data-theme='dark'] .cmyk-num .paper {
-  color: var(--color-text);
-  text-shadow: 0.025em 0.018em 0 var(--color-accent-2),
-    -0.023em -0.017em 0 var(--color-accent);
-}
-
-:root[data-theme='dark'] .cmyk-num .plate {
-  display: none;
-}
 /* Registered so they can be animated: an unregistered custom property is a
    string to the animation engine and jumps between keyframes rather than
    interpolating. The press driver writes these at runtime; the registration is

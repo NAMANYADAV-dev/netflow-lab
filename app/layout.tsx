@@ -51,28 +51,9 @@ export const metadata: Metadata = {
   },
 };
 
-/* Set the saved (or system) theme before the page paints. Keeping this tiny
-   bootstrap in the document avoids a light flash for returning dark-mode
-   readers; the navbar toggle owns subsequent changes. */
-const themeBootstrap = `
-  (() => {
-    try {
-      const saved = localStorage.getItem('netflow-theme');
-      const theme = saved === 'light' || saved === 'dark'
-        ? saved
-        : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      document.documentElement.dataset.theme = theme;
-      document.documentElement.style.colorScheme = theme;
-    } catch {}
-  })();
-`;
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={serif.variable} suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
-      </head>
+    <html lang="en" className={serif.variable}>
       <body>
         {children}
         {/* the separation filters have to live in the document for the url(#…)

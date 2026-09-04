@@ -25,18 +25,6 @@
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-:global(html[data-theme='dark']) .labHeader {
-  --lh-bg: #0c1116;
-  --lh-surface: #0f151b;
-  --lh-line: #253039;
-  --lh-text: #e9eef2;
-  --lh-text-2: #a3b3c0;
-  --lh-text-3: #6e8090;
-  --lh-cyan: #56c7dc;
-  --lh-orange: #f2a93b;
-  --lh-purple: #b39cff;
-}
-
 .labHeader a {
   text-decoration: none;
 }
@@ -138,30 +126,6 @@
   text-transform: uppercase;
 }
 
-.labThemeToggle {
-  width: 36px;
-  height: 36px;
-  flex: none;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--lh-line);
-  border-radius: 4px;
-  background: var(--lh-surface);
-  color: var(--lh-text-2);
-  cursor: pointer;
-  font-family: system-ui, sans-serif;
-  font-size: 15px;
-}
-
-.labThemeToggle:hover {
-  border-color: var(--lh-cyan);
-  color: var(--lh-cyan);
-}
-
-.labThemeSun { display: none; }
-:global(html[data-theme='dark']) .labThemeMoon { display: none; }
-:global(html[data-theme='dark']) .labThemeSun { display: inline; }
-
 .browseLabsButton {
   height: 36px;
   padding-inline: 16px;
@@ -203,22 +167,6 @@
   background: var(--lab-bg);
   color: var(--lab-text);
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
-
-:global(html[data-theme='dark']) .lab {
-  --lab-bg: #0c1116;
-  --lab-surface: #131a21;
-  --lab-surface-2: #0f151b;
-  --lab-line: #253039;
-  --lab-text: #e9eef2;
-  --lab-text-2: #a3b3c0;
-  --lab-text-3: #6e8090;
-  --lab-cyan: #56c7dc;
-  --lab-cyan-dim: #0b6b80;
-  --lab-orange: #f2a93b;
-  --lab-purple: #b39cff;
-  --lab-green: #5fd08a;
-  --lab-red: #ff6b5e;
 }
 
 .lab ::selection {

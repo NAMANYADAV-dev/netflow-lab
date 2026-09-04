@@ -36,10 +36,11 @@ export default function LabAmbientCanvas() {
     let flashes: Flash[] = [];
     let sparks: Spark[] = [];
 
-    const palette = (): Color[] =>
-      document.documentElement.dataset.theme === 'dark'
-        ? [[86, 199, 220], [242, 169, 59], [179, 156, 255]]
-        : [[11, 107, 128], [154, 95, 2], [91, 63, 214]];
+    const palette = (): Color[] => [
+      [11, 107, 128],
+      [154, 95, 2],
+      [91, 63, 214],
+    ];
 
     const gridPoint = (gx: number, gy: number) => ({
       x: offsetX + gx * GRID,
@@ -89,8 +90,8 @@ export default function LabAmbientCanvas() {
       seed();
     };
 
-    const drawNetwork = (dark: boolean) => {
-      const nodeColor = dark ? '86,199,220' : '11,107,128';
+    const drawNetwork = () => {
+      const nodeColor = '11,107,128';
       for (const node of nodes) {
         if (!reduceMotion) {
           node.x += node.vx;
@@ -265,9 +266,8 @@ export default function LabAmbientCanvas() {
     };
 
     const draw = () => {
-      const dark = document.documentElement.dataset.theme === 'dark';
       context.clearRect(0, 0, width, height);
-      drawNetwork(dark);
+      drawNetwork();
       drawTrails();
       drawRunners();
       drawSparks();

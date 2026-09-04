@@ -23,17 +23,6 @@ export default function LabsNav({
   searchEntries: SearchEntry[];
   searchDefaults: SearchEntry[];
 }) {
-  const toggleTheme = () => {
-    const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-    document.documentElement.dataset.theme = nextTheme;
-    document.documentElement.style.colorScheme = nextTheme;
-    try {
-      localStorage.setItem('netflow-theme', nextTheme);
-    } catch {
-      // The visual state still changes when storage is unavailable.
-    }
-  };
-
   return (
     <header className={styles.labHeader}>
       <Link href="/" className={styles.labHeaderBrand}>
@@ -73,17 +62,6 @@ export default function LabsNav({
       </div>
 
       <SiteSearch entries={searchEntries} defaults={searchDefaults} />
-
-      <button
-        type="button"
-        className={styles.labThemeToggle}
-        onClick={toggleTheme}
-        aria-label="Toggle color theme"
-        title="Toggle color theme"
-      >
-        <span className={styles.labThemeMoon} aria-hidden="true">☾</span>
-        <span className={styles.labThemeSun} aria-hidden="true">☀</span>
-      </button>
 
       {!activeLab && (
         <Link href="/lab#labs" className={styles.browseLabsButton}>
