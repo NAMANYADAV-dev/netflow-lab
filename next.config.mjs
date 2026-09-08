@@ -11,8 +11,7 @@ const isDev = process.env.NODE_ENV === 'development';
    Two relaxations are real and worth stating plainly:
 
    script-src 'unsafe-inline' — Next.js ships its own inline bootstrap scripts
-   with every page, and app/layout.tsx adds one more to set the theme before
-   first paint. Locking these down needs a per-request nonce, which needs
+   with every page. Locking these down needs a per-request nonce, which needs
    middleware, which makes every page dynamic — a heavy price for a static
    reference site whose only text input is compared against a string and never
    rendered as markup. Revisit this the day the site grows a real input.

@@ -14,7 +14,6 @@ NetFlow Lab helps students understand what happens between devices—from the fr
 - Network device, cable, and connector references
 - Animated protocol diagrams and simplified packet views
 - Simple, Technical, and Packet learning modes in the labs
-- Light and dark themes
 - Desktop and laptop focused interface
 - Standards-based explanations with RFC references where relevant
 - Security headers, Content Security Policy, and production-safe defaults
