@@ -83,6 +83,7 @@
 /* .nav-brand (design system) already supplies the type and the margin-right:auto
    that pushes the rest of the nav right; this only sets the mark beside it */
 .nav .brand.brand {
+  transition: var(--motion-ui);
   display: inline-flex;
   align-items: center;
   gap: 14px;
@@ -188,6 +189,7 @@
 }
 
 .chip {
+  transition: var(--motion-ui);
   text-decoration: none;
   color: var(--color-text);
   cursor: grab;

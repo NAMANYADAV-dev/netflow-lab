@@ -164,6 +164,7 @@
 }
 
 .stackRow {
+  transition: var(--motion-ui);
   display: flex;
   align-items: baseline;
   gap: 10px;
@@ -203,6 +204,7 @@
 }
 
 .relTag {
+  transition: var(--motion-ui);
   cursor: pointer;
   font-family: var(--font-heading);
   font-weight: 600;
@@ -258,6 +260,7 @@
 }
 
 .trayChip {
+  transition: var(--motion-ui);
   cursor: grab;
   font-family: var(--font-heading);
   font-weight: 600;
@@ -298,6 +301,7 @@
 }
 
 .filter {
+  transition: var(--motion-ui);
   cursor: pointer;
   font-family: var(--font-heading);
   font-weight: 600;
@@ -383,6 +387,7 @@
 }
 
 .protoCard {
+  transition: var(--motion-ui);
   cursor: grab;
   gap: 8px;
   /* the bottom padding is the room the Open link sits in */
@@ -395,6 +400,7 @@
 }
 .protoCard:hover {
   box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 .protoCard:active {
   cursor: grabbing;

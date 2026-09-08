@@ -292,6 +292,7 @@
 }
 
 .protoChip {
+  transition: var(--motion-ui);
   text-decoration: none;
   font-family: var(--font-heading);
   font-weight: 600;
@@ -308,6 +309,7 @@
 }
 
 .besideChip {
+  transition: var(--motion-ui);
   font-family: var(--font-heading);
   font-weight: 600;
   font-size: 14px;
@@ -701,6 +703,7 @@ a.chainChip:hover {
    serif display type — rather than in the labs' instrument style. It is a
    pointer from this page, not a piece of the lab pasted in. */
 .labBridge {
+  transition: var(--motion-ui);
   display: flex;
   align-items: baseline;
   gap: 22px;

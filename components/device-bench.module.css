@@ -173,6 +173,7 @@
 }
 
 .besideTag {
+  transition: var(--motion-ui);
   cursor: pointer;
   font-family: var(--font-heading);
   font-weight: 600;
@@ -255,6 +256,7 @@
    system's .card, and the button defaults are what needs undoing. The bottom
    padding is the room the Open link sits in. */
 .deviceCard {
+  transition: var(--motion-ui);
   cursor: grab;
   gap: 8px;
   padding: 14px 16px 34px;
@@ -266,6 +268,7 @@
 }
 .deviceCard:hover {
   box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 .deviceCard:active {
   cursor: grabbing;

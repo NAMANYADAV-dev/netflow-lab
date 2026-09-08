@@ -72,6 +72,23 @@
      small tracked capitals that a text serif was never drawn to set */
   --font-furniture: var(--font-gothic), system-ui, sans-serif;
 
+  /* Motion. The publication settles at one rate: a card, a chip, a tag and a
+     table row all take the same 160ms on the same decelerating curve, so the
+     page reads as one surface responding rather than a dozen widgets each with
+     an opinion. --motion-ui is the whole transition value, not a duration, so
+     a rule spends one line on it and the property list stays in one place.
+
+     Anything that moves must also be able to not move: the reduced-motion
+     block at the foot of this file stands the whole thing down. */
+  --motion: 160ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --motion-ui:
+    color var(--motion) var(--ease),
+    background-color var(--motion) var(--ease),
+    border-color var(--motion) var(--ease),
+    box-shadow var(--motion) var(--ease),
+    transform var(--motion) var(--ease);
+
   --space-1: 5px;
   --space-2: 10px;
   --space-3: 15px;
@@ -334,6 +351,7 @@ figcaption {
 
 /* — buttons — */
 .btn {
+  transition: var(--motion-ui);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -374,6 +392,7 @@ figcaption {
   color: color-mix(in srgb, var(--color-text) 78%, transparent);
 }
 .input {
+  transition: var(--motion-ui);
   width: 100%;
   min-height: 36px;
   padding: 6px 10px;
@@ -405,6 +424,7 @@ textarea.input { min-height: 90px; resize: vertical; }
   pointer-events: none;
 }
 .radio .dot {
+  transition: var(--motion-ui);
   width: 16px;
   height: 16px;
   flex: none;
@@ -425,6 +445,7 @@ textarea.input { min-height: 90px; resize: vertical; }
   border-radius: var(--radius-md);
 }
 .seg-opt {
+  transition: var(--motion-ui);
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -507,7 +528,12 @@ textarea.input { min-height: 90px; resize: vertical; }
    label in the page ink at rest and in the accent on hover, both of them sitting
    on the accent fill. `.btn` already sets its own text-decoration and font-size,
    so there is nothing here it needs. */
-.nav a:not(.btn) { color: inherit; text-decoration: none; font-size: 14px; }
+.nav a:not(.btn) {
+  color: inherit;
+  text-decoration: none;
+  font-size: 14px;
+  transition: var(--motion-ui);
+}
 .nav a:not(.btn):hover,
 .nav a:not(.btn)[aria-current='page'] { color: var(--color-accent); }
 
@@ -527,6 +553,7 @@ textarea.input { min-height: 90px; resize: vertical; }
   padding: var(--space-2);
   border-bottom: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
 }
+.table tbody tr { transition: var(--motion-ui); }
 .table tbody tr:hover { background: color-mix(in srgb, var(--color-text) 4%, transparent); }
 
 /* — dialog — */
@@ -582,4 +609,17 @@ textarea.input { min-height: 90px; resize: vertical; }
 .rich-m {
   font-family: var(--font-heading);
   font-style: normal;
+}
+
+/* Everything above may move; nothing above insists on it. One stop for the
+   whole publication — the labs' own guards predate this and still stand. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

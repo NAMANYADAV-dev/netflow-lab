@@ -135,6 +135,7 @@
 }
 
 .clear {
+  transition: var(--motion-ui);
   flex: none;
   width: 24px;
   height: 24px;
@@ -343,6 +344,7 @@
 }
 
 .emptyAction {
+  transition: var(--motion-ui);
   margin-top: 12px;
   padding: 6px 12px;
   border: 1px solid var(--color-accent);

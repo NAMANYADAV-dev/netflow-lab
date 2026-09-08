@@ -262,6 +262,7 @@
 }
 
 .catCard {
+  transition: var(--motion-ui);
   text-decoration: none;
   color: var(--color-text);
   gap: 10px;
@@ -269,6 +270,7 @@
 }
 .catCard:hover {
   box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
 .catHead {
@@ -328,6 +330,7 @@
 }
 
 .featCell {
+  transition: var(--motion-ui);
   text-decoration: none;
   color: var(--color-text);
   background: var(--color-bg);
