@@ -1,18 +1,31 @@
 import type { Metadata } from 'next';
-import { Source_Serif_4 } from 'next/font/google';
+import { Archivo, Source_Serif_4 } from 'next/font/google';
 import PressPlates from '@/components/PressPlates';
 import { site } from '@/lib/site';
 import './broadsheet.css';
 
-/* Broadsheet sets everything in one serif — headings and body both. Loading it
-   through next/font self-hosts the files and inlines the @font-face, so there is
-   no render-blocking round trip to fonts.googleapis.com the way the design
+/* Two voices, the way a broadsheet actually sets one.
+
+   The serif carries what is read — headlines, decks, body. Loading it through
+   next/font self-hosts the files and inlines the @font-face, so there is no
+   render-blocking round trip to fonts.googleapis.com the way the design
    source's @import had. `variable` publishes the family as --font-serif, which
-   is what the --font-heading/--font-body tokens resolve to. */
+   is what the --font-heading/--font-body tokens resolve to.
+
+   The grotesque carries the furniture — kickers, tags, table heads, captions,
+   the small tracked capitals a serif was never cut to set. Neither is given a
+   `weight`, so next/font fetches the variable cut of each: one file apiece for
+   the whole range, rather than a file per weight. */
 const serif = Source_Serif_4({
   subsets: ['latin'],
   style: ['normal', 'italic'],
   variable: '--font-serif',
+  display: 'swap',
+});
+
+const gothic = Archivo({
+  subsets: ['latin'],
+  variable: '--font-gothic',
   display: 'swap',
 });
 
@@ -53,7 +66,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={serif.variable}>
+    <html lang="en" className={`${serif.variable} ${gothic.variable}`}>
       <body>
         {children}
         {/* the separation filters have to live in the document for the url(#…)

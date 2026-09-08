@@ -43,6 +43,7 @@
 }
 
 .kicker {
+  font-family: var(--font-furniture);
   font-size: 12px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -98,7 +99,7 @@
   /* above the numeral's own paper ground, which bleeds past its layout box */
   position: relative;
   z-index: 1;
-  font-family: var(--font-heading);
+  font-family: var(--font-furniture);
   font-weight: 600;
   font-size: 12px;
   letter-spacing: 0.08em;
@@ -124,6 +125,7 @@
 }
 
 .aboutLabel {
+  font-family: var(--font-furniture);
   font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -188,6 +190,7 @@
 }
 
 .stackKicker {
+  font-family: var(--font-furniture);
   font-size: 10px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -224,6 +227,7 @@
 }
 
 .crossLabel {
+  font-family: var(--font-furniture);
   font-size: 10px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -337,6 +341,7 @@
 }
 
 .featCat {
+  font-family: var(--font-furniture);
   font-size: 10px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -388,6 +393,7 @@
 }
 
 .benchKicker {
+  font-family: var(--font-furniture);
   font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -418,6 +424,7 @@
 }
 
 .benchCardKicker {
+  font-family: var(--font-furniture);
   font-size: 10px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -454,6 +461,7 @@
 }
 
 .benchWorksLabel {
+  font-family: var(--font-furniture);
   font-size: 10px;
   letter-spacing: 0.12em;
   text-transform: uppercase;

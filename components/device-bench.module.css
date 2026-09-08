@@ -82,6 +82,7 @@
 }
 
 .filledGroup {
+  font-family: var(--font-furniture);
   font-size: 11px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -131,6 +132,7 @@
 }
 
 .metaLabel {
+  font-family: var(--font-furniture);
   font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -306,7 +308,7 @@
   position: absolute;
   left: 16px;
   bottom: 12px;
-  font-family: var(--font-heading);
+  font-family: var(--font-furniture);
   font-weight: 600;
   font-size: 12px;
   letter-spacing: 0.04em;

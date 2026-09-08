@@ -12,6 +12,7 @@
 }
 
 .kicker {
+  font-family: var(--font-furniture);
   font-size: 12px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -52,6 +53,7 @@
 }
 
 .countLabel {
+  font-family: var(--font-furniture);
   /* .cmyk-num paints its own paper ground on a padding box that bleeds 0.12em
      past the glyphs — at 130px that is 16px, which lands on this line. Lifting
      the label puts it above the bleed. */

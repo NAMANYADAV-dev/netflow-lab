@@ -9,6 +9,7 @@
 /* ── breadcrumb ─────────────────────────────────────────────────────────── */
 
 .crumbs {
+  font-family: var(--font-furniture);
   padding-top: 22px;
   display: flex;
   align-items: baseline;
@@ -42,6 +43,7 @@
 }
 
 .kicker {
+  font-family: var(--font-furniture);
   font-size: 12px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -134,6 +136,7 @@
 }
 
 .pointKey {
+  font-family: var(--font-furniture);
   font-size: 10px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -186,6 +189,7 @@
 }
 
 .stepsKicker {
+  font-family: var(--font-furniture);
   font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -448,6 +452,7 @@ a.chainChip:hover {
 }
 
 .pairHead {
+  font-family: var(--font-furniture);
   padding: 8px 12px;
   background: var(--color-bg);
   border-bottom: 1px solid var(--color-divider);
@@ -532,6 +537,7 @@ a.chainChip:hover {
 }
 
 .cmpHead {
+  font-family: var(--font-furniture);
   font-size: 11px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -541,6 +547,7 @@ a.chainChip:hover {
 }
 
 .cmpKey {
+  font-family: var(--font-furniture);
   color: color-mix(in srgb, var(--color-text) 60%, transparent);
 }
 
@@ -708,6 +715,7 @@ a.chainChip:hover {
 .labBridgeMain { flex: 1 1 30ch; min-width: 0; }
 
 .labBridgeKicker {
+  font-family: var(--font-furniture);
   font-size: 10px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -738,6 +746,7 @@ a.chainChip:hover {
 }
 
 .labBridgeMeta {
+  font-family: var(--font-furniture);
   flex: none;
   display: flex;
   align-items: baseline;

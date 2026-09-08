@@ -22,7 +22,7 @@
   background: color-mix(in srgb, var(--lh-bg) 88%, transparent);
   color: var(--lh-text);
   backdrop-filter: blur(8px);
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-furniture);
 }
 
 .labHeader a {
@@ -166,7 +166,7 @@
   overflow: clip;
   background: var(--lab-bg);
   color: var(--lab-text);
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-furniture);
 }
 
 .lab ::selection {
@@ -241,7 +241,7 @@
 .hero h1 {
   max-width: 15ch;
   margin: 0;
-  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-furniture);
   font-size: 56px;
   font-weight: 650;
   line-height: 1.03;
@@ -605,7 +605,7 @@
 .honestySection h2,
 .finalCta h2 {
   margin: 0;
-  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-furniture);
   font-weight: 650;
   letter-spacing: -0.035em;
 }

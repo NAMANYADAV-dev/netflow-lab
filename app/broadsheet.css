@@ -63,6 +63,9 @@
   --font-heading: var(--font-serif), system-ui, sans-serif;
   --font-heading-weight: 600;
   --font-body: var(--font-serif), system-ui, sans-serif;
+  /* the furniture face — kickers, tags, table heads, captions, buttons: the
+     small tracked capitals that a text serif was never drawn to set */
+  --font-furniture: var(--font-gothic), system-ui, sans-serif;
 
   --space-1: 5px;
   --space-2: 10px;
@@ -295,12 +298,18 @@ h2 { font-size: 32px; }
 h3 { font-size: 25px; }
 h4 { font-size: 20px; }
 h5 { font-size: 16px; }
-h6 { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; }
+h6 {
+  font-family: var(--font-furniture);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
 p { margin: 0 0 var(--space-3); }
 a { color: var(--color-accent); text-underline-offset: 3px; }
 img { display: block; max-width: 100%; }
 figure { margin: 0; }
 figcaption {
+  font-family: var(--font-furniture);
   font-size: 11px;
   margin-top: var(--space-1);
   color: color-mix(in srgb, var(--color-text) 55%, transparent);
@@ -326,8 +335,8 @@ figcaption {
   gap: 6px;
   cursor: pointer;
   text-decoration: none;
-  font-family: var(--font-heading);
-  font-weight: var(--font-heading-weight);
+  font-family: var(--font-furniture);
+  font-weight: 600;
   /* matches the .input's 14px — the pair sits side by side in sign-up rows */
   font-size: 14px;
   line-height: 1.2;
@@ -353,6 +362,7 @@ figcaption {
 
 /* — forms — */
 .field > label {
+  font-family: var(--font-furniture);
   display: block;
   font-size: 12px;
   margin-bottom: 5px;
@@ -432,6 +442,7 @@ textarea.input { min-height: 90px; resize: vertical; }
   background: var(--color-surface);
 }
 .card-kicker {
+  font-family: var(--font-furniture);
   font-size: 10px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -445,6 +456,7 @@ textarea.input { min-height: 90px; resize: vertical; }
 }
 .card-body { margin: 0; font-size: 13px; opacity: 0.8; flex: 1; }
 .card-meta {
+  font-family: var(--font-furniture);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -457,6 +469,7 @@ textarea.input { min-height: 90px; resize: vertical; }
 
 /* — tags — */
 .tag {
+  font-family: var(--font-furniture);
   display: inline-flex;
   align-items: center;
   font-size: 11px;
@@ -496,6 +509,7 @@ textarea.input { min-height: 90px; resize: vertical; }
 /* — tables — */
 .table { width: 100%; border-collapse: collapse; font-size: 14px; }
 .table th {
+  font-family: var(--font-furniture);
   text-align: left;
   font-size: 11px;
   letter-spacing: 0.08em;

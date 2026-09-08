@@ -10,6 +10,7 @@
 }
 
 .caption {
+  font-family: var(--font-furniture);
   text-align: center;
   font-size: 12px;
   letter-spacing: 0.14em;
@@ -100,6 +101,7 @@
 }
 
 .endTag {
+  font-family: var(--font-furniture);
   font-size: 11px;
   margin-top: 5px;
   letter-spacing: 0.06em;
@@ -199,6 +201,7 @@
 }
 
 .tableLabel {
+  font-family: var(--font-furniture);
   font-size: 10px;
   letter-spacing: 0.12em;
   text-transform: uppercase;

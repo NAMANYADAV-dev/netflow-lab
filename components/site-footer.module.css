@@ -19,7 +19,7 @@
   border-top: 1px solid var(--footer-line);
   background: color-mix(in srgb, var(--footer-bg) 94%, var(--footer-text) 6%);
   color: var(--footer-text);
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-furniture);
 }
 
 .inner {
@@ -77,6 +77,7 @@
 }
 
 .nav h2 {
+  font-family: var(--font-furniture);
   margin: 0 0 5px;
   color: var(--footer-text);
   font-size: 10px;
