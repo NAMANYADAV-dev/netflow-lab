@@ -466,10 +466,6 @@
   flex-wrap: wrap;
   gap: 6px;
 }
-.benchTags .tag {
-  font-family: var(--font-heading);
-  font-weight: 600;
-}
 
 /* ── closing call ───────────────────────────────────────────────────────── */
 

@@ -239,10 +239,6 @@ export const devicesByGroup = deviceGroups.map((g) => ({
 /** the nav menu shows a 3×4 grid, so it takes the first twelve */
 export const deviceMenu = devices.slice(0, 12);
 
-export const deviceGroupById: Record<string, DeviceGroup> = Object.fromEntries(
-  deviceGroups.map((g) => [g.id, g]),
-);
-
 /** the neighbours in the catalogue order, for the foot of a device's page */
 export function deviceNeighbours(slug: string) {
   const i = devices.findIndex((d) => d.slug === slug);

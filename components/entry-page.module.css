@@ -281,13 +281,6 @@
   font-size: 26px;
 }
 
-.metaNone {
-  margin: 0;
-  font-size: 15px;
-  font-style: italic;
-  color: color-mix(in srgb, var(--color-text) 62%, transparent);
-}
-
 .chipRow {
   display: flex;
   flex-wrap: wrap;
@@ -474,10 +467,6 @@ a.chainChip:hover {
 }
 .pairRow + .pairRow {
   border-top: 1px solid var(--color-divider);
-}
-
-.pairKeyHi {
-  color: var(--color-accent-700);
 }
 
 /* the header summarised as fields and what each is for */

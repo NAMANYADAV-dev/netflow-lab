@@ -543,29 +543,6 @@
 .win strong { display: block; font-size: 15px; font-weight: 650; color: var(--text); }
 .win span { display: block; margin-top: 2px; font-size: 13px; color: var(--text2); }
 
-/* ---------- footer ---------- */
-.footer { position: relative; z-index: 1; margin-top: 20px; border-top: 1px solid var(--line); }
-
-.footer > div {
-  max-width: 1560px;
-  margin: 0 auto;
-  padding: 24px 40px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.footer svg { width: 22px; height: 22px; flex: none; }
-.footerTile { fill: var(--text); }
-.footerLine { stroke: var(--bg); stroke-width: 1.6; }
-.footerCircle { fill: var(--b); }
-.footerSquare { fill: var(--a); }
-.footer strong { font-size: 14px; font-weight: 650; }
-.footer a { color: var(--text3); text-decoration: none; font-size: 13px; }
-.footer a:hover { color: var(--b); }
-.footer code { margin-left: auto; color: var(--text3); font-family: var(--mono); font-size: 12px; }
-
 @keyframes runX { from { left: 0; } to { left: calc(100% - 12px); } }
 @keyframes runBackX { from { left: calc(100% - 12px); } to { left: 0; } }
 @keyframes runY { from { top: 0; } to { top: calc(100% - 12px); } }
@@ -577,7 +554,6 @@
   .side { position: static; }
   .missionBar,
   .winWrap { padding-inline: 22px; }
-  .footer > div { padding-inline: 22px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
