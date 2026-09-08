@@ -11,3 +11,12 @@ next-env.d.ts
 _ds/
 /photo/
 support.js
+
+# scratch: rendered pages, contact sheets, generated PDFs, the dev server's log
+/output/
+/tmp/
+
+# unrelated work that lives in this folder but is not this project
+/cpp_demo_work/
+/cpp_full_work/
+/*.docx

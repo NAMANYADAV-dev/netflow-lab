@@ -46,7 +46,7 @@
 .emptyMark {
   width: 44px;
   height: 44px;
-  border: 1.5px dashed color-mix(in srgb, var(--color-text) 45%, transparent);
+  border: 1.5px dashed color-mix(in srgb, var(--color-text) 48%, transparent);
   border-radius: 50%;
   display: flex;
   align-items: center;
