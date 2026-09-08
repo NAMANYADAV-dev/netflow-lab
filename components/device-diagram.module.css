@@ -15,7 +15,7 @@
   font-size: 12px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
   margin-bottom: 28px;
 }
 
@@ -180,7 +180,7 @@
 .deviceSub {
   font-size: 12.5px;
   font-style: italic;
-  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+  color: color-mix(in srgb, var(--color-text) 67%, transparent);
   margin-top: 4px;
 }
 
@@ -205,7 +205,7 @@
   font-size: 10px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
   text-align: center;
   margin-bottom: 10px;
 }
@@ -230,7 +230,7 @@
 }
 
 .rowRight {
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
   text-align: right;
 }
 
@@ -287,7 +287,7 @@
   font-size: 10.5px;
   font-style: italic;
   margin-top: 3px;
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
 }
 
 /* ── the line under the drawing ─────────────────────────────────────────── */
@@ -295,7 +295,7 @@
 .note {
   text-align: center;
   font-size: 13px;
-  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+  color: color-mix(in srgb, var(--color-text) 67%, transparent);
   margin: 22px auto 0;
   font-style: italic;
   max-width: 64ch;

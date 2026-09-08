@@ -16,7 +16,7 @@
   font-size: 12px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
   margin-bottom: 26px;
 }
 
@@ -46,7 +46,7 @@
   font-family: var(--font-heading);
   font-weight: 600;
   font-size: 13px;
-  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+  color: color-mix(in srgb, var(--color-text) 78%, transparent);
 }
 .panelHeadOn {
   background: var(--color-accent-100);
@@ -71,7 +71,7 @@
   width: 38px;
   font-family: var(--font-heading);
   font-size: 11px;
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
 }
 
 /* a unit of data on the lane. The height differs between a single stream and a
@@ -122,7 +122,7 @@
 }
 
 .specimenSep {
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
 }
 
 .halves {
@@ -170,13 +170,13 @@
 
 .halfText {
   font-size: 13px;
-  color: color-mix(in srgb, var(--color-text) 62%, transparent);
+  color: color-mix(in srgb, var(--color-text) 69%, transparent);
   margin-top: 2px;
 }
 
 .anatomyNote {
   font-size: 12.5px;
-  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+  color: color-mix(in srgb, var(--color-text) 67%, transparent);
   margin: 10px 0 0;
   text-align: center;
 }
@@ -196,7 +196,7 @@
 
 .fall {
   text-align: center;
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
   font-size: 16px;
   padding: 10px 0;
 }
@@ -259,13 +259,13 @@
 }
 
 .paneletText {
-  color: color-mix(in srgb, var(--color-text) 65%, transparent);
+  color: color-mix(in srgb, var(--color-text) 72%, transparent);
 }
 
 .bridge {
   text-align: center;
   font-size: 12px;
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
   padding: 10px 0 6px;
   font-style: italic;
 }
@@ -309,7 +309,7 @@
 
 .refText {
   font-size: 13px;
-  color: color-mix(in srgb, var(--color-text) 72%, transparent);
+  color: color-mix(in srgb, var(--color-text) 80%, transparent);
 }
 
 /* ── an announcement passed along, growing as it goes ───────────────────── */
@@ -336,7 +336,7 @@
 
 .stopNote {
   font-size: 12px;
-  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+  color: color-mix(in srgb, var(--color-text) 67%, transparent);
   margin-top: 2px;
   white-space: pre-line;
 }
@@ -380,7 +380,7 @@
   font-family: var(--font-heading);
   font-size: 9px;
   white-space: nowrap;
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
 }
 
 /* ── the conversation, transcribed ──────────────────────────────────────── */
@@ -405,7 +405,7 @@
   font-size: 10px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
 }
 
 .dialogRow {
@@ -518,7 +518,7 @@
   margin: 0;
   font-size: 13px;
   line-height: 1.5;
-  color: color-mix(in srgb, var(--color-text) 72%, transparent);
+  color: color-mix(in srgb, var(--color-text) 80%, transparent);
 }
 
 /* ── the two ends of the conversation ───────────────────────────────────── */
@@ -562,13 +562,13 @@
    against what it is called */
 .msgGloss {
   font-weight: 400;
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
   margin-left: 8px;
 }
 
 /* the far lane, when the other end is the whole segment rather than one peer */
 .laneMuted {
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
 }
 
 .inkA {
@@ -654,13 +654,13 @@
 
 .cardGloss {
   padding: 7px 14px;
-  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+  color: color-mix(in srgb, var(--color-text) 78%, transparent);
 }
 
 /* the message transcribed, one line per line, as it goes on the wire */
 .cardLine {
   padding: 7px 14px;
-  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+  color: color-mix(in srgb, var(--color-text) 78%, transparent);
 }
 .cardLine + .cardLine {
   border-top: 1px solid var(--color-divider);
@@ -681,7 +681,7 @@
 }
 
 .cardRowVal {
-  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+  color: color-mix(in srgb, var(--color-text) 67%, transparent);
   text-align: right;
 }
 
@@ -737,7 +737,7 @@
   height: 2px;
   background: repeating-linear-gradient(
     90deg,
-    color-mix(in srgb, var(--color-text) 40%, transparent) 0 6px,
+    color-mix(in srgb, var(--color-text) 45%, transparent) 0 6px,
     transparent 6px 12px
   );
 }
@@ -752,7 +752,7 @@
    message — nothing is on the wire at this point. */
 .settled {
   text-align: center;
-  border: 1px dashed color-mix(in srgb, var(--color-text) 35%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--color-text) 39%, transparent);
   border-radius: var(--radius-md);
   padding: 10px 16px;
   font-family: var(--font-heading);
@@ -765,7 +765,7 @@
 .note {
   text-align: center;
   font-size: 13px;
-  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+  color: color-mix(in srgb, var(--color-text) 67%, transparent);
   margin: 24px auto 0;
   font-style: italic;
   max-width: 64ch;
@@ -783,7 +783,7 @@
   font-size: 10px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
   text-align: center;
   margin-bottom: 8px;
 }
@@ -794,7 +794,7 @@
   justify-content: space-between;
   font-family: var(--font-heading);
   font-size: 10px;
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
   padding: 0 2px 4px;
 }
 
@@ -843,7 +843,7 @@
 
 /* options, padding — there, but not what anyone reads the map for */
 .fieldFaint {
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
 }
 
 /* the bytes the header is wrapped around. Dashed and outside the ruled box,
@@ -854,9 +854,9 @@
   text-align: center;
   font-family: var(--font-heading);
   font-size: 12.5px;
-  border: 1px dashed color-mix(in srgb, var(--color-text) 35%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--color-text) 39%, transparent);
   border-radius: var(--radius-md);
-  color: color-mix(in srgb, var(--color-text) 65%, transparent);
+  color: color-mix(in srgb, var(--color-text) 72%, transparent);
 }
 
 /* ── breakpoints ────────────────────────────────────────────────────────── */

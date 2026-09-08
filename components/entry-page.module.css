@@ -16,7 +16,7 @@
   flex-wrap: wrap;
   gap: 8px;
   font-size: 13px;
-  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+  color: color-mix(in srgb, var(--color-text) 67%, transparent);
 }
 
 .crumbLink {
@@ -28,7 +28,7 @@
 }
 
 .crumbSep {
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
 }
 
 .crumbHere {
@@ -70,7 +70,7 @@
 .sub {
   font-size: 23px;
   font-style: italic;
-  color: color-mix(in srgb, var(--color-text) 62%, transparent);
+  color: color-mix(in srgb, var(--color-text) 69%, transparent);
 }
 
 .lede {
@@ -152,7 +152,7 @@
 
 .pointNote {
   font-size: 13px;
-  color: color-mix(in srgb, var(--color-text) 62%, transparent);
+  color: color-mix(in srgb, var(--color-text) 69%, transparent);
 }
 
 /* ── section furniture ──────────────────────────────────────────────────── */
@@ -178,7 +178,7 @@
   font-size: 17px;
   line-height: 1.55;
   max-width: 66ch;
-  color: color-mix(in srgb, var(--color-text) 80%, transparent);
+  color: color-mix(in srgb, var(--color-text) 89%, transparent);
   text-wrap: pretty;
 }
 
@@ -233,7 +233,7 @@
   margin: 0;
   font-size: 15px;
   line-height: 1.6;
-  color: color-mix(in srgb, var(--color-text) 80%, transparent);
+  color: color-mix(in srgb, var(--color-text) 89%, transparent);
 }
 
 /* ── in cybersecurity ───────────────────────────────────────────────────── */
@@ -255,7 +255,7 @@
   margin: 0;
   font-size: 15px;
   line-height: 1.6;
-  color: color-mix(in srgb, var(--color-text) 80%, transparent);
+  color: color-mix(in srgb, var(--color-text) 89%, transparent);
 }
 
 /* ── what it runs, what it sits beside, the photo well ──────────────────── */
@@ -337,7 +337,7 @@
   font-style: italic;
   text-align: center;
   max-width: 30ch;
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
 }
 
 /* the padding exists to inset the placeholder line; a photograph wants the
@@ -398,7 +398,7 @@ a.chainChip:hover {
 }
 
 .chainArrow {
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
 }
 
 /* a line under the chain, where the chain alone would mislead */
@@ -406,7 +406,7 @@ a.chainChip:hover {
   margin: 14px 0 0;
   font-size: 13.5px;
   line-height: 1.55;
-  color: color-mix(in srgb, var(--color-text) 65%, transparent);
+  color: color-mix(in srgb, var(--color-text) 72%, transparent);
   max-width: 40ch;
 }
 
@@ -441,7 +441,7 @@ a.chainChip:hover {
 
 .beatText {
   font-size: 13px;
-  color: color-mix(in srgb, var(--color-text) 65%, transparent);
+  color: color-mix(in srgb, var(--color-text) 72%, transparent);
 }
 
 /* two reference tables abreast */
@@ -459,7 +459,7 @@ a.chainChip:hover {
   font-size: 10px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
 }
 
 .pairRow {
@@ -504,7 +504,7 @@ a.chainChip:hover {
 .asideNote {
   margin: 8px 0 0;
   font-size: 12px;
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
 }
 
 .kvRow {
@@ -519,7 +519,7 @@ a.chainChip:hover {
 }
 
 .kvVal {
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
   text-align: right;
 }
 
@@ -541,14 +541,14 @@ a.chainChip:hover {
   font-size: 11px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
   padding-top: 8px;
   padding-bottom: 8px;
 }
 
 .cmpKey {
   font-family: var(--font-furniture);
-  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+  color: color-mix(in srgb, var(--color-text) 67%, transparent);
 }
 
 /* the column for the protocol whose page this is */
@@ -593,7 +593,7 @@ a.chainChip:hover {
 
 /* the middle link is furniture, not a destination — it steps back */
 .pagerAll {
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
   font-size: 13px;
 }
 

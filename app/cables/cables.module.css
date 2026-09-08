@@ -29,7 +29,7 @@
   line-height: 1.6;
   max-width: 55ch;
   margin: 26px 0 0;
-  color: color-mix(in srgb, var(--color-text) 82%, transparent);
+  color: color-mix(in srgb, var(--color-text) 91%, transparent);
   text-wrap: pretty;
 }
 
@@ -55,7 +55,7 @@
   font-size: 12px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--color-text) 58%, transparent);
+  color: color-mix(in srgb, var(--color-text) 64%, transparent);
   margin-top: 10px;
 }
 
@@ -105,7 +105,7 @@
   place-items: center;
   overflow: hidden;
   background: var(--color-bg);
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
   font-style: italic;
 }
 
@@ -139,7 +139,7 @@
   margin: 12px 0 0;
   font-size: 15px;
   line-height: 1.6;
-  color: color-mix(in srgb, var(--color-text) 78%, transparent);
+  color: color-mix(in srgb, var(--color-text) 87%, transparent);
 }
 
 .cardLink {
@@ -175,7 +175,7 @@
   height: 100%;
   display: grid;
   place-items: center;
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
   font-style: italic;
 }
 
@@ -204,7 +204,7 @@
 .compareCard span {
   font-size: 14px;
   line-height: 1.55;
-  color: color-mix(in srgb, var(--color-text) 72%, transparent);
+  color: color-mix(in srgb, var(--color-text) 80%, transparent);
 }
 
 @media (max-width: 900px) {

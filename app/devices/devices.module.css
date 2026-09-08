@@ -33,7 +33,7 @@
   line-height: 1.6;
   max-width: 52ch;
   margin: 26px 0 0;
-  color: color-mix(in srgb, var(--color-text) 82%, transparent);
+  color: color-mix(in srgb, var(--color-text) 91%, transparent);
   text-wrap: pretty;
 }
 
@@ -62,7 +62,7 @@
   font-size: 12px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--color-text) 58%, transparent);
+  color: color-mix(in srgb, var(--color-text) 64%, transparent);
   margin-top: 10px;
 }
 

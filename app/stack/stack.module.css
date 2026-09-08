@@ -28,7 +28,7 @@
   line-height: 1.6;
   max-width: 60ch;
   margin: 24px 0 0;
-  color: color-mix(in srgb, var(--color-text) 82%, transparent);
+  color: color-mix(in srgb, var(--color-text) 91%, transparent);
   text-wrap: pretty;
 }
 
@@ -124,13 +124,13 @@
 .osiBlurb {
   font-size: 13.5px;
   line-height: 1.5;
-  color: color-mix(in srgb, var(--color-text) 72%, transparent);
+  color: color-mix(in srgb, var(--color-text) 80%, transparent);
   margin-top: 2px;
 }
 
 .osiExamples {
   font-size: 12px;
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
   margin-top: 6px;
 }
 
@@ -165,7 +165,7 @@
 .tcpBlurb {
   font-size: 13.5px;
   line-height: 1.5;
-  color: color-mix(in srgb, var(--color-text) 78%, transparent);
+  color: color-mix(in srgb, var(--color-text) 87%, transparent);
   margin-top: 4px;
   max-width: 38ch;
 }
@@ -183,7 +183,7 @@
 
 .caption {
   font-size: 13px;
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
   margin: 16px 0 0;
   font-style: italic;
 }
@@ -226,7 +226,7 @@
 
 .detailExamples {
   font-size: 12px;
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
   margin-top: 3px;
 }
 
@@ -243,7 +243,7 @@
   margin: 0;
   font-size: 15px;
   line-height: 1.6;
-  color: color-mix(in srgb, var(--color-text) 80%, transparent);
+  color: color-mix(in srgb, var(--color-text) 89%, transparent);
 }
 
 /* ── sender and receiver ────────────────────────────────────────────────── */
@@ -264,7 +264,7 @@
   line-height: 1.55;
   max-width: 64ch;
   margin: 0 0 26px;
-  color: color-mix(in srgb, var(--color-text) 80%, transparent);
+  color: color-mix(in srgb, var(--color-text) 89%, transparent);
 }
 
 .flowGrid {
@@ -331,7 +331,7 @@
   justify-content: center;
   font-family: var(--font-heading);
   font-size: 12px;
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
   border-bottom: 1px solid var(--color-divider);
 }
 /* the first PDU cell also draws the top edge, so the middle column is ruled
@@ -343,14 +343,14 @@
 .wire {
   grid-column: 1 / span 3;
   margin-top: 14px;
-  border: 1px dashed color-mix(in srgb, var(--color-text) 40%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--color-text) 45%, transparent);
   border-radius: var(--radius-md);
   background: var(--color-surface);
   padding: 12px 16px;
   text-align: center;
   font-family: var(--font-heading);
   font-size: 13px;
-  color: color-mix(in srgb, var(--color-text) 65%, transparent);
+  color: color-mix(in srgb, var(--color-text) 72%, transparent);
 }
 
 /* ── how the data gets wrapped ──────────────────────────────────────────── */
@@ -391,7 +391,7 @@
   flex: none;
   width: 96px;
   font-size: 12px;
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
 }
 .encapResultNamed {
   color: var(--color-accent-700);
@@ -435,7 +435,7 @@
   align-items: center;
   gap: 2px;
   letter-spacing: 0.18em;
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 61%, transparent);
   padding: 6px 2px;
   overflow: hidden;
   white-space: nowrap;
@@ -473,7 +473,7 @@
   margin: 0;
   font-size: 15px;
   line-height: 1.6;
-  color: color-mix(in srgb, var(--color-text) 80%, transparent);
+  color: color-mix(in srgb, var(--color-text) 89%, transparent);
 }
 
 /* ── tracing one layer through the page ─────────────────────────────────── */
@@ -524,7 +524,7 @@
   line-height: 1.55;
   max-width: 68ch;
   margin: 0 0 18px;
-  color: color-mix(in srgb, var(--color-text) 68%, transparent);
+  color: color-mix(in srgb, var(--color-text) 76%, transparent);
 }
 
 .key {
