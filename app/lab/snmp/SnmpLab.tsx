@@ -1,35 +1,26 @@
 'use client';
 
-import Link from 'next/link';
-import { useState, type CSSProperties } from 'react';
+import { useState, type CSSProperties, type ReactNode } from 'react';
 import {
-  Broadcast,
-  ChartLineUp,
-  CursorClick,
+  ArrowCounterClockwise,
+  ArrowLeft,
+  ArrowRight,
+  BellRinging,
+  CaretDown,
+  ChatCircleText,
+  CheckCircle,
+  Clock,
   Eye,
   EyeSlash,
+  Gauge,
+  Key,
   Lightbulb,
-  ListDashes,
   LockKey,
-  LockOpen,
+  Package,
   ShieldCheck,
-  Siren,
-  TerminalWindow,
-  TreeStructure,
-  WarningCircle,
 } from '@phosphor-icons/react';
-import SnmpDiagram from './SnmpDiagram';
-import {
-  RATE,
-  flowTone,
-  idle,
-  mibByKey,
-  mibTree,
-  states,
-  stepsFor,
-  toneVar,
-  type Scenario,
-} from './snmp-data';
+import SnmpStage from './SnmpStage';
+import { RATE, flowTone, idle, states, stepsFor, toneVar, type Scenario } from './snmp-data';
 import styles from './snmp-lab.module.css';
 
 type ReadingMode = 'Simple' | 'Technical' | 'Packet';
@@ -37,37 +28,34 @@ type Vars = CSSProperties & Record<`--${string}`, string>;
 
 const modes: ReadingMode[] = ['Simple', 'Technical', 'Packet'];
 
-const advanceLabels: Record<Scenario, string[]> = {
+/** what Next will do from each step, so the button says what is about to happen */
+const nextLabels: Record<Scenario, string[]> = {
   poll: [
-    'Ask for uptime →',
-    'Read the answer',
-    'Walk the interface table →',
-    'Read the table',
-    'Poll again, 60 s later →',
-    'Work out the rate',
-    'Unplug Gi0/2 →',
-    'Polled twice · trapped once',
+    'Send the first question',
+    'Show the answer',
+    'Ask for all the ports',
+    'Show the answer',
+    'Wait 60 s and ask again',
+    'Show the answer',
+    'Pull out a cable',
+    'Finished',
   ],
   secure: [
-    'Ask with no credentials →',
-    'Read the refusal',
-    'Ask again, signed and sealed →',
-    'Verify and decrypt',
-    'Read securely · done',
+    'Knock without a password',
+    'Show the reply',
+    'Ask again, locked',
+    'Show the answer',
+    'Finished',
   ],
+};
+
+const intro: Record<Scenario, string> = {
+  poll: 'A monitoring server wants to keep an eye on a router. Press Next to send its first question.',
+  secure: 'The same question as before — but this time nobody else on the network should be able to read it.',
 };
 
 /** thousands separators without Intl, so the server and the browser agree */
 const fmt = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-
-const levels = [
-  { key: 'community', name: 'v1 / v2c', sub: 'community string', read: true, forge: true },
-  { key: 'noauth', name: 'v3 noAuthNoPriv', sub: 'a user name, nothing else', read: true, forge: true },
-  { key: 'auth', name: 'v3 authNoPriv', sub: 'signed with HMAC', read: true, forge: false },
-  { key: 'authpriv', name: 'v3 authPriv', sub: 'signed and encrypted', read: false, forge: false },
-] as const;
-
-const visibleOnWire = ['IP addresses', 'UDP ports', 'msgID', 'user name', 'engine ID', 'boots · time', 'size · timing'];
 
 export default function SnmpLab() {
   const [sc, setSc] = useState<Scenario>('poll');
@@ -81,126 +69,231 @@ export default function SnmpLab() {
   const current = step > 0 ? steps[step - 1] : null;
   const done = step >= maxStep;
   const state = states[sc][step];
-  const flowColor = current ? toneVar[flowTone[current.flow]] : 'var(--text3)';
 
-  const chooseScenario = (next: Scenario) => {
+  const go = (next: number) => {
+    setStep(Math.max(0, Math.min(maxStep, next)));
+    setTick((value) => value + 1);
+  };
+
+  const choose = (next: Scenario) => {
     if (next === sc) return;
     setSc(next);
     setStep(0);
     setTick((value) => value + 1);
   };
 
-  const advance = () => {
-    if (step >= maxStep) return;
-    setStep(step + 1);
-    setTick((value) => value + 1);
-  };
-
-  const reset = () => { setStep(0); setTick((value) => value + 1); };
-
-  /* the capture only ever grows, so index keys are stable: new rows mount and
-     animate, rows already on screen stay put */
-  const wire = steps.slice(0, step).flatMap((entry) => entry.wire);
-
-  /* a node is the leaf the PDU names, on the path down to one, or neither */
-  const touched = (current?.touches ?? []).map((key) => mibByKey[key].oid);
-  const nodeState = (oid: string) =>
-    touched.includes(oid) ? 'leaf' : touched.some((leaf) => leaf.startsWith(`${oid}.`)) ? 'path' : 'idle';
-
   const explain = current
     ? mode === 'Packet' ? current.packet : mode === 'Technical' ? current.technical : current.simple
     : idle[sc].explain;
 
-  const castLabel = current ? `udp ${current.flow === 'trap' ? 162 : 161} · ${current.pdu}` : 'nothing on the wire';
-
-  /* the mode decides how much of each varbind the table admits to */
+  /* the table admits to more of each value as the reading mode deepens */
   const showOid = mode === 'Packet';
   const showType = mode !== 'Simple';
   const showNote = mode !== 'Packet';
 
-  /* ---------------------------------------------------------- the rate */
-  const firstRead = step >= 4;
-  const secondRead = step >= 6;
-  const linkDown = step >= 7;
   const deltaOctets = RATE.second.octets - RATE.first.octets;
-  const deltaTicks = RATE.second.ticks - RATE.first.ticks;
-  const bps = (deltaOctets * 8) / (deltaTicks / 100);
-  const share = (bps / RATE.linkBps) * 100;
-  const rateNote = linkDown
-    ? 'The next poll would find this counter frozen, and the graph would sag a minute late. The trap got here first — with the reason.'
-    : secondRead
-      ? 'Two readings, sixty seconds apart, became a speed. The NMS plots one point and waits another minute. That is the whole graph.'
-      : firstRead
-        ? 'Baseline stored. 1,204,775,210 bytes since boot says nothing about right now. The rate needs a second reading.'
-        : 'A counter only climbs. One reading is a large, meaningless number — this panel needs two.';
+  const seconds = (RATE.second.ticks - RATE.first.ticks) / 100;
+  const mbps = (deltaOctets * 8) / seconds / 1e6;
 
-  /* ------------------------------------------------------ the security */
-  const level = poll ? null : step >= 3 ? 'authpriv' : step >= 1 ? 'noauth' : null;
-  const secNote = step >= 3
-    ? 'authPriv: the OIDs and values are sealed and every message is signed. What is left in the clear is what the agent needs to find the key.'
-    : step >= 1
-      ? 'Discovery runs at noAuthNoPriv on purpose. Without the engine ID there is no key to sign or encrypt with.'
-      : 'Four ways to run SNMP. Only the bottom row keeps the data private and the requests genuine.';
+  /* one idea per stretch of the exchange — the thing worth remembering */
+  let idea: { icon: ReactNode; title: string; body: ReactNode } | null = null;
+  if (poll && step >= 1 && step <= 2) {
+    idea = {
+      icon: <ChatCircleText weight="duotone" size={20} />,
+      title: 'One question, one answer',
+      body: <p>The server names exactly what it wants, and the router sends back that one value. That is all SNMP polling is: a question on UDP 161, and an answer back.</p>,
+    };
+  } else if (poll && step >= 3 && step <= 5) {
+    idea = {
+      icon: <Gauge weight="duotone" size={20} />,
+      title: 'A counter is a running total',
+      body: <p>Gi0/2 has received <b>{fmt(RATE.first.octets)}</b> bytes since the router started. On its own that number says nothing about how busy the port is <em>right now</em> — for that you need a second reading.</p>,
+    };
+  } else if (poll && step === 6) {
+    idea = {
+      icon: <Gauge weight="duotone" size={20} />,
+      title: 'Two readings make a speed',
+      body: (
+        <div className={styles.equation}>
+          <span className={styles.term}><small>2nd reading</small>{fmt(RATE.second.octets)}</span>
+          <span className={styles.op}>−</span>
+          <span className={styles.term}><small>1st reading</small>{fmt(RATE.first.octets)}</span>
+          <span className={styles.op}>=</span>
+          <span className={styles.term} data-tone="a"><small>bytes in {seconds} s</small>{fmt(deltaOctets)}</span>
+          <span className={styles.op}>× 8 ÷ {seconds} s =</span>
+          <span className={styles.term} data-tone="ok"><small>speed</small>{mbps.toFixed(1)} Mbit/s</span>
+        </div>
+      ),
+    };
+  } else if (poll && step === 7) {
+    idea = {
+      icon: <BellRinging weight="duotone" size={20} />,
+      title: 'Two ways to find out',
+      body: (
+        <div className={styles.split}>
+          <div>
+            <Clock weight="duotone" size={22} />
+            <strong>Polling</strong>
+            <p>The server asks every 60 seconds. Good for graphs.</p>
+          </div>
+          <div data-tone="rst">
+            <BellRinging weight="duotone" size={22} />
+            <strong>Trap</strong>
+            <p>The router tells the server at once, on UDP 162. Good for alarms — but nobody replies, so a lost alarm is never noticed.</p>
+          </div>
+        </div>
+      ),
+    };
+  } else if (!poll && step >= 1 && step <= 2) {
+    idea = {
+      icon: <Key weight="duotone" size={20} />,
+      title: 'Keys belong to one router',
+      body: <p>SNMPv3 turns each password into a key tied to one router’s ID. Until the server knows that ID it cannot sign or lock anything — so its first message only asks for it.</p>,
+    };
+  } else if (!poll && step >= 3) {
+    idea = {
+      icon: <LockKey weight="duotone" size={20} />,
+      title: 'Locked, not invisible',
+      body: (
+        <div className={styles.split}>
+          <div data-tone="ok">
+            <EyeSlash weight="duotone" size={22} />
+            <strong>Hidden</strong>
+            <p>What was asked, the answer, and any password. And nobody can forge or change the message.</p>
+          </div>
+          <div>
+            <Eye weight="duotone" size={22} />
+            <strong>Still visible</strong>
+            <p>The two IP addresses, the ports, the user name <code>nms-ro</code> and the router’s ID.</p>
+          </div>
+        </div>
+      ),
+    };
+  }
 
   return (
     <main className={styles.lab}>
       <div className={styles.grid} aria-hidden="true" />
 
-      <div className={styles.missionBar}>
-        <span className={styles.missionTag}>Mission</span>
-        <h1 className={styles.missionLine}>
-          {poll ? (
-            <>Graph the traffic on <code>Gi0/2</code> of <code>10.0.0.1</code> — poll a counter twice, turn it into a speed, then <b>catch the alarm</b>.</>
-          ) : (
-            <>Ask <code>10.0.0.1</code> the same question with <b>SNMPv3</b> — so nobody on the path can read the answer or forge the request.</>
-          )}
-        </h1>
-        <div className={styles.modeTabs}>
-          {modes.map((option) => (
-            <button key={option} type="button" data-active={mode === option} aria-pressed={mode === option} onClick={() => setMode(option)}>
-              {option}
-            </button>
-          ))}
+      <div className={styles.wrap}>
+        {/* ---------------------------------------------------- mission */}
+        <div className={styles.missionBar}>
+          <span className={styles.missionTag}>Mission</span>
+          <h1 className={styles.missionLine}>
+            {poll ? (
+              <>Watch a router: measure how busy port <code>Gi0/2</code> is, then <b>catch the alarm</b> when it fails.</>
+            ) : (
+              <>Ask the router the same question with <b>SNMPv3</b>, so nobody else can read the answer.</>
+            )}
+          </h1>
         </div>
-      </div>
 
-      <div className={styles.workspace}>
-        <div className={styles.column}>
-          {/* ------------------------------------------------------- diagram */}
-          <div className={styles.panel}>
-            <div className={styles.panelHead}>
-              <Broadcast weight="duotone" size={15} color="var(--text3)" />
-              <span>{poll ? 'snmp v2c · one lane for questions, one for alarms' : 'snmp v3 · the same lane, sealed'}</span>
-              <span className={styles.headNote} style={{ color: flowColor }}>{castLabel}</span>
-            </div>
-            <div className={styles.stageBody}>
-              <SnmpDiagram sc={sc} steps={steps} step={step} tick={tick} />
-            </div>
+        {/* ---------------------------------------------------- toolbar */}
+        <div className={styles.toolbar}>
+          <div className={styles.scenarios} role="group" aria-label="Scenario">
+            <button type="button" data-active={poll} aria-pressed={poll} onClick={() => choose('poll')}>
+              <Gauge weight="duotone" size={16} /> Watch a router · v2c
+            </button>
+            <button type="button" data-active={!poll} aria-pressed={!poll} data-tone="ok" onClick={() => choose('secure')}>
+              <ShieldCheck weight="duotone" size={16} /> Keep it private · v3
+            </button>
           </div>
 
-          {/* ------------------------------------------------------ the wire */}
-          <div className={styles.panel}>
-            <div className={styles.panelHead}>
-              <TerminalWindow weight="duotone" size={15} color="var(--text3)" />
-              <span>capture · what anyone on the path between them reads</span>
-              <span className={styles.headNote}>{current ? `t = ${current.at}` : '—'}</span>
+          <div className={styles.progress}>
+            <span className={styles.status} style={{ color: toneVar[state.tone] }}>
+              <i /> {state.text}
+            </span>
+            <div className={styles.dots} role="group" aria-label="Jump to a step">
+              {steps.map((entry, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  data-state={index < step - 1 ? 'done' : index === step - 1 ? 'current' : 'todo'}
+                  style={{ '--tone': toneVar[flowTone[entry.flow]] } as Vars}
+                  aria-label={`Step ${index + 1}: ${entry.walkLabel}`}
+                  aria-current={index === step - 1 ? 'step' : undefined}
+                  title={entry.walkLabel}
+                  onClick={() => go(index + 1)}
+                />
+              ))}
             </div>
-            <div className={styles.wireBody}>
-              {wire.length > 0
-                ? wire.map((row, index) => <div key={index} style={{ color: toneVar[row.tone] }}>{row.text}</div>)
-                : <div className={styles.wireEmpty}>listening on the path — no datagrams yet</div>}
+            <span className={styles.stepCount}>{step === 0 ? `${maxStep} steps` : `Step ${step} of ${maxStep}`}</span>
+          </div>
+        </div>
+
+        {/* ------------------------------------------------------ stage */}
+        <SnmpStage sc={sc} step={step} current={current} tick={tick} />
+
+        {/* ----------------------------------------------- what happened */}
+        <section className={styles.happened} data-tone={current ? flowTone[current.flow] : 'idle'} aria-live="polite">
+          <div className={styles.happenedHead}>
+            <span className={styles.kicker}><Lightbulb weight="duotone" size={16} /> What happened</span>
+            <div className={styles.modeTabs} role="group" aria-label="How much detail">
+              {modes.map((option) => (
+                <button key={option} type="button" data-active={mode === option} aria-pressed={mode === option} onClick={() => setMode(option)}>
+                  {option}
+                </button>
+              ))}
             </div>
           </div>
-
-          {/* ------------------------------------------------------- the pdu */}
-          <div className={styles.panel}>
-            <div className={styles.panelHead}>
-              <ListDashes weight="duotone" size={15} color="var(--text3)" />
-              <span>pdu · the header, then the variable bindings</span>
-              <span className={styles.headNote} style={{ color: flowColor }}>{current ? current.pdu : 'no pdu yet'}</span>
+          <h2 className={styles.happenedTitle}>{current ? current.title : intro[sc]}</h2>
+          <p className={styles.happenedText} data-kind={current ? mode : undefined}>{explain}</p>
+          {current && (
+            <div className={styles.exposure} style={{ color: toneVar[current.exposure.tone] }}>
+              {current.exposure.tone === 'ok' ? <EyeSlash weight="duotone" size={16} /> : <Eye weight="duotone" size={16} />}
+              <span>{current.exposure.text}</span>
             </div>
+          )}
+        </section>
 
-            {current && (
+        {/* ------------------------------------------------- navigation */}
+        <div className={styles.navRow}>
+          <button type="button" className={styles.secondary} onClick={() => go(step - 1)} disabled={step === 0}>
+            <ArrowLeft weight="bold" size={16} /> Back
+          </button>
+          <button type="button" className={styles.ghost} onClick={() => go(0)} disabled={step === 0}>
+            <ArrowCounterClockwise weight="bold" size={16} /> Start over
+          </button>
+          <button type="button" className={styles.next} data-tone={poll ? 'b' : 'ok'} onClick={() => go(step + 1)} disabled={done}>
+            {nextLabels[sc][Math.min(step, maxStep)]} {!done && <ArrowRight weight="bold" size={17} />}
+          </button>
+        </div>
+
+        {/* ---------------------------------------------------- key idea */}
+        {idea && (
+          <section key={`${sc}-${idea.title}`} className={styles.idea}>
+            <div className={styles.ideaHead}>{idea.icon}<span>Key idea · {idea.title}</span></div>
+            <div className={styles.ideaBody}>{idea.body}</div>
+          </section>
+        )}
+
+        {done && (
+          <div className={styles.win}>
+            <CheckCircle weight="duotone" size={28} />
+            <div>
+              <strong>
+                {poll ? 'Done — you watched a router the way real monitoring does' : 'Done — same answer, but only the server could read it'}
+              </strong>
+              <span>
+                {poll
+                  ? 'Questions and answers on UDP 161 built the 45 Mbit/s graph; the alarm on UDP 162 arrived the moment the cable came out. Try Keep it private · v3 next.'
+                  : 'The server learned the router’s ID first, then signed and locked every message. The addresses and the user name still showed — locking hides what is said, not who is talking.'}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* ------------------------------------------- the real packet */}
+        <details className={styles.details}>
+          <summary>
+            <Package weight="duotone" size={18} />
+            <span>See the real packet</span>
+            <small>{current ? `${current.pdu} · the fields and values on the wire` : 'fields and values appear once a message is sent'}</small>
+            <CaretDown weight="bold" size={15} className={styles.caret} />
+          </summary>
+
+          {current ? (
+            <div className={styles.detailsBody}>
               <dl className={styles.fields}>
                 {current.header.map((field) => {
                   const tone = field.tone ? toneVar[field.tone] : undefined;
@@ -213,286 +306,53 @@ export default function SnmpLab() {
                   );
                 })}
               </dl>
-            )}
 
-            {current?.sealed && (
-              <div className={styles.sealed}>
-                <LockKey weight="duotone" size={15} />
-                <span>
-                  encrypted on the wire · shown here as the manager {current.flow === 'req' ? 'wrote it before sealing' : 'read it after decrypting'}
-                </span>
-              </div>
-            )}
+              {current.sealed && (
+                <div className={styles.sealed}>
+                  <LockKey weight="duotone" size={15} />
+                  <span>Encrypted on the wire — shown here as the server {current.flow === 'req' ? 'wrote it before locking' : 'read it after unlocking'}.</span>
+                </div>
+              )}
 
-            <div className={styles.vbWrap}>
-              {current && current.varbinds.length > 0 ? (
-                <table className={styles.vbTable}>
-                  <thead>
-                    <tr>
-                      <th>{showOid ? 'oid' : 'object'}</th>
-                      {showType && <th>type</th>}
-                      <th>value</th>
-                      {showNote && <th>what it means</th>}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {current.varbinds.map((vb, index) => {
-                      const asking = vb.type === 'NULL';
-                      return (
-                        <tr key={`${sc}-${step}-${vb.oid}`} style={{ '--i': String(index) } as Vars}>
-                          <td className={showOid ? styles.vbOid : styles.vbName}>{showOid ? vb.oid : vb.name}</td>
-                          {showType && <td className={styles.vbType}>{vb.type}</td>}
-                          <td className={styles.vbValue} data-asking={asking || undefined}>
-                            {asking ? (mode === 'Simple' ? 'asking…' : 'NULL') : vb.value}
-                          </td>
-                          {showNote && <td className={styles.vbNote}>{vb.note ?? ''}</td>}
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+              {current.varbinds.length > 0 ? (
+                <div className={styles.vbWrap}>
+                  <table className={styles.vbTable}>
+                    <thead>
+                      <tr>
+                        <th>{showOid ? 'oid' : 'value name'}</th>
+                        {showType && <th>type</th>}
+                        <th>value</th>
+                        {showNote && <th>meaning</th>}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {current.varbinds.map((vb) => {
+                        const asking = vb.type === 'NULL';
+                        return (
+                          <tr key={`${sc}-${step}-${vb.oid}`}>
+                            <td className={showOid ? styles.vbOid : styles.vbName}>{showOid ? vb.oid : vb.name}</td>
+                            {showType && <td className={styles.vbType}>{vb.type}</td>}
+                            <td className={styles.vbValue} data-asking={asking || undefined}>
+                              {asking ? (mode === 'Simple' ? 'asking…' : 'NULL') : vb.value}
+                            </td>
+                            {showNote && <td className={styles.vbNote}>{vb.note ?? ''}</td>}
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               ) : (
-                <p className={styles.vbEmpty}>
-                  {current
-                    ? 'An empty variable-binding list. This request names no object at all — it exists only to be refused.'
-                    : 'No PDU yet. Every SNMP message carries the same cargo: a list of OIDs, each paired with a value — or with NULL, when it is a question.'}
-                </p>
+                <p className={styles.vbEmpty}>No values at all — this message exists only to be refused.</p>
               )}
+
+              <code className={styles.packetLine}>{current.packet}</code>
             </div>
-          </div>
-
-          <div className={styles.twoUp}>
-            {/* ---------------------------------------------------- the mib */}
-            <div className={styles.panel}>
-              <div className={styles.panelHead}>
-                <TreeStructure weight="duotone" size={15} color="var(--text3)" />
-                <span>mib · the numbered tree every OID walks</span>
-              </div>
-              <ul className={styles.tree} style={{ '--tone': flowColor } as Vars}>
-                {mibTree.map((node) => (
-                  <li key={node.key} data-state={nodeState(node.oid)} data-depth={node.depth}
-                    style={{ '--depth': String(node.depth) } as Vars}>
-                    <span className={styles.treeName}>{node.label}</span>
-                    <span className={styles.treeArc}>({node.arc})</span>
-                    {node.via && <span className={styles.treeVia}>{node.via}</span>}
-                  </li>
-                ))}
-              </ul>
-              <div className={styles.treeFoot}>
-                {current && current.touches.length > 0 ? (
-                  <>
-                    <span>this pdu names</span>
-                    {current.touches.map((key) => <code key={key} style={{ color: flowColor }}>{mibByKey[key].label}</code>)}
-                  </>
-                ) : (
-                  <span>
-                    {current
-                      ? 'this pdu names no object at all'
-                      : 'every object has a name for people and a number for the wire — only the number is sent'}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {poll ? (
-              /* ------------------------------------------------ the rate */
-              <div className={styles.panel}>
-                <div className={styles.panelHead}>
-                  <ChartLineUp weight="duotone" size={15} color="var(--text3)" />
-                  <span>counter → rate · the sum behind every graph</span>
-                </div>
-                <div className={styles.rateBody}>
-                  <div className={styles.readings}>
-                    <div className={styles.readHead}>
-                      <span />
-                      <span>sysUpTime</span>
-                      <span>ifInOctets.3</span>
-                    </div>
-                    <div data-on={firstRead}>
-                      <span>poll 1</span>
-                      <span>{firstRead ? fmt(RATE.first.ticks) : '—'}</span>
-                      <span>{firstRead ? fmt(RATE.first.octets) : '—'}</span>
-                    </div>
-                    <div data-on={secondRead}>
-                      <span>poll 2</span>
-                      <span>{secondRead ? fmt(RATE.second.ticks) : '—'}</span>
-                      <span>{secondRead ? fmt(RATE.second.octets) : '—'}</span>
-                    </div>
-                    <div data-on={secondRead} data-delta>
-                      <span>Δ</span>
-                      <span>{secondRead ? `${fmt(deltaTicks)} = ${(deltaTicks / 100).toFixed(2)} s` : '—'}</span>
-                      <span>{secondRead ? fmt(deltaOctets) : '—'}</span>
-                    </div>
-                  </div>
-
-                  <div className={styles.rateResult} data-state={linkDown ? 'down' : secondRead ? 'ok' : 'wait'}>
-                    <div className={styles.rateLabel}>
-                      {linkDown
-                        ? <><Siren weight="duotone" size={14} /> Gi0/2 down · last rate</>
-                        : secondRead ? 'Δ octets × 8 ÷ Δ time' : 'needs two readings'}
-                    </div>
-                    <strong>{secondRead ? (bps / 1e6).toFixed(1) : '—'}<small> Mbit/s</small></strong>
-                    <div className={styles.meter}><i style={{ width: secondRead ? `${share}%` : '0%' }} /></div>
-                    <div className={styles.meterTicks}>
-                      <span>0</span>
-                      <span>{secondRead ? `${share.toFixed(1)} % of the link` : ''}</span>
-                      <span>1 Gbit/s</span>
-                    </div>
-                  </div>
-
-                  <p className={styles.panelNote}>{rateNote}</p>
-                </div>
-              </div>
-            ) : (
-              /* -------------------------------------------- the security */
-              <div className={styles.panel}>
-                <div className={styles.panelHead}>
-                  <LockKey weight="duotone" size={15} color="var(--text3)" />
-                  <span>security level · who can read it, who can forge it</span>
-                </div>
-                <div className={styles.rateBody}>
-                  <div className={styles.ladder}>
-                    <div className={styles.ladderHead}>
-                      <span>level</span>
-                      <span>readable</span>
-                      <span>forgeable</span>
-                    </div>
-                    {levels.map((row) => (
-                      <div key={row.key} data-active={level === row.key} data-best={row.key === 'authpriv'}>
-                        <span><b>{row.name}</b><small>{row.sub}</small></span>
-                        <span data-bad={row.read}>
-                          {row.read ? <Eye weight="duotone" size={14} /> : <EyeSlash weight="duotone" size={14} />}
-                          {row.read ? 'yes' : 'no'}
-                        </span>
-                        <span data-bad={row.forge}>
-                          {row.forge ? <LockOpen weight="duotone" size={14} /> : <ShieldCheck weight="duotone" size={14} />}
-                          {row.forge ? 'yes' : 'no'}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className={styles.toolLabel}>still visible on the wire</div>
-                  <div className={styles.visible}>
-                    {visibleOnWire.map((item) => <span key={item} data-on={step >= 3}>{item}</span>)}
-                  </div>
-
-                  <p className={styles.panelNote}>{secNote}</p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* ------------------------------------------------ the mistake */}
-          <div className={styles.panel}>
-            <div className={styles.panelHead}>
-              <WarningCircle weight="duotone" size={15} color="var(--a)" />
-              <span>the common mistake</span>
-            </div>
-            <div className={styles.mistake}>
-              <p>
-                SNMP is not a monitoring system. It is the protocol a monitoring system uses to <em>ask</em>. The graphs,
-                thresholds and alerts all live in the NMS; the router only keeps counters and answers questions about them.
-              </p>
-              <p className={styles.mistakeSplit}>
-                A counter is not a speed. <code data-tone="a">ifInOctets = 1,204,775,210</code> means nothing on its own
-                &mdash; only the difference between two polls, divided by the time between them, becomes 45 Mbit/s. And
-                32-bit counters wrap: on a gigabit link, in about 34 seconds. Fast interfaces are read from the 64-bit{' '}
-                <code data-tone="b">ifHCInOctets</code>.
-              </p>
-              <p className={styles.mistakeSplit}>
-                <code data-tone="rst">public</code> is not a password. v1 and v2c send the community string in the clear in
-                every packet, replies included. Run SNMPv3 at authPriv and let only the NMS reach UDP 161. Encryption hides
-                what is asked, <em data-plain>not who is asking</em> &mdash; the <Link href="/lab/https">HTTPS lab</Link>{' '}
-                shows the same limit one layer over.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* ---------------------------------------------------- console */}
-        <div className={`${styles.column} ${styles.side}`}>
-          <div className={styles.panel}>
-            <div className={styles.panelHead}>
-              <CursorClick weight="duotone" size={15} color="var(--text3)" />
-              <span>manager_console</span>
-            </div>
-            <div className={styles.toolBody}>
-              <div className={styles.toolLabel}>Scenario</div>
-              <div className={styles.scenarios}>
-                <button type="button" data-active={poll} aria-pressed={poll} data-tone="b" onClick={() => chooseScenario('poll')}>
-                  Poll &amp; trap · v2c
-                </button>
-                <button type="button" data-active={!poll} aria-pressed={!poll} data-tone="ok" onClick={() => chooseScenario('secure')}>
-                  Secure · v3
-                </button>
-              </div>
-
-              <div className={styles.stateRow} style={{ color: toneVar[state.tone] }}>
-                <span className={styles.stateDot} />
-                <strong>{state.text}</strong>
-              </div>
-
-              <div className={styles.endpoints}>
-                <span>nms    10.0.0.50</span>
-                <span>agent  10.0.0.1:161 · core-rtr-01</span>
-                <span data-tone={poll ? 'rst' : 'ok'}>
-                  {poll ? 'auth   community "public"' : 'auth   user nms-ro · authPriv'}
-                </span>
-              </div>
-
-              <div className={styles.walk}>
-                {steps.map((entry, index) => (
-                  <div key={index} data-state={index < step ? entry.flow : 'todo'} data-current={index === step - 1 || undefined}>
-                    <i>{index < step ? '✓' : index + 1}</i>
-                    <span>{entry.walkLabel}</span>
-                  </div>
-                ))}
-              </div>
-
-              <button type="button" className={styles.advance} data-tone={poll ? 'b' : 'ok'} disabled={done} onClick={advance}>
-                {advanceLabels[sc][Math.min(step, maxStep)]}
-              </button>
-              <button type="button" className={styles.reset} onClick={reset}>Start over</button>
-            </div>
-          </div>
-
-          <div className={styles.panel}>
-            <div className={styles.panelHead}>
-              <Lightbulb weight="duotone" size={15} color="var(--b)" />
-              <span>what just happened</span>
-            </div>
-            <div className={styles.explainBody}>
-              <p data-kind={current ? mode : undefined}>{explain}</p>
-              {mode !== 'Packet' && (
-                <div className={styles.footNote}>{current ? current.packet : idle[sc].foot}</div>
-              )}
-            </div>
-          </div>
-        </div>
+          ) : (
+            <p className={styles.detailsEmpty}>{idle[sc].foot}</p>
+          )}
+        </details>
       </div>
-
-      {done && (
-        <div className={styles.winWrap}>
-          <div className={styles.win}>
-            {poll
-              ? <ChartLineUp weight="duotone" size={26} color="var(--ok)" />
-              : <ShieldCheck weight="duotone" size={26} color="var(--ok)" />}
-            <div>
-              <strong>
-                {poll
-                  ? 'Polled twice, trapped once — that is how every network graph is made'
-                  : 'Same uptime, but nobody on the path could read it or forge it'}
-              </strong>
-              <span>
-                {poll
-                  ? 'Polling built the graph: two readings of a counter, sixty seconds apart, became 45 Mbit/s. The trap raised the alarm the moment Gi0/2 failed, without waiting for the next poll. Switch to Secure · v3 to ask the same question without handing out the password.'
-                  : 'Discovery taught the manager the engine ID it needed to localise its keys; after that every message was signed with HMAC-SHA-256 and encrypted with AES-128. The user name and engine ID still crossed in the clear — encryption hides what is asked, not who is asking.'}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
     </main>
   );
 }
