@@ -157,6 +157,17 @@ export const labs: Lab[] = [
     tone: 'red',
     shape: 'round',
   },
+  {
+    abbr: 'SNMP',
+    layer: 'Layer 7 · Network management',
+    description:
+      'Poll a router’s byte counter twice and turn the difference into 45 Mbit/s. Pull a cable and the router speaks first, on port 162. Then ask again with SNMPv3—signed, sealed, and still not anonymous.',
+    difficulty: 'Intermediate',
+    status: 'Ready',
+    href: '/lab/snmp',
+    protocolSlug: 'snmp',
+    tone: 'green',
+  },
 ];
 
 /** Find the hands-on lab paired with an atlas protocol entry. */

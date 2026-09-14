@@ -21,7 +21,7 @@ export const metadata = pageMeta({
    one. Adding a lab now rewrites the copy instead of quietly falsifying it. */
 const numberWords = [
   'Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six',
-  'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve',
+  'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen',
 ];
 const labCount = numberWords[labs.length] ?? String(labs.length);
 

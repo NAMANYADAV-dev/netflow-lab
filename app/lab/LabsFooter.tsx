@@ -10,6 +10,7 @@ const labFooterNotes = {
   icmp: 'ICMP rides directly in IP · types and codes, no TCP/UDP ports · RFC 792',
   ip: 'Destination IP drives the route · NAT may rewrite the source · RFC 791',
   mail: 'SMTP pushes · IMAP 993 and POP3 995 pull · one email, three protocols',
+  snmp: 'Two polls and a subtraction make a graph · the trap is the alarm · RFC 3416',
   tcp: 'SYN/FIN each consume one sequence number · every field traces to RFC 9293',
   telnet: 'Negotiate the terminal, then type your password into the room · port 23 · RFC 854',
   udp: 'UDP adds ports and a checksum · no delivery, ordering or retry guarantee · RFC 768',

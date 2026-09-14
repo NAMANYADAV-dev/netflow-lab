@@ -10,7 +10,7 @@ import {
   cableNeighbours,
   cables,
 } from '@/lib/cable-data';
-import { photoFor } from '@/lib/photos';
+import { requirePhoto } from '@/lib/photos';
 import { pageMeta } from '@/lib/seo';
 import entry from '@/components/entry-page.module.css';
 import cableStyles from '../cables.module.css';
@@ -38,7 +38,7 @@ export default async function CablePage({ params }: { params: Promise<{ slug: st
   const cable = cableBySlug[slug];
   if (!cable) notFound();
 
-  const photo = photoFor('cables', cable.slug);
+  const photo = requirePhoto('cables', cable.slug);
   const { prev, next } = cableNeighbours(cable.slug);
 
   return (
@@ -99,12 +99,8 @@ export default async function CablePage({ params }: { params: Promise<{ slug: st
 
         <figure className={cableStyles.figureWrap}>
           <div className={`halftone ${cableStyles.figure}`}>
-            {photo ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={photo} alt={cable.imageAlt} className={cableStyles.figureImage} />
-            ) : (
-              <div className={cableStyles.figureMissing}>Artwork awaiting placement</div>
-            )}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={photo} alt={cable.imageAlt} className={cableStyles.figureImage} />
           </div>
           <figcaption>Supplied NetFlow Lab anatomy plate · shown uncropped</figcaption>
         </figure>

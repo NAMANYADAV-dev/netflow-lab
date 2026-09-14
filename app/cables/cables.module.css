@@ -170,15 +170,6 @@
   object-fit: contain;
 }
 
-.figureMissing {
-  width: 100%;
-  height: 100%;
-  display: grid;
-  place-items: center;
-  color: color-mix(in srgb, var(--color-text) 61%, transparent);
-  font-style: italic;
-}
-
 .compareCard {
   transition: var(--motion-ui);
   display: flex;

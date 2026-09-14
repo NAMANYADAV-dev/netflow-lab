@@ -10,7 +10,7 @@ import {
   connectorNeighbours,
   connectors,
 } from '@/lib/connector-data';
-import { photoFor } from '@/lib/photos';
+import { requirePhoto } from '@/lib/photos';
 import { pageMeta } from '@/lib/seo';
 import entry from '@/components/entry-page.module.css';
 import cableStyles from '../../cables.module.css';
@@ -38,7 +38,7 @@ export default async function ConnectorPage({ params }: { params: Promise<{ slug
   const connector = connectorBySlug[slug];
   if (!connector) notFound();
 
-  const photo = photoFor('connectors', connector.slug);
+  const photo = requirePhoto('connectors', connector.slug);
   const { prev, next } = connectorNeighbours(connector.slug);
   const isComparison = connector.slug === 'rj11-vs-rj45';
 
@@ -104,12 +104,8 @@ export default async function ConnectorPage({ params }: { params: Promise<{ slug
 
         <figure className={cableStyles.figureWrap}>
           <div className={`halftone ${cableStyles.figure}`}>
-            {photo ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={photo} alt={connector.imageAlt} className={cableStyles.figureImage} />
-            ) : (
-              <div className={cableStyles.figureMissing}>Artwork awaiting placement</div>
-            )}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={photo} alt={connector.imageAlt} className={cableStyles.figureImage} />
           </div>
           <figcaption>Supplied NetFlow Lab connector plate · shown uncropped</figcaption>
         </figure>

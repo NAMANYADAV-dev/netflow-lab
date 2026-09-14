@@ -9,7 +9,7 @@ NetFlow Lab helps students understand what happens between devices—from the fr
 ## Highlights
 
 - 48 networking protocols organised into 11 protocol categories
-- 12 interactive protocol labs with step-by-step packet flows
+- 13 interactive protocol labs with step-by-step packet flows
 - Visual guides for the OSI and TCP/IP models
 - Network device, cable, and connector references
 - Animated protocol diagrams and simplified packet views
@@ -34,6 +34,7 @@ NetFlow Lab helps students understand what happens between devices—from the fr
 | DHCP | Address assignment using DORA and lease renewal |
 | Mail | SMTP delivery with IMAP and POP3 retrieval |
 | Telnet | Cleartext remote access and why encrypted alternatives are required |
+| SNMP | Polling counters into traffic rates, traps on port 162, and SNMPv3 authPriv |
 
 ## Technology Stack
 

@@ -46,12 +46,18 @@ Each page shows its photograph in the "On the bench" plate, cropped to 4:3.
 Any device without a file keeps its ruled placeholder — the page still works, it
 just waits for its art.
 
-## cables/ and connectors/
+## cables/ and connectors/ — required
 
-These folders are ready, but the Cables section itself is still a stub, so the
-slugs are not fixed yet. Put the files in with sensible names — `cat6.jpg`,
-`single-mode.jpg`, `rj45.jpg`, `lc-fibre.jpg` — and the slugs will be matched to
-whatever you send when those pages are built.
+Unlike devices, these have **no placeholder**. Every cable and connector page is
+built around its plate, so a missing file stops `npm run build` with the exact
+path to put back. Do not delete these files.
+
+| Folder | Files |
+|---|---|
+| `cables/` | `coaxial` `fiber-optic` `stp` `utp` |
+| `connectors/` | `bnc` `f-type` `lc` `mtp` `rj11` `rj11-vs-rj45` `rj45` `sc` `st` |
+
+Each is a `.webp` today; any accepted format with the same slug works.
 
 ## What makes a good photograph here
 

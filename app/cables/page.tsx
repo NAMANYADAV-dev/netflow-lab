@@ -5,7 +5,7 @@ import SiteHeader from '@/components/SiteHeader';
 import { PlateNumber } from '@/components/PlateText';
 import { cableHref, cables } from '@/lib/cable-data';
 import { connectorHref, connectors } from '@/lib/connector-data';
-import { photoFor } from '@/lib/photos';
+import { requirePhoto } from '@/lib/photos';
 import shell from '../shell.module.css';
 import styles from './cables.module.css';
 
@@ -51,18 +51,14 @@ export default function CablesPage() {
 
         <div className={styles.cards}>
           {cables.map((cable) => {
-            const photo = photoFor('cables', cable.slug);
+            const photo = requirePhoto('cables', cable.slug);
             return (
               <Link href={cableHref(cable)} className={styles.card} key={cable.slug}>
                 <div className={`halftone ${styles.cardImage}`}>
-                  {photo ? (
-                    /* Supplied editorial artwork has its own labels and fixed
-                       composition, so it is shown without an optimizer crop. */
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={photo} alt={cable.imageAlt} />
-                  ) : (
-                    <span>Artwork awaiting placement</span>
-                  )}
+                  {/* Supplied editorial artwork has its own labels and fixed
+                      composition, so it is shown without an optimizer crop. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={photo} alt={cable.imageAlt} />
                 </div>
                 <div className={styles.cardBody}>
                   <div className={styles.cardSpec}>{cable.spec}</div>
@@ -86,16 +82,12 @@ export default function CablesPage() {
 
         <div className={styles.connectorCards}>
           {connectors.map((connector) => {
-            const photo = photoFor('connectors', connector.slug);
+            const photo = requirePhoto('connectors', connector.slug);
             return (
               <Link href={connectorHref(connector)} className={styles.card} key={connector.slug}>
                 <div className={`halftone ${styles.cardImage}`}>
-                  {photo ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={photo} alt={connector.imageAlt} />
-                  ) : (
-                    <span>Artwork awaiting placement</span>
-                  )}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={photo} alt={connector.imageAlt} />
                 </div>
                 <div className={styles.cardBody}>
                   <div className={styles.cardSpec}>{connector.spec}</div>

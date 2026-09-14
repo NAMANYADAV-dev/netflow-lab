@@ -61,3 +61,23 @@ export function photoFor(kind: PhotoKind, slug: string): string | undefined {
   cache[kind] ??= readFolder(kind);
   return cache[kind]![slug.toLowerCase()];
 }
+
+/* Devices can wait for their art: sixteen pages, four of which have never had
+   a photograph, and each draws a ruled placeholder that says so. Cables and
+   connectors cannot. Every one of those pages is built around its plate, and
+   a placeholder there is not a page waiting for art but a broken one — which
+   is how the whole set once went missing without a single build noticing.
+
+   So these two kinds are required: a missing file stops `next build` (and
+   shows in the dev overlay) with the exact path to put back. */
+export function requirePhoto(kind: 'cables' | 'connectors', slug: string): string {
+  const photo = photoFor(kind, slug);
+  if (!photo) {
+    throw new Error(
+      `Missing photograph for /${kind === 'cables' ? 'cables' : 'cables/connectors'}/${slug}: ` +
+        `add public/photo/${kind}/${slug}.webp (or .avif, .png, .jpg). ` +
+        'Cable and connector pages have no placeholder, so the build stops here instead of shipping without it.',
+    );
+  }
+  return photo;
+}
