@@ -1,0 +1,319 @@
+/* The two teaching aids around the SNMP lab: the "Start here" guide at the
+   top, and the commands that let a reader do each step for real.
+
+   Everything here renders inside the lab's .lab element, so the colour tokens
+   (--b, --a, --ok, --line, …) come from there. The lab also resets every
+   button's colour with `.lab button`, so any button here that sets its own
+   colour does it with two classes to outrank that. */
+
+/* ---------- toolbar: scenarios plus the help button ---------- */
+.toolbarStart { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+.helpButton {
+  height: 44px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 650;
+  transition: var(--motion-ui);
+}
+
+.helpButton:hover { border-color: var(--b); }
+.toolbarStart .helpButton[aria-expanded='true'] { border-color: var(--b); background: color-mix(in srgb, var(--b) 12%, var(--surface)); color: var(--b); }
+
+/* ---------- start here ---------- */
+.guide {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.7fr);
+  gap: 22px;
+  padding: 20px 52px 20px 22px;
+  border: 1px solid color-mix(in srgb, var(--b) 35%, var(--line));
+  border-radius: 14px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--b) 8%, var(--surface)), var(--surface) 62%);
+  animation: rise 350ms var(--ease) both;
+}
+
+.guideKicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--b);
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.guideIntro h2 { margin: 6px 0; font-family: var(--sans); font-size: 21px; font-weight: 650; color: var(--text); }
+.guideIntro p { margin: 0; color: var(--text2); font-size: 14.5px; line-height: 1.62; }
+
+.howTo {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  align-self: center;
+}
+
+.howTo li { padding: 13px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+
+.howIcon {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  margin-bottom: 9px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--b) 12%, var(--surface));
+  color: var(--b);
+}
+
+.howIcon b {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 19px;
+  height: 19px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--surface);
+  border-radius: 50%;
+  background: var(--b);
+  color: #fff;
+  font-size: 10px;
+}
+
+.howTo strong { display: block; color: var(--text); font-size: 14px; }
+.howTo p { margin: 3px 0 0; color: var(--text3); font-size: 12.5px; line-height: 1.5; }
+
+.guide .guideClose {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  transition: var(--motion-ui);
+}
+
+.guide .guideClose:hover { background: var(--surface2); color: var(--text); }
+
+/* ---------- try it for real ---------- */
+.tryIt {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  overflow: hidden;
+  animation: rise 350ms var(--ease) both;
+}
+
+.tryHead {
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--b) 7%, var(--surface2));
+  color: var(--b);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.tryBody { padding: 14px 18px 16px; display: flex; flex-direction: column; gap: 12px; }
+
+.command { display: flex; flex-direction: column; gap: 5px; }
+
+.commandLabel {
+  color: var(--text3);
+  font-size: 10.5px;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.commandRow { display: flex; align-items: stretch; overflow: hidden; border-radius: 8px; background: #182027; }
+
+.commandRow code {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  color: #dfe9ef;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  /* a command is copied or retyped character for character, so -- must never
+     be drawn as one long dash */
+  font-variant-ligatures: none;
+}
+
+.commandRow code span { color: #7fd1c7; user-select: none; }
+
+.command .commandRow button {
+  flex: none;
+  padding: 0 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 0;
+  border-left: 1px solid #2d3b45;
+  background: #212d36;
+  color: #dfe9ef;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 650;
+  transition: var(--motion-ui);
+}
+
+.command .commandRow button:hover { background: #2c3a45; }
+
+.output pre {
+  margin: 5px 0 0;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface2);
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.tryNote {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--text3);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+.tryTip {
+  margin: 0;
+  padding: 10px 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--a) 8%, var(--surface));
+  color: var(--text2);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+.tryTip svg { flex: none; margin-top: 2px; color: var(--a); }
+
+.tryBody .setupLink {
+  align-self: flex-start;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: none;
+  color: var(--b);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.tryBody .setupLink:hover { text-decoration: underline; }
+
+/* ---------- practise on your own computer ---------- */
+.setup {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  overflow: hidden;
+  scroll-margin-top: 80px;
+}
+
+.setup summary {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 650;
+  list-style: none;
+  transition: var(--motion-ui);
+}
+
+.setup summary::-webkit-details-marker { display: none; }
+.setup summary:hover { background: var(--surface2); }
+.setup summary > svg:first-child { color: var(--ok); }
+.setup summary small { color: var(--text3); font-size: 12px; font-weight: 400; }
+.caret { margin-left: auto; color: var(--text3); transition: transform var(--motion) var(--ease); }
+.setup[open] .caret { transform: rotate(180deg); }
+.setup[open] summary { border-bottom: 1px solid var(--line); }
+
+.setupBody { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 16px; }
+
+.safety {
+  margin: 0;
+  padding: 10px 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  border: 1px solid color-mix(in srgb, var(--a) 40%, var(--line));
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--a) 7%, var(--surface));
+  color: var(--text2);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+.safety svg { flex: none; margin-top: 2px; color: var(--a); }
+
+.setupSteps { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 18px; }
+.setupSteps li { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 12px; }
+
+.setupNum {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--ok);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.setupSteps strong { display: block; padding-top: 3px; color: var(--text); font-size: 14.5px; }
+.setupSteps p { margin: 3px 0 9px; color: var(--text2); font-size: 13.5px; line-height: 1.55; }
+.setupSteps .command + .command { margin-top: 7px; }
+
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 900px) {
+  .guide { grid-template-columns: minmax(0, 1fr); }
+  .howTo { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 520px) {
+  .howTo { grid-template-columns: minmax(0, 1fr); }
+  .command .commandRow button span { display: none; }
+}

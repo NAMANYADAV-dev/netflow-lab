@@ -17,10 +17,15 @@ import {
   Lightbulb,
   LockKey,
   Package,
+  Question,
   ShieldCheck,
 } from '@phosphor-icons/react';
+import SnmpGuide from './SnmpGuide';
+import { SetupGuide, TryItCard } from './SnmpPractice';
 import SnmpStage from './SnmpStage';
 import { RATE, flowTone, idle, states, stepsFor, toneVar, type Scenario } from './snmp-data';
+import { practiceFor } from './snmp-practice';
+import guide from './snmp-guide.module.css';
 import styles from './snmp-lab.module.css';
 
 type ReadingMode = 'Simple' | 'Technical' | 'Packet';
@@ -62,6 +67,8 @@ export default function SnmpLab() {
   const [step, setStep] = useState(0);
   const [mode, setMode] = useState<ReadingMode>('Simple');
   const [tick, setTick] = useState(0);
+  /* open for a first visit; the first move into the story puts it away */
+  const [guideOpen, setGuideOpen] = useState(true);
 
   const poll = sc === 'poll';
   const steps = stepsFor(sc);
@@ -69,9 +76,12 @@ export default function SnmpLab() {
   const current = step > 0 ? steps[step - 1] : null;
   const done = step >= maxStep;
   const state = states[sc][step];
+  const practice = practiceFor(sc, step);
 
   const go = (next: number) => {
-    setStep(Math.max(0, Math.min(maxStep, next)));
+    const clamped = Math.max(0, Math.min(maxStep, next));
+    if (clamped > 0) setGuideOpen(false);
+    setStep(clamped);
     setTick((value) => value + 1);
   };
 
@@ -80,6 +90,13 @@ export default function SnmpLab() {
     setSc(next);
     setStep(0);
     setTick((value) => value + 1);
+  };
+
+  const openSetup = () => {
+    const panel = document.getElementById('snmp-setup');
+    if (!(panel instanceof HTMLDetailsElement)) return;
+    panel.open = true;
+    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   const explain = current
@@ -188,14 +205,22 @@ export default function SnmpLab() {
           </h1>
         </div>
 
+        {/* ------------------------------------------------- start here */}
+        {guideOpen && <SnmpGuide onClose={() => setGuideOpen(false)} />}
+
         {/* ---------------------------------------------------- toolbar */}
         <div className={styles.toolbar}>
-          <div className={styles.scenarios} role="group" aria-label="Scenario">
-            <button type="button" data-active={poll} aria-pressed={poll} onClick={() => choose('poll')}>
-              <Gauge weight="duotone" size={16} /> Watch a router · v2c
-            </button>
-            <button type="button" data-active={!poll} aria-pressed={!poll} data-tone="ok" onClick={() => choose('secure')}>
-              <ShieldCheck weight="duotone" size={16} /> Keep it private · v3
+          <div className={guide.toolbarStart}>
+            <div className={styles.scenarios} role="group" aria-label="Scenario">
+              <button type="button" data-active={poll} aria-pressed={poll} onClick={() => choose('poll')}>
+                <Gauge weight="duotone" size={16} /> Watch a router · v2c
+              </button>
+              <button type="button" data-active={!poll} aria-pressed={!poll} data-tone="ok" onClick={() => choose('secure')}>
+                <ShieldCheck weight="duotone" size={16} /> Keep it private · v3
+              </button>
+            </div>
+            <button type="button" className={guide.helpButton} aria-expanded={guideOpen} onClick={() => setGuideOpen((open) => !open)}>
+              <Question weight="duotone" size={17} /> How to use
             </button>
           </div>
 
@@ -266,6 +291,9 @@ export default function SnmpLab() {
             <div className={styles.ideaBody}>{idea.body}</div>
           </section>
         )}
+
+        {/* ----------------------------------------------- try it for real */}
+        {practice && <TryItCard key={`${sc}-${practice.goal}`} practice={practice} onSetup={openSetup} />}
 
         {done && (
           <div className={styles.win}>
@@ -352,6 +380,9 @@ export default function SnmpLab() {
             <p className={styles.detailsEmpty}>{idle[sc].foot}</p>
           )}
         </details>
+
+        {/* ------------------------------------ practise on your own computer */}
+        <SetupGuide />
       </div>
     </main>
   );
