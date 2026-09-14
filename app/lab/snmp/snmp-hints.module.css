@@ -1,0 +1,80 @@
+/* The "what will this do?" layer: one tooltip that follows the pointer or
+   keyboard focus onto any control with a data-hint, and the Start-here cue
+   that points a first-time visitor at the Next button. */
+
+.layer { position: relative; z-index: 1; }
+
+.bubble {
+  position: fixed;
+  z-index: 90;
+  width: max-content;
+  max-width: 270px;
+  padding: 8px 12px;
+  border-radius: 9px;
+  background: #182027;
+  color: #f1f6f8;
+  font-family: var(--sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  pointer-events: none;
+  box-shadow: 0 12px 28px -12px rgb(0 0 0 / 60%);
+  transform: translate(-50%, calc(-100% - 12px));
+  animation: hintIn 150ms ease-out both;
+}
+
+.bubble[data-below='true'] { transform: translate(-50%, 12px); }
+
+/* the tail stays over the control even when the bubble is nudged in from the edge */
+.bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: calc(50% + var(--tail, 0px));
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: inherit;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.bubble[data-below='true']::after { top: -5px; bottom: auto; }
+
+/* ---------- start here ---------- */
+.cueHost { position: relative; }
+
+.startCue {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 12px);
+  padding: 6px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  background: var(--a);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 650;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 8px 18px -8px color-mix(in srgb, var(--a) 90%, transparent);
+  transform: translateX(-50%);
+  /* a handful of bounces to catch the eye, then it rests */
+  animation: cueBounce 1.2s ease-in-out 6;
+}
+
+.startCue::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -4px;
+  width: 9px;
+  height: 9px;
+  background: inherit;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+@keyframes hintIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes cueBounce { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -6px); } }

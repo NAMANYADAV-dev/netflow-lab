@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type CSSProperties, type ReactNode } from 'react';
+import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import {
   ArrowCounterClockwise,
   ArrowLeft,
@@ -10,6 +10,7 @@ import {
   ChatCircleText,
   CheckCircle,
   Clock,
+  CursorClick,
   Eye,
   EyeSlash,
   Gauge,
@@ -20,12 +21,14 @@ import {
   Question,
   ShieldCheck,
 } from '@phosphor-icons/react';
+import HintLayer from './HintLayer';
 import SnmpGuide from './SnmpGuide';
 import { SetupGuide, TryItCard } from './SnmpPractice';
 import SnmpStage from './SnmpStage';
 import { RATE, flowTone, idle, states, stepsFor, toneVar, type Scenario } from './snmp-data';
 import { practiceFor } from './snmp-practice';
 import guide from './snmp-guide.module.css';
+import hints from './snmp-hints.module.css';
 import styles from './snmp-lab.module.css';
 
 type ReadingMode = 'Simple' | 'Technical' | 'Packet';
@@ -54,6 +57,33 @@ const nextLabels: Record<Scenario, string[]> = {
   ],
 };
 
+/** what clicking Next will do from each step — shown in the button's pop-up */
+const nextHints: Record<Scenario, string[]> = {
+  poll: [
+    'Click to send the first question — watch the envelope fly from the server to the router.',
+    'Click to see the router’s answer come back.',
+    'Click to ask for all three ports in one message.',
+    'Click to see the router send back every port’s details.',
+    'Click to jump one minute ahead and ask for the byte count again.',
+    'Click to see the new count, and the speed worked out from it.',
+    'Click to unplug port Gi0/2 and watch the router raise an alarm.',
+    'All steps done — use Back or Start over, or try Keep it private.',
+  ],
+  secure: [
+    'Click to send an empty question, just to learn the router’s ID.',
+    'Click to see the router refuse — and reveal its ID.',
+    'Click to send the real question, signed and locked.',
+    'Click to see the locked answer arrive and get unlocked.',
+    'All steps done — use Back or Start over, or try Watch a router.',
+  ],
+};
+
+const modeHints: Record<ReadingMode, string> = {
+  Simple: 'Click for the plain-language explanation.',
+  Technical: 'Click for the explanation in real protocol terms.',
+  Packet: 'Click to see the message exactly as it looks on the wire.',
+};
+
 const intro: Record<Scenario, string> = {
   poll: 'A monitoring server wants to keep an eye on a router. Press Next to send its first question.',
   secure: 'The same question as before — but this time nobody else on the network should be able to read it.',
@@ -69,6 +99,12 @@ export default function SnmpLab() {
   const [tick, setTick] = useState(0);
   /* open for a first visit; the first move into the story puts it away */
   const [guideOpen, setGuideOpen] = useState(true);
+  /* A step changes the height of what sits above the buttons — the guide
+     closing, a longer explanation — which would pull the clicked button out
+     from under the pointer, so a quick second click lands on whatever slid
+     into its place. The clicked control's position is noted before the step
+     changes, and the page scrolled by the difference afterwards. */
+  const anchor = useRef<{ el: HTMLElement; top: number } | null>(null);
 
   const poll = sc === 'poll';
   const steps = stepsFor(sc);
@@ -78,8 +114,9 @@ export default function SnmpLab() {
   const state = states[sc][step];
   const practice = practiceFor(sc, step);
 
-  const go = (next: number) => {
+  const go = (next: number, from?: HTMLElement) => {
     const clamped = Math.max(0, Math.min(maxStep, next));
+    anchor.current = from ? { el: from, top: from.getBoundingClientRect().top } : null;
     if (clamped > 0) setGuideOpen(false);
     setStep(clamped);
     setTick((value) => value + 1);
@@ -91,6 +128,16 @@ export default function SnmpLab() {
     setStep(0);
     setTick((value) => value + 1);
   };
+
+  /* tick moves on every navigation, so a noted anchor is always spent on the
+     render it was noted for and never lingers into a later one */
+  useLayoutEffect(() => {
+    const held = anchor.current;
+    anchor.current = null;
+    if (!held?.el.isConnected) return;
+    const moved = held.el.getBoundingClientRect().top - held.top;
+    if (Math.abs(moved) >= 1) window.scrollBy(0, moved);
+  }, [step, guideOpen, tick]);
 
   const openSetup = () => {
     const panel = document.getElementById('snmp-setup');
@@ -192,6 +239,7 @@ export default function SnmpLab() {
     <main className={styles.lab}>
       <div className={styles.grid} aria-hidden="true" />
 
+      <HintLayer>
       <div className={styles.wrap}>
         {/* ---------------------------------------------------- mission */}
         <div className={styles.missionBar}>
@@ -212,14 +260,33 @@ export default function SnmpLab() {
         <div className={styles.toolbar}>
           <div className={guide.toolbarStart}>
             <div className={styles.scenarios} role="group" aria-label="Scenario">
-              <button type="button" data-active={poll} aria-pressed={poll} onClick={() => choose('poll')}>
+              <button
+                type="button"
+                data-active={poll}
+                aria-pressed={poll}
+                data-hint={poll ? 'You are on this story — press Next below to move through it.' : 'Click to switch to watching a router: questions, answers and an alarm.'}
+                onClick={() => choose('poll')}
+              >
                 <Gauge weight="duotone" size={16} /> Watch a router · v2c
               </button>
-              <button type="button" data-active={!poll} aria-pressed={!poll} data-tone="ok" onClick={() => choose('secure')}>
+              <button
+                type="button"
+                data-active={!poll}
+                aria-pressed={!poll}
+                data-tone="ok"
+                data-hint={!poll ? 'You are on this story — press Next below to move through it.' : 'Click to switch to the private version: the same question, locked with SNMPv3.'}
+                onClick={() => choose('secure')}
+              >
                 <ShieldCheck weight="duotone" size={16} /> Keep it private · v3
               </button>
             </div>
-            <button type="button" className={guide.helpButton} aria-expanded={guideOpen} onClick={() => setGuideOpen((open) => !open)}>
+            <button
+              type="button"
+              className={guide.helpButton}
+              aria-expanded={guideOpen}
+              data-hint={guideOpen ? 'Click to hide the Start here guide.' : 'Click to show what SNMP is and how to use this lab.'}
+              onClick={() => setGuideOpen((open) => !open)}
+            >
               <Question weight="duotone" size={17} /> How to use
             </button>
           </div>
@@ -237,8 +304,8 @@ export default function SnmpLab() {
                   style={{ '--tone': toneVar[flowTone[entry.flow]] } as Vars}
                   aria-label={`Step ${index + 1}: ${entry.walkLabel}`}
                   aria-current={index === step - 1 ? 'step' : undefined}
-                  title={entry.walkLabel}
-                  onClick={() => go(index + 1)}
+                  data-hint={`Click to jump to step ${index + 1}: ${entry.walkLabel}`}
+                  onClick={(event) => go(index + 1, event.currentTarget)}
                 />
               ))}
             </div>
@@ -255,7 +322,7 @@ export default function SnmpLab() {
             <span className={styles.kicker}><Lightbulb weight="duotone" size={16} /> What happened</span>
             <div className={styles.modeTabs} role="group" aria-label="How much detail">
               {modes.map((option) => (
-                <button key={option} type="button" data-active={mode === option} aria-pressed={mode === option} onClick={() => setMode(option)}>
+                <button key={option} type="button" data-active={mode === option} aria-pressed={mode === option} data-hint={modeHints[option]} onClick={() => setMode(option)}>
                   {option}
                 </button>
               ))}
@@ -273,13 +340,26 @@ export default function SnmpLab() {
 
         {/* ------------------------------------------------- navigation */}
         <div className={styles.navRow}>
-          <button type="button" className={styles.secondary} onClick={() => go(step - 1)} disabled={step === 0}>
+          <button type="button" className={styles.secondary} data-hint="Click to go back one step and replay it." onClick={(event) => go(step - 1, event.currentTarget)} disabled={step === 0}>
             <ArrowLeft weight="bold" size={16} /> Back
           </button>
-          <button type="button" className={styles.ghost} onClick={() => go(0)} disabled={step === 0}>
+          <button type="button" className={styles.ghost} data-hint="Click to reset this story to the very beginning." onClick={(event) => go(0, event.currentTarget)} disabled={step === 0}>
             <ArrowCounterClockwise weight="bold" size={16} /> Start over
           </button>
-          <button type="button" className={styles.next} data-tone={poll ? 'b' : 'ok'} onClick={() => go(step + 1)} disabled={done}>
+          <button
+            type="button"
+            className={`${styles.next} ${hints.cueHost}`}
+            data-tone={poll ? 'b' : 'ok'}
+            data-hint={nextHints[sc][Math.min(step, maxStep)]}
+            data-hint-side={step === 0 ? 'bottom' : undefined}
+            onClick={(event) => go(step + 1, event.currentTarget)}
+            disabled={done}
+          >
+            {step === 0 && (
+              <span className={hints.startCue} aria-hidden="true">
+                <CursorClick weight="fill" size={14} /> Click here to start
+              </span>
+            )}
             {nextLabels[sc][Math.min(step, maxStep)]} {!done && <ArrowRight weight="bold" size={17} />}
           </button>
         </div>
@@ -313,7 +393,7 @@ export default function SnmpLab() {
 
         {/* ------------------------------------------- the real packet */}
         <details className={styles.details}>
-          <summary>
+          <summary data-hint="Click to open the fields and values inside the current message.">
             <Package weight="duotone" size={18} />
             <span>See the real packet</span>
             <small>{current ? `${current.pdu} · the fields and values on the wire` : 'fields and values appear once a message is sent'}</small>
@@ -384,6 +464,7 @@ export default function SnmpLab() {
         {/* ------------------------------------ practise on your own computer */}
         <SetupGuide />
       </div>
+      </HintLayer>
     </main>
   );
 }

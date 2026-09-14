@@ -37,7 +37,12 @@ function CommandLine({ cmd, label }: { cmd: string; label?: string }) {
           <span aria-hidden="true">$ </span>
           {cmd}
         </code>
-        <button type="button" onClick={copy} aria-label={copied ? 'Copied' : 'Copy command'}>
+        <button
+          type="button"
+          onClick={copy}
+          aria-label={copied ? 'Copied' : 'Copy command'}
+          data-hint={copied ? 'Copied — now paste it into your terminal.' : 'Click to copy this command, then paste it into your terminal.'}
+        >
           {copied ? <Check weight="bold" size={15} /> : <Copy size={15} />}
           <span>{copied ? 'Copied' : 'Copy'}</span>
         </button>
@@ -73,7 +78,7 @@ export function TryItCard({ practice, onSetup }: { practice: Practice; onSetup: 
           <span>{practice.tip}</span>
         </p>
 
-        <button type="button" className={styles.setupLink} onClick={onSetup}>
+        <button type="button" className={styles.setupLink} data-hint="Click to open the 5-step setup guide at the bottom of the page." onClick={onSetup}>
           <ArrowDown weight="bold" size={14} /> No SNMP on your computer yet? Set it up in 5 steps
         </button>
       </div>
@@ -85,7 +90,7 @@ export function TryItCard({ practice, onSetup }: { practice: Practice; onSetup: 
 export function SetupGuide() {
   return (
     <details className={styles.setup} id="snmp-setup">
-      <summary>
+      <summary data-hint="Click to open the setup steps for your own computer.">
         <Laptop weight="duotone" size={19} />
         <span>Practise on your own computer</span>
         <small>5 steps · Ubuntu, or Windows with WSL</small>

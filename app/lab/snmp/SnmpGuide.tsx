@@ -42,7 +42,13 @@ export default function SnmpGuide({ onClose }: { onClose: () => void }) {
         ))}
       </ol>
 
-      <button type="button" className={styles.guideClose} onClick={onClose} aria-label="Hide the guide">
+      <button
+        type="button"
+        className={styles.guideClose}
+        onClick={onClose}
+        aria-label="Hide the guide"
+        data-hint="Click to hide this guide — the How to use button brings it back."
+      >
         <X weight="bold" size={16} />
       </button>
     </section>
