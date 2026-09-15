@@ -2,11 +2,13 @@
 
 import type { CSSProperties, ReactNode } from 'react';
 import {
+  CheckCircle,
   Desktop,
   DesktopTower,
   Globe,
-  HardDrives,
+  ShareNetwork,
   Skull,
+  X,
 } from '@phosphor-icons/react';
 import styles from './arp-lab.module.css';
 
@@ -74,16 +76,20 @@ function Packet({ d, w, h, fill, dur, delay = 0, linear = false, opacity }: {
   );
 }
 
-function Node({ cx, cy, w, h, icon, title, sub, color, stroke, weight, dim, lit, subColor }: {
+/* A machine on the segment, drawn the way the SNMP lab draws one: the icon
+   in its own tile, the name under it, and the tone carried by the border, the
+   tile ring and the glow. `compact` lays the same card out sideways for the
+   six hosts, whose rows are only 74px apart. */
+function Node({ cx, cy, w, h, icon, title, sub, color, stroke, weight, dim, lit, subColor, compact }: {
   cx: number; cy: number; w: number; h: number;
   icon: ReactNode; title: string; sub?: string;
   color: string; stroke: string; weight: number;
-  dim?: boolean; lit?: boolean; subColor?: string;
+  dim?: boolean; lit?: boolean; subColor?: string; compact?: boolean;
 }) {
   return (
     <foreignObject x={cx - w / 2} y={cy - h / 2} width={w} height={h} style={{ overflow: 'visible' }}>
       <div
-        className={styles.node}
+        className={compact ? `${styles.node} ${styles.nodeRow}` : styles.node}
         style={{
           border: `${weight}px solid ${stroke}`,
           boxShadow: lit ? `0 0 22px -4px ${stroke}` : 'none',
@@ -91,10 +97,23 @@ function Node({ cx, cy, w, h, icon, title, sub, color, stroke, weight, dim, lit,
           color,
         }}
       >
-        {icon}
-        <b style={{ color }}>{title}</b>
-        {sub && <span style={{ color: subColor ?? T3 }}>{sub}</span>}
+        <span className={styles.nodeIcon} style={{ color, boxShadow: `inset 0 0 0 1px ${stroke}` }}>{icon}</span>
+        <span className={styles.nodeText}>
+          <b style={{ color }}>{title}</b>
+          {sub && <span style={{ color: subColor ?? T3 }}>{sub}</span>}
+        </span>
       </div>
+    </foreignObject>
+  );
+}
+
+/** the small state mark that sits over a machine: cached, poisoned, protected */
+function Badge({ cx, cy, color, icon, r = 14 }: {
+  cx: number; cy: number; color: string; icon: ReactNode; r?: number;
+}) {
+  return (
+    <foreignObject x={cx - r} y={cy - r} width={r * 2} height={r * 2} style={{ overflow: 'visible' }}>
+      <div className={styles.nodeBadge} style={{ color, width: r * 2, height: r * 2 }}>{icon}</div>
     </foreignObject>
   );
 }
@@ -124,7 +143,9 @@ function Callout({ text, color, x, y, dir }: {
   );
 }
 
-const iconStyle = { fontSize: 23 } as const;
+const iconStyle = { fontSize: 24 } as const;
+const smallIcon = { fontSize: 18 } as const;
+const badgeIcon = { fontSize: 17 } as const;
 
 /* ------------------------------------------------------------------ normal */
 
@@ -204,11 +225,11 @@ export function NormalDiagram({ beat, speed }: { beat: number; speed: number }) 
         <circle cx={hostX} cy={ty} r={34} fill="none" stroke={OK} strokeWidth={1.6} className={styles.matchRing} />
       )}
 
-      <Node cx={pcaX} cy={MID_Y} w={102} h={68} icon={<Desktop weight="duotone" style={iconStyle} />}
+      <Node cx={pcaX} cy={MID_Y} w={102} h={86} icon={<Desktop weight="duotone" style={iconStyle} />}
         title="PC-A" sub=".10" color={A} stroke={A} weight={pcaLit ? 2.4 : 1.6} lit={pcaLit} />
-      {cached && <text x={pcaX} y={MID_Y - 44} textAnchor="middle" fontSize={15} fill={OK}>✓</text>}
+      {cached && <Badge cx={pcaX + 44} cy={MID_Y - 36} color={OK} icon={<CheckCircle weight="fill" style={badgeIcon} />} />}
 
-      <Node cx={swX} cy={MID_Y} w={110} h={68} icon={<HardDrives weight="duotone" style={iconStyle} />}
+      <Node cx={swX} cy={MID_Y} w={110} h={86} icon={<ShareNetwork weight="duotone" style={iconStyle} />}
         title="SWITCH" color={B} stroke={B} weight={1.8} lit={flood || checking} />
 
       {hosts.map((h, i) => {
@@ -224,14 +245,14 @@ export function NormalDiagram({ beat, speed }: { beat: number; speed: number }) 
         }
         return (
           <g key={h.l}>
-            <Node cx={hostX} cy={h.y} w={92} h={62} icon={<DesktopTower weight="duotone" style={iconStyle} />}
+            <Node cx={hostX} cy={h.y} w={92} h={58} compact icon={<DesktopTower weight="duotone" style={smallIcon} />}
               title={h.l} sub={sub} color={color} stroke={stroke} weight={weight} dim={dim} lit={lit} subColor={subColor} />
             {checking && (
               <text x={hostX + 60} y={h.y + 5} textAnchor="middle" fontFamily="var(--mono)" fontSize={13} fill={A}
                 className={styles.blink} style={{ '--delay': `${i * 0.08}s` } as Vars}>=?</text>
             )}
             {matched && !h.target && (
-              <text x={hostX + 60} y={h.y + 5} textAnchor="middle" fontFamily="var(--mono)" fontSize={14} fill={RST} opacity={0.7}>✕</text>
+              <Badge cx={hostX + 58} cy={h.y} color={RST} r={11} icon={<X weight="bold" style={{ fontSize: 13 }} />} />
             )}
           </g>
         );
@@ -318,18 +339,18 @@ export function AttackDiagram({ beat, speed }: { beat: number; speed: number }) 
       <Wire x1={swR} y1={MID_Y} x2={rL} y2={gwY} stroke={gl.stroke} width={gl.width} dash={gl.dash} opacity={gl.opacity} dashDur={gl.dashDur} />
       <Wire x1={swR} y1={MID_Y} x2={rL} y2={atkY} stroke={al.stroke} width={al.width} dash={al.dash} opacity={al.opacity} dashDur={al.dashDur} />
 
-      <Node cx={pcaX} cy={MID_Y} w={102} h={68} icon={<Desktop weight="duotone" style={iconStyle} />}
+      <Node cx={pcaX} cy={MID_Y} w={102} h={86} icon={<Desktop weight="duotone" style={iconStyle} />}
         title="PC-A" sub=".10" color={pcaCol} stroke={pcaCol} weight={inject || poisoned ? 2.4 : 1.6} lit={inject || poisoned} />
-      {poisoned && <text x={pcaX} y={MID_Y - 44} textAnchor="middle" fontSize={15} fill={RST}>☠</text>}
-      {defend && <text x={pcaX} y={MID_Y - 44} textAnchor="middle" fontSize={15} fill={OK}>✓</text>}
+      {poisoned && <Badge cx={pcaX + 44} cy={MID_Y - 36} color={RST} icon={<Skull weight="fill" style={badgeIcon} />} />}
+      {defend && <Badge cx={pcaX + 44} cy={MID_Y - 36} color={OK} icon={<CheckCircle weight="fill" style={badgeIcon} />} />}
 
-      <Node cx={swX} cy={MID_Y} w={110} h={68} icon={<HardDrives weight="duotone" style={iconStyle} />}
+      <Node cx={swX} cy={MID_Y} w={110} h={86} icon={<ShareNetwork weight="duotone" style={iconStyle} />}
         title="SWITCH" color={B} stroke={B} weight={1.7} />
 
-      <Node cx={rX} cy={gwY} w={100} h={64} icon={<Globe weight="duotone" style={iconStyle} />}
+      <Node cx={rX} cy={gwY} w={100} h={82} icon={<Globe weight="duotone" style={iconStyle} />}
         title="GATEWAY" sub=".1" color={gwCalm || gwLit ? OK : T3} stroke={gwCalm || gwLit ? OK : T3} weight={1.6} lit={gwLit} />
 
-      <Node cx={rX} cy={atkY} w={100} h={64} icon={<Skull weight="fill" style={iconStyle} />}
+      <Node cx={rX} cy={atkY} w={100} h={82} icon={<Skull weight="fill" style={iconStyle} />}
         title="ATTACKER" sub=".66" color={atkActive ? RST : T3} stroke={atkActive ? RST : LINE}
         weight={atkActive ? 2.1 : 1.4} dim={beat === 0} lit={atkActive} subColor={atkActive ? RST : T3} />
       {forged && (

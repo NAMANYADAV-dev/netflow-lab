@@ -4,11 +4,19 @@ import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import {
   ArrowCounterClockwise,
+  CaretLeft,
+  CaretRight,
+  CheckCircle,
   Graph,
   MagnifyingGlass,
   Package,
+  PaperPlaneRight,
+  Pause,
+  Play,
   Skull,
+  X,
 } from '@phosphor-icons/react';
+import HintLayer from '../HintLayer';
 import { AttackDiagram, NormalDiagram } from './ArpDiagram';
 import styles from './arp-lab.module.css';
 
@@ -153,6 +161,12 @@ const modeOptions: { v: ReadingMode; label: string }[] = [
   { v: 'packet', label: 'Packet' },
 ];
 
+const modeHints: Record<ReadingMode, string> = {
+  simple: 'Click for the plain-language version of this beat.',
+  technical: 'Click for the same beat in real networking terms.',
+  packet: 'Click to see the field values this beat puts on the wire.',
+};
+
 const LAST_BEAT = 8;
 
 /** the coach mark above whichever builder field is still waiting to be filled */
@@ -271,6 +285,7 @@ export default function ArpLab() {
     <main className={styles.lab}>
       <div className={styles.grid} aria-hidden="true" />
 
+      <HintLayer>
       <div className={styles.missionBar}>
         <span className={styles.mission}>
           <span className={styles.missionTag} data-tone={attack ? 'rst' : 'a'}>
@@ -290,8 +305,12 @@ export default function ArpLab() {
         </span>
 
         <div className={styles.scenarioTabs}>
-          <button type="button" data-active={!attack} aria-pressed={!attack} data-tone="b" onClick={() => chooseScenario('normal')}>Normal</button>
-          <button type="button" data-active={attack} aria-pressed={attack} data-tone="rst" onClick={() => chooseScenario('attack')}>ARP spoofing</button>
+          <button type="button" data-active={!attack} aria-pressed={!attack} data-tone="b"
+            data-hint={attack ? 'Click to go back to the normal exchange: one question, one answer.' : 'You are on this story — build the frame on the left.'}
+            onClick={() => chooseScenario('normal')}>Normal</button>
+          <button type="button" data-active={attack} aria-pressed={attack} data-tone="rst"
+            data-hint={attack ? 'You are on this story — launch the attack on the left.' : 'Click to see how a forged reply poisons the cache and reroutes traffic.'}
+            onClick={() => chooseScenario('attack')}>ARP spoofing</button>
         </div>
       </div>
 
@@ -318,6 +337,7 @@ export default function ArpLab() {
                 <div className={styles.options} data-bad={tried && fEth !== '0x0806'}>
                   {ethOptions.map((value) => (
                     <button key={value} type="button" className={styles.chip} data-active={fEth === value} aria-pressed={fEth === value}
+                      data-hint={`Click to set the EtherType to ${value}.`}
                       onClick={() => { setFEth(value); setTried(false); }}>{value}</button>
                   ))}
                 </div>
@@ -329,6 +349,7 @@ export default function ArpLab() {
                 <div className={styles.options} data-bad={tried && fOp !== '1'}>
                   {opOptions.map((option) => (
                     <button key={option.v} type="button" className={styles.chip} data-active={fOp === option.v} aria-pressed={fOp === option.v}
+                      data-hint={`Click to make this frame a ${option.v === '1' ? 'question (request)' : 'answer (reply)'}.`}
                       onClick={() => { setFOp(option.v); setTried(false); }}>{option.label}</button>
                   ))}
                 </div>
@@ -359,6 +380,7 @@ export default function ArpLab() {
                 <div className={styles.optionsStack} data-bad={tried && fDst !== 'bc'}>
                   {dstOptions.map((option) => (
                     <button key={option.v} type="button" className={styles.macOption} data-active={fDst === option.v} aria-pressed={fDst === option.v}
+                      data-hint={`Click to address the frame to ${option.hint}.`}
                       onClick={() => { setFDst(option.v); setTried(false); }}>
                       <b>{option.mac}</b>
                       <span>{option.hint}</span>
@@ -376,8 +398,16 @@ export default function ArpLab() {
               </div>
 
               {guide === 5 && <Coach tone="ok" text="all four set — now click this" />}
-              <button type="button" className={styles.sendButton} data-valid={valid} onClick={send}>
-                Send onto the wire ▶
+              <button
+                type="button"
+                className={styles.sendButton}
+                data-valid={valid}
+                data-hint={valid
+                  ? 'Click to put your frame on the wire and watch the switch flood it to every host.'
+                  : 'Fill in all four fields first — then this sends the frame.'}
+                onClick={send}
+              >
+                <PaperPlaneRight weight="fill" size={16} /> Send onto the wire
               </button>
               {tried && !valid && (
                 <p className={styles.hint}>
@@ -390,7 +420,7 @@ export default function ArpLab() {
 
           {!attack && sent && (
             <div className={styles.sentBody}>
-              <div className={styles.sentLabel}>Frame sent ✓</div>
+              <div className={styles.sentLabel}><CheckCircle weight="fill" size={15} /> Frame sent</div>
               <div className={styles.frame}>
                 <div><b>eth.dst </b>ff:ff:ff:ff:ff:ff</div>
                 <div><b>eth.src </b>00:1a:2b:00:0a:01</div>
@@ -400,7 +430,7 @@ export default function ArpLab() {
                 <div><b>tha     </b>00:00:00:00:00:00</div>
               </div>
 
-              <button type="button" className={styles.inspectButton} onClick={openInspect}>
+              <button type="button" className={styles.inspectButton} data-hint="Click to open every field of this frame, explained one by one." onClick={openInspect}>
                 <MagnifyingGlass weight="duotone" size={15} /> Inspect frame
               </button>
 
@@ -416,7 +446,7 @@ export default function ArpLab() {
                 )}
               </div>
 
-              <button type="button" className={styles.resetButton} onClick={replay}>
+              <button type="button" className={styles.resetButton} data-hint="Click to clear the frame and build it again from scratch." onClick={replay}>
                 <ArrowCounterClockwise weight="duotone" size={14} /> Reset &amp; build again
               </button>
             </div>
@@ -433,7 +463,7 @@ export default function ArpLab() {
                 <div data-tone="a"><span>spoof as</span><span>gateway 192.168.1.1</span></div>
                 <div data-tone="b"><span>victim</span><span>PC-A 192.168.1.10</span></div>
               </div>
-              <button type="button" className={styles.launchButton} onClick={launch}>
+              <button type="button" className={styles.launchButton} data-hint="Click to send the forged reply and watch PC-A believe it." onClick={launch}>
                 <Skull weight="fill" size={16} /> Launch ARP spoof ▶
               </button>
             </div>
@@ -450,7 +480,7 @@ export default function ArpLab() {
                 <div><b>sha     </b>de:ad:be:ef:13:37</div>
               </div>
 
-              <button type="button" className={styles.inspectButton} data-tone="rst" onClick={openInspect}>
+              <button type="button" className={styles.inspectButton} data-tone="rst" data-hint="Click to open the forged reply field by field, and see where the lie sits." onClick={openInspect}>
                 <MagnifyingGlass weight="duotone" size={15} /> Inspect forged reply
               </button>
 
@@ -464,7 +494,7 @@ export default function ArpLab() {
                 </div>
               </div>
 
-              <button type="button" className={styles.resetButton} data-tone="rst" onClick={replay}>
+              <button type="button" className={styles.resetButton} data-tone="rst" data-hint="Click to undo the attack and start it again." onClick={replay}>
                 <ArrowCounterClockwise weight="duotone" size={14} /> Reset attack
               </button>
             </div>
@@ -489,7 +519,7 @@ export default function ArpLab() {
                 <button
                   key={item.k}
                   type="button"
-                  title={`Beat ${index + 1} · ${item.k}`}
+                  data-hint={`Click to jump to beat ${index + 1}: ${item.t}`}
                   aria-label={`Beat ${index + 1} · ${item.k}`}
                   aria-pressed={index === beat}
                   onClick={() => goTo(index)}
@@ -504,13 +534,22 @@ export default function ArpLab() {
               ))}
             </div>
             <div className={styles.controls}>
-              <button type="button" className={styles.step} title="Step back" aria-label="Step back" onClick={() => goTo(beat - 1)}>◀</button>
-              <button type="button" className={styles.play} title="Play / pause" aria-label={playing ? 'Pause' : 'Play'} onClick={togglePlay}>{playing ? '❘❘' : '▶'}</button>
-              <button type="button" className={styles.step} title="Step forward" aria-label="Step forward" onClick={() => goTo(beat + 1)}>▶</button>
+              <button type="button" className={styles.step} aria-label="Step back"
+                data-hint="Click to step one beat back." onClick={() => goTo(beat - 1)}>
+                <CaretLeft weight="bold" size={14} />
+              </button>
+              <button type="button" className={styles.play} aria-label={playing ? 'Pause' : 'Play'}
+                data-hint={playing ? 'Click to pause here and look around.' : 'Click to play the beats one after another.'} onClick={togglePlay}>
+                {playing ? <Pause weight="fill" size={14} /> : <Play weight="fill" size={14} />}
+              </button>
+              <button type="button" className={styles.step} aria-label="Step forward"
+                data-hint="Click to step one beat forward." onClick={() => goTo(beat + 1)}>
+                <CaretRight weight="bold" size={14} />
+              </button>
               <span className={styles.beatReadout}>beat {beat + 1}/9 · {current.k}</span>
               <div className={styles.speeds}>
                 {speedOptions.map((value) => (
-                  <button key={value} type="button" data-active={speed === value} aria-pressed={speed === value} onClick={() => setSpeed(value)}>{value}×</button>
+                  <button key={value} type="button" data-active={speed === value} aria-pressed={speed === value} data-hint={`Click to run the beats at ${value}× speed.`} onClick={() => setSpeed(value)}>{value}×</button>
                 ))}
               </div>
             </div>
@@ -521,7 +560,7 @@ export default function ArpLab() {
         <div className={`${styles.lesson} ${styles.side}`}>
           <div className={styles.modeTabs}>
             {modeOptions.map((option) => (
-              <button key={option.v} type="button" data-active={mode === option.v} aria-pressed={mode === option.v} onClick={() => setMode(option.v)}>{option.label}</button>
+              <button key={option.v} type="button" data-active={mode === option.v} aria-pressed={mode === option.v} data-hint={modeHints[option.v]} onClick={() => setMode(option.v)}>{option.label}</button>
             ))}
           </div>
 
@@ -547,6 +586,7 @@ export default function ArpLab() {
                     key={option.t}
                     type="button"
                     data-state={answer === index ? (option.ok ? 'correct' : 'wrong') : undefined}
+                    data-hint="Click to choose this answer."
                     onClick={() => pick(index)}
                   >
                     {option.t}
@@ -569,7 +609,7 @@ export default function ArpLab() {
             <div className={styles.inspectorHead}>
               <b>Frame inspector</b>
               <span data-tone={attack ? 'rst' : 'a'}>{attack ? 'FORGED REPLY' : 'ARP REQUEST'}</span>
-              <button type="button" onClick={() => setShowInspect(false)} aria-label="Close inspector">✕</button>
+              <button type="button" onClick={() => setShowInspect(false)} aria-label="Close inspector" data-hint="Click to close the inspector."><X weight="bold" size={14} /></button>
             </div>
             <div className={styles.inspectorRows}>
               {inspectByScenario[scenario].map((field) => (
@@ -589,7 +629,7 @@ export default function ArpLab() {
           </aside>
         </>
       )}
-
+      </HintLayer>
     </main>
   );
 }

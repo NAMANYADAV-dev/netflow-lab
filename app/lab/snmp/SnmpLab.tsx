@@ -21,14 +21,14 @@ import {
   Question,
   ShieldCheck,
 } from '@phosphor-icons/react';
-import HintLayer from './HintLayer';
+import HintLayer from '../HintLayer';
 import SnmpGuide from './SnmpGuide';
 import { SetupGuide, TryItCard } from './SnmpPractice';
 import SnmpStage from './SnmpStage';
 import { RATE, flowTone, idle, states, stepsFor, toneVar, type Scenario } from './snmp-data';
 import { practiceFor } from './snmp-practice';
 import guide from './snmp-guide.module.css';
-import hints from './snmp-hints.module.css';
+import hints from '../lab-hints.module.css';
 import styles from './snmp-lab.module.css';
 
 type ReadingMode = 'Simple' | 'Technical' | 'Packet';

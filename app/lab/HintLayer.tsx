@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
-import styles from './snmp-hints.module.css';
+import styles from './lab-hints.module.css';
 
 type Vars = CSSProperties & Record<`--${string}`, string>;
 type Hint = { text: string; left: number; top: number; below: boolean; tail: number };

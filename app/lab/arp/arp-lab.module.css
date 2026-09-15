@@ -316,6 +316,10 @@
 .sendButton {
   width: 100%;
   height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   border: 0;
   border-radius: 6px;
   background: var(--line);
@@ -533,6 +537,9 @@
 .step {
   width: 38px;
   height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid var(--line);
   border-radius: 5px;
   background: var(--surface2);
@@ -546,6 +553,9 @@
 .play {
   width: 40px;
   height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid var(--b);
   border-radius: 5px;
   background: color-mix(in srgb, var(--b) 14%, transparent);
@@ -769,18 +779,48 @@
   width: 100%;
   height: 100%;
   box-sizing: border-box;
+  padding: 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  border-radius: 10px;
+  gap: 6px;
+  border-radius: 12px;
   background: var(--surface2);
   transition: border-color 250ms ease, box-shadow 250ms ease, opacity 250ms ease;
 }
 
-.node b { font-family: var(--mono); font-size: 12.5px; font-weight: 700; line-height: 1; letter-spacing: 0.03em; }
-.node span { font-family: var(--mono); font-size: 10px; line-height: 1; }
+/* the six hosts sit 74px apart, too close for a stacked card, so theirs lies
+   on its side and keeps the same parts */
+.nodeRow { flex-direction: row; justify-content: flex-start; gap: 8px; padding: 6px 8px; }
+
+.nodeIcon {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: var(--surface);
+}
+
+.nodeRow .nodeIcon { width: 30px; height: 30px; border-radius: 9px; }
+
+.nodeText { display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 0; }
+.nodeRow .nodeText { align-items: flex-start; }
+
+.nodeText b { font-family: var(--mono); font-size: 12.5px; font-weight: 700; line-height: 1; letter-spacing: 0.03em; }
+.nodeText span { font-family: var(--mono); font-size: 10px; line-height: 1; }
+
+.nodeBadge {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  background: var(--surface);
+}
 
 .callout {
   position: relative;
@@ -871,3 +911,6 @@
   .inspector,
   .cacheTable { animation: none !important; }
 }
+
+/* the tick is an icon now, so the label is a row */
+.sentLabel { display: inline-flex; align-items: center; gap: 6px; }
