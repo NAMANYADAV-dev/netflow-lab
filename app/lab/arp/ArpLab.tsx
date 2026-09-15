@@ -13,10 +13,12 @@ import {
   PaperPlaneRight,
   Pause,
   Play,
+  Question,
   Skull,
   X,
 } from '@phosphor-icons/react';
 import HintLayer from '../HintLayer';
+import LabTour, { type TourStep } from '../LabTour';
 import { AttackDiagram, NormalDiagram } from './ArpDiagram';
 import styles from './arp-lab.module.css';
 
@@ -195,6 +197,9 @@ export default function ArpLab() {
   const [tried, setTried] = useState(false);
 
   const [showInspect, setShowInspect] = useState(false);
+  /* bumping this re-runs the walkthrough from the lab's own button, whatever
+     the browser remembers about having seen it */
+  const [tourRun, setTourRun] = useState(0);
   const [answer, setAnswer] = useState<number | null>(null);
 
   const attack = scenario === 'attack';
@@ -275,6 +280,30 @@ export default function ArpLab() {
     setAnswer(index);
   };
 
+  /* Orientation only — which part of the page does what. The coach marks
+     inside the builder still handle the four fields one at a time. */
+  const tourSteps: TourStep[] = attack
+    ? [{
+      target: '[data-tour="launch"]',
+      title: 'You are the rogue host',
+      text: 'No password and no exploit — one forged ARP reply is enough. Send it, and watch PC-A believe it.',
+      done: sent,
+    }]
+    : [
+      {
+        target: '[data-tour="builder"]',
+        title: 'Build the request here',
+        text: 'Four fields, and nothing is filled in for you. The small marks above each one tell you which is next.',
+        done: valid,
+      },
+      {
+        target: '[data-tour="send"]',
+        title: 'Now put it on the wire',
+        text: 'All four fields are set. Send the frame and watch the switch flood it to every host on the segment.',
+        done: sent,
+      },
+    ];
+
   // which of the four fields the coach mark is currently pointing at, 5 = ready to send
   const guide = !fEth ? 1 : !fOp ? 2 : !fTip.trim() ? 3 : !fDst ? 4 : 5;
   const tipOk = fTip.trim() === '192.168.1.7';
@@ -305,6 +334,11 @@ export default function ArpLab() {
         </span>
 
         <div className={styles.scenarioTabs}>
+          <button type="button" className={styles.tourButton}
+            data-hint="Click to walk through this lab step by step."
+            onClick={() => setTourRun((run) => run + 1)}>
+            <Question weight="duotone" size={15} /> How to use
+          </button>
           <button type="button" data-active={!attack} aria-pressed={!attack} data-tone="b"
             data-hint={attack ? 'Click to go back to the normal exchange: one question, one answer.' : 'You are on this story — build the frame on the left.'}
             onClick={() => chooseScenario('normal')}>Normal</button>
@@ -323,7 +357,7 @@ export default function ArpLab() {
           </div>
 
           {!attack && !sent && (
-            <div className={styles.builderBody}>
+            <div className={styles.builderBody} data-tour="builder">
               <p className={styles.helper}>Assemble the request field by field. Nothing is filled for you.</p>
 
               <div className={styles.context}>
@@ -401,6 +435,7 @@ export default function ArpLab() {
               <button
                 type="button"
                 className={styles.sendButton}
+                data-tour="send"
                 data-valid={valid}
                 data-hint={valid
                   ? 'Click to put your frame on the wire and watch the switch flood it to every host.'
@@ -463,7 +498,7 @@ export default function ArpLab() {
                 <div data-tone="a"><span>spoof as</span><span>gateway 192.168.1.1</span></div>
                 <div data-tone="b"><span>victim</span><span>PC-A 192.168.1.10</span></div>
               </div>
-              <button type="button" className={styles.launchButton} data-hint="Click to send the forged reply and watch PC-A believe it." onClick={launch}>
+              <button type="button" className={styles.launchButton} data-tour="launch" data-hint="Click to send the forged reply and watch PC-A believe it." onClick={launch}>
                 <Skull weight="fill" size={16} /> Launch ARP spoof ▶
               </button>
             </div>
@@ -630,6 +665,14 @@ export default function ArpLab() {
         </>
       )}
       </HintLayer>
+
+      <LabTour
+        key={`${scenario}-${tourRun}`}
+        id="arp"
+        steps={tourSteps}
+        active={!sent}
+        force={tourRun > 0}
+      />
     </main>
   );
 }

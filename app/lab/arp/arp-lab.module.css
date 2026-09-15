@@ -914,3 +914,22 @@
 
 /* the tick is an icon now, so the label is a row */
 .sentLabel { display: inline-flex; align-items: center; gap: 6px; }
+
+/* runs the walkthrough again, beside the scenario tabs */
+.tourButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--surface);
+  color: var(--text2);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 650;
+  white-space: nowrap;
+  transition: border-color 120ms ease, color 120ms ease;
+}
+
+.tourButton:hover { border-color: var(--b); color: var(--b); }
