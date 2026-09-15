@@ -1,14 +1,12 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { ArrowRight, Question as QuestionIcon, X } from '@phosphor-icons/react';
+import { Question as QuestionIcon } from '@phosphor-icons/react';
 import styles from './lab-tour.module.css';
 
 export type TourStep = {
-  /** a selector for the thing to light up — use a data-tour attribute */
+  /** what to light up — a selector; every match is lit as one area */
   target: string;
-  title: string;
-  text: string;
   /** true once the reader has done this step; the tour then moves on by itself */
   done: boolean;
 };
@@ -17,21 +15,20 @@ type Box = { x: number; y: number; w: number; h: number };
 
 /* The walkthrough that opens with the lab.
 
-   It shows the first step the reader has not done yet, lights that part of the
-   page and dims the rest, and moves on when they actually do it — there is no
-   "Next" to click through without reading. The dimming never takes a click:
-   it only directs the eye, so nobody can get stuck behind it.
+   It lights the one control the reader is meant to touch next and dims
+   everything else, then moves on by itself when they touch it. There is no
+   card and no Next: the lab already labels each step where it happens, and a
+   second copy of that text in a floating box was just something else to read.
+   There is no Skip either — the dimming takes no clicks, so it is a way of
+   pointing rather than a gate, and it lifts on its own the moment the lab
+   starts running.
 
    It runs every time the lab is opened. Nothing is remembered between visits,
    on purpose: a lab that walks one reader through and then silently drops the
-   walkthrough for the next one is the thing that felt broken. Skip and Escape
-   put it away for this visit only.
-
-   `active` goes false the moment the lab starts running, which clears the
-   whole thing out of the way of the animation.
+   walkthrough for the next one is the thing that felt broken.
 
    Every setState below happens inside a callback — an animation frame, a
-   listener, a button — rather than in the body of an effect. */
+   listener — rather than in the body of an effect. */
 export default function LabTour({ steps, active, question }: {
   steps: TourStep[];
   active: boolean;
@@ -42,33 +39,50 @@ export default function LabTour({ steps, active, question }: {
   const [box, setBox] = useState<Box | null>(null);
 
   const index = steps.findIndex((step) => !step.done);
-  const step = index === -1 ? null : steps[index];
+  const target = index === -1 ? null : steps[index].target;
   const visible = open && active;
-  const showing = visible && step !== null;
+  const showing = visible && target !== null;
 
   const finish = useCallback(() => setOpen(false), []);
 
   useEffect(() => {
-    const el = showing && step ? document.querySelector(step.target) : null;
+    const found = showing && target ? [...document.querySelectorAll(target)] : [];
 
+    /* one area around everything the step names, so a field and the note
+       above it are lit together rather than the note being dimmed out */
     const measure = () => {
-      if (!el) { setBox(null); return; }
-      const rect = el.getBoundingClientRect();
-      setBox({ x: rect.left, y: rect.top, w: rect.width, h: rect.height });
+      if (!found.length) { setBox(null); return; }
+      let left = Infinity; let top = Infinity; let right = -Infinity; let bottom = -Infinity;
+      for (const el of found) {
+        const rect = el.getBoundingClientRect();
+        left = Math.min(left, rect.left);
+        top = Math.min(top, rect.top);
+        right = Math.max(right, rect.right);
+        bottom = Math.max(bottom, rect.bottom);
+      }
+      setBox({ x: left, y: top, w: right - left, h: bottom - top });
     };
 
-    const frame = requestAnimationFrame(measure);
-    if (!el) return () => cancelAnimationFrame(frame);
+    const frame = requestAnimationFrame(() => {
+      measure();
+      /* only scroll when the step is actually off screen — the builder moves
+         the page a little of its own accord to keep a clicked control under
+         the pointer, and two things scrolling at once reads as a lurch */
+      const rect = found[0]?.getBoundingClientRect();
+      if (rect && (rect.top < 8 || rect.bottom > window.innerHeight - 8)) {
+        found[0].scrollIntoView({ block: 'center' });
+      }
+    });
+    if (!found.length) return () => cancelAnimationFrame(frame);
 
-    el.scrollIntoView({ block: 'center' });
     const observer = new ResizeObserver(measure);
-    observer.observe(el);
+    for (const el of found) observer.observe(el);
     window.addEventListener('scroll', measure, { capture: true, passive: true });
     window.addEventListener('resize', measure);
-    /* the panel also moves when a coach mark appears above a field, which
-       changes no size the observer can see — so the position is re-read on a
-       slow timer as well */
-    const timer = window.setInterval(measure, 300);
+    /* the panel also shifts when a note appears above a field, which changes
+       no size the observer can see — so the position is re-read on a slow
+       timer as well */
+    const timer = window.setInterval(measure, 250);
 
     return () => {
       cancelAnimationFrame(frame);
@@ -77,8 +91,10 @@ export default function LabTour({ steps, active, question }: {
       window.removeEventListener('resize', measure);
       window.clearInterval(timer);
     };
-  }, [showing, step]);
+  }, [showing, target]);
 
+  /* no button offers this, but a reader who wants the page plain should not
+     have to finish the lab to get it */
   useEffect(() => {
     if (!visible) return;
     const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') finish(); };
@@ -89,29 +105,12 @@ export default function LabTour({ steps, active, question }: {
   if (!visible) return null;
 
   let spotlight = null;
-  if (showing && step && box) {
+  if (showing && box) {
     const pad = 8;
     const x = Math.max(0, box.x - pad);
     const y = Math.max(0, box.y - pad);
     const w = box.w + pad * 2;
     const h = box.h + pad * 2;
-
-    /* Under the lit area when there is room, over it when there is not — and
-       beside it when the target is so tall that neither fits, which is just
-       what a whole panel is. Without that third case the card slides off the
-       top of the screen and takes its Skip button with it. */
-    const CARD = 190;
-    const place = window.innerHeight - (y + h) >= CARD ? 'below' : y >= CARD ? 'above' : 'side';
-    const flip = place === 'side' && x + w + 360 > window.innerWidth;
-
-    const cardTop = place === 'below'
-      ? y + h + 14
-      : place === 'above'
-        ? y - 14
-        : Math.min(Math.max(y + h / 2 - 90, 12), Math.max(12, window.innerHeight - CARD));
-    const cardLeft = place === 'side'
-      ? (flip ? x - 16 : x + w + 16)
-      : Math.min(Math.max(x + w / 2, 190), window.innerWidth - 190);
 
     spotlight = (
       <>
@@ -121,28 +120,12 @@ export default function LabTour({ steps, active, question }: {
         <div className={styles.shade} style={{ top: y + h, left: 0, right: 0, bottom: 0 }} />
         <div className={styles.shade} style={{ top: y, left: 0, width: x, height: h }} />
         <div className={styles.shade} style={{ top: y, left: x + w, right: 0, height: h }} />
-        <div className={styles.ring} style={{ top: y, left: x, width: w, height: h }} />
-
         <div
-          className={styles.card}
-          data-place={place}
-          data-flip={flip}
-          style={{ top: cardTop, left: cardLeft }}
-          role="region"
+          className={styles.ring}
+          style={{ top: y, left: x, width: w, height: h }}
+          role="presentation"
           aria-label={`Step ${index + 1} of ${steps.length}`}
-        >
-          <div className={styles.cardHead}>
-            <span className={styles.count}>Step {index + 1} of {steps.length}</span>
-            <button type="button" className={styles.skip} onClick={finish} aria-label="Skip the walkthrough">
-              <X weight="bold" size={13} /> Skip
-            </button>
-          </div>
-          <strong className={styles.title}>{step.title}</strong>
-          <p className={styles.text}>{step.text}</p>
-          <div className={styles.doIt}>
-            <ArrowRight weight="bold" size={13} /> do it here to carry on
-          </div>
-        </div>
+        />
       </>
     );
   }

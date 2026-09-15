@@ -1,5 +1,6 @@
-/* The first-run walkthrough: four dim panes around whatever the current step
-   is about, a ring on it, and a card beside it.
+/* The walkthrough: four dim panes around whatever the current step is about,
+   and a ring on it. Nothing else — the lab labels its own steps where they
+   happen, so there is no card repeating that text and no Skip to dismiss.
 
    The panes never take a click — dimming here is a way of pointing, not a way
    of blocking, so a reader who wants to do something else can always do it. */
@@ -20,89 +21,7 @@
   transition: top 180ms var(--ease), left 180ms var(--ease), width 180ms var(--ease), height 180ms var(--ease);
 }
 
-.card {
-  position: fixed;
-  width: 340px;
-  max-width: calc(100vw - 32px);
-  padding: 14px 16px 15px;
-  border-radius: 12px;
-  background: #182027;
-  color: #eef4f7;
-  pointer-events: auto;
-  box-shadow: 0 18px 40px -16px rgb(0 0 0 / 70%);
-  transform: translateX(-50%);
-  animation: tourIn 200ms var(--ease) both;
-}
-
-/* over the lit area when the foot of the page is close, and beside it when the
-   target is taller than the room above and below it */
-.card[data-place='above'] { transform: translate(-50%, -100%); }
-.card[data-place='side'] { transform: none; }
-.card[data-place='side'][data-flip='true'] { transform: translateX(-100%); }
-
-.card::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: -5px;
-  width: 11px;
-  height: 11px;
-  border-radius: 2px;
-  background: inherit;
-  transform: translateX(-50%) rotate(45deg);
-}
-
-.card[data-place='above']::after { top: auto; bottom: -5px; }
-/* beside the target there is no single edge to point at, so no tail */
-.card[data-place='side']::after { display: none; }
-
-.cardHead { margin-bottom: 7px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-
-.count {
-  color: #7fd1c7;
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.skip {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 8px;
-  border: 1px solid rgb(255 255 255 / 22%);
-  border-radius: 6px;
-  background: transparent;
-  color: #cddae1;
-  cursor: pointer;
-  font: inherit;
-  font-size: 11.5px;
-  font-weight: 650;
-  transition: var(--motion-ui);
-}
-
-.skip:hover { border-color: rgb(255 255 255 / 45%); color: #fff; }
-
-.title { display: block; margin-bottom: 4px; font-size: 15.5px; font-weight: 650; }
-.text { margin: 0; color: #bfced7; font-size: 13.5px; line-height: 1.55; }
-
-.doIt {
-  margin-top: 10px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: #7fd1c7;
-  font-size: 11.5px;
-  font-weight: 650;
-  letter-spacing: 0.02em;
-}
-
 @keyframes tourIn { from { opacity: 0; } to { opacity: 1; } }
-
-@media (max-width: 560px) {
-  .card { width: calc(100vw - 32px); }
-}
 
 /* The challenge, shown from the start rather than sprung at the end. It sits
    clear of the lit area, in the corner, and leaves with the rest of the

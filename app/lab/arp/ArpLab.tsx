@@ -172,9 +172,9 @@ const modeHints: Record<ReadingMode, string> = {
 const LAST_BEAT = 8;
 
 /** the coach mark above whichever builder field is still waiting to be filled */
-function Coach({ text, tone }: { text: string; tone: 'a' | 'ok' }) {
+function Coach({ text, tone, tour }: { text: string; tone: 'a' | 'ok'; tour?: string }) {
   return (
-    <div className={styles.coach} style={{ color: `var(--${tone})` }}>
+    <div className={styles.coach} data-tour={tour} style={{ color: `var(--${tone})` }}>
       <span>{text}</span>
       <i />
     </div>
@@ -287,28 +287,17 @@ export default function ArpLab() {
     ? 'The attacker’s reply worked even though PC-A never asked for it. Why did PC-A believe it?'
     : 'The question was a broadcast, but the reply came back as a unicast. Why?';
 
-  /* Orientation only — which part of the page does what. The coach marks
-     inside the builder still handle the four fields one at a time. */
+  /* One step per field, in the same order the coach marks already use, so the
+     lit area walks down the builder as the reader fills it in. The marks carry
+     the wording; the tour only says where to look. */
   const tourSteps: TourStep[] = attack
-    ? [{
-      target: '[data-tour="launch"]',
-      title: 'You are the rogue host',
-      text: 'No password and no exploit — one forged ARP reply is enough. Send it, and watch PC-A believe it.',
-      done: sent,
-    }]
+    ? [{ target: '[data-tour="launch"]', done: sent }]
     : [
-      {
-        target: '[data-tour="builder"]',
-        title: 'Build the request here',
-        text: 'Four fields, and nothing is filled in for you. The small marks above each one tell you which is next.',
-        done: valid,
-      },
-      {
-        target: '[data-tour="send"]',
-        title: 'Now put it on the wire',
-        text: 'All four fields are set. Send the frame and watch the switch flood it to every host on the segment.',
-        done: sent,
-      },
+      { target: '[data-tour="f1"]', done: fEth !== null },
+      { target: '[data-tour="f2"]', done: fOp !== null },
+      { target: '[data-tour="f3"]', done: fTip.trim() !== '' },
+      { target: '[data-tour="f4"]', done: fDst !== null },
+      { target: '[data-tour="send"]', done: sent },
     ];
 
   // which of the four fields the coach mark is currently pointing at, 5 = ready to send
@@ -364,7 +353,7 @@ export default function ArpLab() {
           </div>
 
           {!attack && !sent && (
-            <div className={styles.builderBody} data-tour="builder">
+            <div className={styles.builderBody}>
               <p className={styles.helper}>Assemble the request field by field. Nothing is filled for you.</p>
 
               <div className={styles.context}>
@@ -372,8 +361,8 @@ export default function ArpLab() {
                 <span>src IP   192.168.1.10 <i>(PC-A)</i></span>
               </div>
 
-              {guide === 1 && <Coach tone="a" text="step 1 of 4 · which payload? pick ARP" />}
-              <div className={styles.field}>
+              {guide === 1 && <Coach tone="a" tour="f1" text="step 1 of 4 · which payload? pick ARP" />}
+              <div className={styles.field} data-tour="f1">
                 <div className={styles.fieldLabel}>EtherType</div>
                 <div className={styles.options} data-bad={tried && fEth !== '0x0806'}>
                   {ethOptions.map((value) => (
@@ -384,8 +373,8 @@ export default function ArpLab() {
                 </div>
               </div>
 
-              {guide === 2 && <Coach tone="a" text="step 2 of 4 · asking, or answering?" />}
-              <div className={styles.field}>
+              {guide === 2 && <Coach tone="a" tour="f2" text="step 2 of 4 · asking, or answering?" />}
+              <div className={styles.field} data-tour="f2">
                 <div className={styles.fieldLabel}>Operation</div>
                 <div className={styles.options} data-bad={tried && fOp !== '1'}>
                   {opOptions.map((option) => (
@@ -396,8 +385,8 @@ export default function ArpLab() {
                 </div>
               </div>
 
-              {guide === 3 && <Coach tone="a" text="step 3 of 4 · type the IP to resolve" />}
-              <div className={styles.field}>
+              {guide === 3 && <Coach tone="a" tour="f3" text="step 3 of 4 · type the IP to resolve" />}
+              <div className={styles.field} data-tour="f3">
                 <label className={styles.fieldLabel} htmlFor="arp-tip">
                   Target IP <em>— who are we asking about?</em>
                 </label>
@@ -415,8 +404,8 @@ export default function ArpLab() {
                 />
               </div>
 
-              {guide === 4 && <Coach tone="a" text="step 4 of 4 · so who should hear this?" />}
-              <div className={styles.field}>
+              {guide === 4 && <Coach tone="a" tour="f4" text="step 4 of 4 · so who should hear this?" />}
+              <div className={styles.field} data-tour="f4">
                 <div className={styles.fieldLabel}>Destination MAC — who do we send it to?</div>
                 <div className={styles.optionsStack} data-bad={tried && fDst !== 'bc'}>
                   {dstOptions.map((option) => (
@@ -438,7 +427,7 @@ export default function ArpLab() {
                 </div>
               </div>
 
-              {guide === 5 && <Coach tone="ok" text="all four set — now click this" />}
+              {guide === 5 && <Coach tone="ok" tour="send" text="all four set — now click this" />}
               <button
                 type="button"
                 className={styles.sendButton}
@@ -495,7 +484,7 @@ export default function ArpLab() {
           )}
 
           {attack && !sent && (
-            <div className={styles.builderBody}>
+            <div className={styles.builderBody} data-tour="launch">
               <p className={styles.helper}>
                 You&apos;re a rogue host on 192.168.1.0/24. No password, no exploit — one forged ARP reply is enough
                 to reroute PC-A&apos;s traffic through you.
@@ -505,7 +494,7 @@ export default function ArpLab() {
                 <div data-tone="a"><span>spoof as</span><span>gateway 192.168.1.1</span></div>
                 <div data-tone="b"><span>victim</span><span>PC-A 192.168.1.10</span></div>
               </div>
-              <button type="button" className={styles.launchButton} data-tour="launch" data-hint="Click to send the forged reply and watch PC-A believe it." onClick={launch}>
+              <button type="button" className={styles.launchButton} data-hint="Click to send the forged reply and watch PC-A believe it." onClick={launch}>
                 <Skull weight="fill" size={16} /> Launch ARP spoof ▶
               </button>
             </div>
