@@ -103,3 +103,41 @@
 @media (max-width: 560px) {
   .card { width: calc(100vw - 32px); }
 }
+
+/* The challenge, shown from the start rather than sprung at the end. It sits
+   clear of the lit area, in the corner, and leaves with the rest of the
+   walkthrough when the lab starts running. */
+.question {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 300px;
+  max-width: calc(100vw - 32px);
+  padding: 12px 14px 13px;
+  border: 1px solid color-mix(in srgb, var(--a, #9a5f02) 45%, transparent);
+  border-radius: 12px;
+  background: #1e1a14;
+  color: #f4efe6;
+  pointer-events: auto;
+  box-shadow: 0 16px 34px -16px rgb(0 0 0 / 65%);
+  animation: tourIn 240ms 120ms var(--ease) both;
+}
+
+.questionHead {
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #f0b429;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.question p { margin: 0; font-size: 13.5px; font-weight: 600; line-height: 1.5; }
+.questionNote { display: block; margin-top: 8px; color: #b6ab98; font-size: 11.5px; }
+
+@media (max-width: 900px) {
+  .question { bottom: 16px; right: 16px; left: 16px; width: auto; }
+}

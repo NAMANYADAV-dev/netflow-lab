@@ -280,6 +280,13 @@ export default function ArpLab() {
     setAnswer(index);
   };
 
+  /* One sentence, used twice: the challenge asks it at the end, and the
+     walkthrough shows it at the start so the reader knows what to watch for.
+     Kept in one place so the two can never drift apart. */
+  const challengeQuestion = attack
+    ? 'The attacker’s reply worked even though PC-A never asked for it. Why did PC-A believe it?'
+    : 'The question was a broadcast, but the reply came back as a unicast. Why?';
+
   /* Orientation only — which part of the page does what. The coach marks
      inside the builder still handle the four fields one at a time. */
   const tourSteps: TourStep[] = attack
@@ -610,11 +617,7 @@ export default function ArpLab() {
           {beat >= LAST_BEAT && (
             <div className={styles.challenge}>
               <div className={styles.challengeLabel}>Challenge</div>
-              <p>
-                {attack
-                  ? 'The attacker’s reply worked even though PC-A never asked for it. Why did PC-A believe it?'
-                  : 'The question was a broadcast, but the reply came back as a unicast. Why?'}
-              </p>
+              <p>{challengeQuestion}</p>
               <div className={styles.answers}>
                 {answers.map((option, index) => (
                   <button
@@ -668,10 +671,9 @@ export default function ArpLab() {
 
       <LabTour
         key={`${scenario}-${tourRun}`}
-        id="arp"
         steps={tourSteps}
         active={!sent}
-        force={tourRun > 0}
+        question={{ label: 'Question to answer at the end', text: challengeQuestion }}
       />
     </main>
   );
