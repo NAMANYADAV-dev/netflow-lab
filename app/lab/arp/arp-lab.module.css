@@ -933,3 +933,53 @@
 }
 
 .tourButton:hover { border-color: var(--b); color: var(--b); }
+
+/* Where you are in the frame, and a way back into it. A wrong answer should
+   cost one click to fix, not the whole build — so every step stays reachable,
+   and the one that failed says so with a mark rather than a colour alone. */
+.steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 15px;
+}
+
+.stepChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px 3px 4px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text3);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 650;
+  white-space: nowrap;
+  transition: border-color 120ms ease, color 120ms ease;
+}
+
+.stepChip b {
+  display: grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: var(--line);
+  color: var(--surface);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.stepChip:hover { border-color: var(--text3); color: var(--text2); }
+
+.stepChip[data-state='done'] { border-color: color-mix(in srgb, var(--ok) 42%, var(--line)); color: var(--ok); }
+.stepChip[data-state='done'] b { background: var(--ok); }
+
+.stepChip[data-state='now'] { border-color: var(--a); color: var(--a); }
+.stepChip[data-state='now'] b { background: var(--a); }
+
+.stepChip[data-state='wrong'] { border-color: var(--rst); color: var(--rst); }
+.stepChip[data-state='wrong'] b { background: var(--rst); }

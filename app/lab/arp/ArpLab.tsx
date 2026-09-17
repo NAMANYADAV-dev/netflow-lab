@@ -171,6 +171,9 @@ const modeHints: Record<ReadingMode, string> = {
 
 const LAST_BEAT = 8;
 
+/** the four things the frame needs, in the order the builder asks for them */
+const STEP_NAMES = ['EtherType', 'Operation', 'Target IP', 'Dest MAC'];
+
 /* Whether the target IP has actually been typed out, rather than merely
    started. Step 3 hands over to step 4 on the strength of this, and "not
    empty" is the wrong test for that: it turns true on the first keystroke,
@@ -185,7 +188,7 @@ function addressTypedOut(value: string) {
 }
 
 /** the coach mark above whichever builder field is still waiting to be filled */
-function Coach({ text, tone, tour }: { text: string; tone: 'a' | 'ok'; tour?: string }) {
+function Coach({ text, tone, tour }: { text: string; tone: 'a' | 'ok' | 'rst'; tour?: string }) {
   return (
     <div className={styles.coach} data-tour={tour} style={{ color: `var(--${tone})` }}>
       <span>{text}</span>
@@ -210,6 +213,9 @@ export default function ArpLab() {
   const [tried, setTried] = useState(false);
 
   const [showInspect, setShowInspect] = useState(false);
+  /* a step the reader has asked to go back to, so a wrong answer can be put
+     right without starting over; cleared as soon as they change that field */
+  const [redo, setRedo] = useState<number | null>(null);
   /* bumping this re-runs the walkthrough from the lab's own button, whatever
      the browser remembers about having seen it */
   const [tourRun, setTourRun] = useState(0);
@@ -249,7 +255,8 @@ export default function ArpLab() {
   };
 
   const send = () => {
-    if (!valid) { setTried(true); return; }
+    // a rejected frame points at its own first mistake, so drop any detour
+    if (!valid) { setTried(true); setRedo(null); return; }
     setSent(true);
     setBeat(2);
     setTried(false);
@@ -302,22 +309,35 @@ export default function ArpLab() {
 
   const tipTyped = addressTypedOut(fTip);
 
+  /* Which answers are actually wrong. Only shown once they have tried to send:
+     marking a field red the moment it is picked would give the answer away,
+     and being wrong and finding out why is the lesson. */
+  const wrong = [fEth !== '0x0806', fOp !== '1', !addressTypedOut(fTip) || fTip.trim() !== '192.168.1.7', fDst !== 'bc'];
+  const firstWrong = wrong.indexOf(true);
+
+  /* a field the reader has just been told is wrong is lit in the same red as
+     its mark and its chip, so the three read as one thing */
+  const flag = (i: number) => (tried && wrong[i] ? 'rst' as const : 'a' as const);
+
   /* One step per field, in the same order the coach marks already use, so the
      lit area walks down the builder as the reader fills it in. The marks carry
      the wording; the tour only says where to look. */
   const tourSteps: TourStep[] = attack
     ? [{ target: '[data-tour="launch"]', done: sent, tone: 'rst' as const }]
     : [
-      { target: '[data-tour="f1"]', done: fEth !== null },
-      { target: '[data-tour="f2"]', done: fOp !== null },
-      { target: '[data-tour="f3"]', done: tipTyped },
-      { target: '[data-tour="f4"]', done: fDst !== null },
+      { target: '[data-tour="f1"]', done: fEth !== null, tone: flag(0) },
+      { target: '[data-tour="f2"]', done: fOp !== null, tone: flag(1) },
+      { target: '[data-tour="f3"]', done: tipTyped, tone: flag(2) },
+      { target: '[data-tour="f4"]', done: fDst !== null, tone: flag(3) },
       // the last mark turns green when the frame is ready; the light follows it
       { target: '[data-tour="send"]', done: sent, tone: 'ok' as const },
     ];
 
   // which of the four fields the coach mark is currently pointing at, 5 = ready to send
-  const guide = !fEth ? 1 : !fOp ? 2 : !tipTyped ? 3 : !fDst ? 4 : 5;
+  const nextUp = !fEth ? 1 : !fOp ? 2 : !tipTyped ? 3 : !fDst ? 4 : 5;
+  /* What the reader asked to revisit wins; failing that, a rejected frame
+     points at the first thing that is wrong with it; otherwise carry on. */
+  const guide = redo ?? (tried && firstWrong !== -1 ? firstWrong + 1 : nextUp);
   const tipOk = fTip.trim() === '192.168.1.7';
   const cached = beat >= 7;
   const poisoned = beat >= 4;
@@ -372,36 +392,62 @@ export default function ArpLab() {
             <div className={styles.builderBody}>
               <p className={styles.helper}>Assemble the request field by field. Nothing is filled for you.</p>
 
+              {/* Where you are, and a way back. Getting a field wrong should not
+                  mean starting the frame over — click the step and the builder
+                  points at it again so it can be changed. */}
+              <div className={styles.steps}>
+                {STEP_NAMES.map((name, i) => {
+                  const filled = [fEth, fOp, tipTyped ? fTip : null, fDst][i] !== null;
+                  const bad = tried && wrong[i];
+                  const state = bad ? 'wrong' : guide === i + 1 ? 'now' : filled ? 'done' : 'todo';
+                  return (
+                    <button
+                      key={name}
+                      type="button"
+                      className={styles.stepChip}
+                      data-state={state}
+                      aria-current={guide === i + 1 ? 'step' : undefined}
+                      data-hint={state === 'now'
+                        ? `You are on step ${i + 1} — ${name}.`
+                        : `Click to go back to step ${i + 1} and change the ${name}.`}
+                      onClick={() => setRedo(i + 1)}
+                    >
+                      <b>{bad ? '!' : i + 1}</b>{name}
+                    </button>
+                  );
+                })}
+              </div>
+
               <div className={styles.context}>
                 <span>src MAC  00:1a:2b:00:0a:01 <i>(PC-A)</i></span>
                 <span>src IP   192.168.1.10 <i>(PC-A)</i></span>
               </div>
 
-              {guide === 1 && <Coach tone="a" tour="f1" text="step 1 of 4 · which payload? pick ARP" />}
+              {guide === 1 && <Coach tone={tried && wrong[0] ? 'rst' : 'a'} tour="f1" text="step 1 of 4 · which payload? pick ARP" />}
               <div className={styles.field} data-tour="f1">
                 <div className={styles.fieldLabel}>EtherType</div>
                 <div className={styles.options} data-bad={tried && fEth !== '0x0806'}>
                   {ethOptions.map((value) => (
                     <button key={value} type="button" className={styles.chip} data-active={fEth === value} aria-pressed={fEth === value}
                       data-hint={`Click to set the EtherType to ${value}.`}
-                      onClick={() => { setFEth(value); setTried(false); }}>{value}</button>
+                      onClick={() => { setFEth(value); setTried(false); setRedo(null); }}>{value}</button>
                   ))}
                 </div>
               </div>
 
-              {guide === 2 && <Coach tone="a" tour="f2" text="step 2 of 4 · asking, or answering?" />}
+              {guide === 2 && <Coach tone={tried && wrong[1] ? 'rst' : 'a'} tour="f2" text="step 2 of 4 · asking, or answering?" />}
               <div className={styles.field} data-tour="f2">
                 <div className={styles.fieldLabel}>Operation</div>
                 <div className={styles.options} data-bad={tried && fOp !== '1'}>
                   {opOptions.map((option) => (
                     <button key={option.v} type="button" className={styles.chip} data-active={fOp === option.v} aria-pressed={fOp === option.v}
                       data-hint={`Click to make this frame a ${option.v === '1' ? 'question (request)' : 'answer (reply)'}.`}
-                      onClick={() => { setFOp(option.v); setTried(false); }}>{option.label}</button>
+                      onClick={() => { setFOp(option.v); setTried(false); setRedo(null); }}>{option.label}</button>
                   ))}
                 </div>
               </div>
 
-              {guide === 3 && <Coach tone="a" tour="f3" text="step 3 of 4 · type the IP to resolve" />}
+              {guide === 3 && <Coach tone={tried && wrong[2] ? 'rst' : 'a'} tour="f3" text="step 3 of 4 · type the IP to resolve" />}
               <div className={styles.field} data-tour="f3">
                 <label className={styles.fieldLabel} htmlFor="arp-tip">
                   Target IP <em>— who are we asking about?</em>
@@ -416,18 +462,18 @@ export default function ArpLab() {
                   spellCheck={false}
                   placeholder="192.168.1._"
                   data-state={tried && !tipOk ? 'bad' : tipOk ? 'ok' : undefined}
-                  onChange={(event) => { setFTip(event.target.value); setTried(false); }}
+                  onChange={(event) => { setFTip(event.target.value); setTried(false); setRedo(null); }}
                 />
               </div>
 
-              {guide === 4 && <Coach tone="a" tour="f4" text="step 4 of 4 · so who should hear this?" />}
+              {guide === 4 && <Coach tone={tried && wrong[3] ? 'rst' : 'a'} tour="f4" text="step 4 of 4 · so who should hear this?" />}
               <div className={styles.field} data-tour="f4">
                 <div className={styles.fieldLabel}>Destination MAC — who do we send it to?</div>
                 <div className={styles.optionsStack} data-bad={tried && fDst !== 'bc'}>
                   {dstOptions.map((option) => (
                     <button key={option.v} type="button" className={styles.macOption} data-active={fDst === option.v} aria-pressed={fDst === option.v}
                       data-hint={`Click to address the frame to ${option.hint}.`}
-                      onClick={() => { setFDst(option.v); setTried(false); }}>
+                      onClick={() => { setFDst(option.v); setTried(false); setRedo(null); }}>
                       <b>{option.mac}</b>
                       <span>{option.hint}</span>
                     </button>
@@ -678,6 +724,7 @@ export default function ArpLab() {
         key={`${scenario}-${tourRun}`}
         steps={tourSteps}
         active={!sent}
+        at={attack ? null : guide - 1}
         question={{ label: 'Question to answer at the end', text: challengeQuestion }}
       />
     </main>

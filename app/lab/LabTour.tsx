@@ -40,11 +40,14 @@ type Box = { x: number; y: number; w: number; h: number; pw: number; ph: number 
 
    Every setState below happens inside a callback — an animation frame, a
    listener — rather than in the body of an effect. */
-export default function LabTour({ steps, active, question }: {
+export default function LabTour({ steps, active, question, at }: {
   steps: TourStep[];
   active: boolean;
   /** the challenge waiting at the end, carried up front so it can be watched for */
   question?: { label: string; text: string };
+  /** a step to light instead of the next unfinished one — for a lab that lets
+      the reader go back and put an earlier answer right */
+  at?: number | null;
 }) {
   const [open, setOpen] = useState(true);
   const [box, setBox] = useState<Box | null>(null);
@@ -52,7 +55,8 @@ export default function LabTour({ steps, active, question }: {
   const shown = useRef<Box | null>(null);
   const inked = useRef<string | null>(null);
 
-  const index = steps.findIndex((step) => !step.done);
+  const asked = at != null && at >= 0 && at < steps.length ? at : null;
+  const index = asked ?? steps.findIndex((step) => !step.done);
   const current = index === -1 ? null : steps[index];
   const target = current?.target ?? null;
   const tone = current?.tone ?? 'a';
