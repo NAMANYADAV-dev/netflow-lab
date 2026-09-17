@@ -171,6 +171,19 @@ const modeHints: Record<ReadingMode, string> = {
 
 const LAST_BEAT = 8;
 
+/* Whether the target IP has actually been typed out, rather than merely
+   started. Step 3 hands over to step 4 on the strength of this, and "not
+   empty" is the wrong test for that: it turns true on the first keystroke,
+   so the step would call itself finished — and take the highlight off the
+   field — while the reader is still halfway through 192.168.1.7.
+
+   A complete address is enough; it need not be the right one. Sending a
+   wrong address and being told why is part of the lab. */
+function addressTypedOut(value: string) {
+  const parts = value.trim().split('.');
+  return parts.length === 4 && parts.every((part) => /^\d{1,3}$/.test(part) && Number(part) <= 255);
+}
+
 /** the coach mark above whichever builder field is still waiting to be filled */
 function Coach({ text, tone, tour }: { text: string; tone: 'a' | 'ok'; tour?: string }) {
   return (
@@ -287,6 +300,8 @@ export default function ArpLab() {
     ? 'The attacker’s reply worked even though PC-A never asked for it. Why did PC-A believe it?'
     : 'The question was a broadcast, but the reply came back as a unicast. Why?';
 
+  const tipTyped = addressTypedOut(fTip);
+
   /* One step per field, in the same order the coach marks already use, so the
      lit area walks down the builder as the reader fills it in. The marks carry
      the wording; the tour only says where to look. */
@@ -295,14 +310,14 @@ export default function ArpLab() {
     : [
       { target: '[data-tour="f1"]', done: fEth !== null },
       { target: '[data-tour="f2"]', done: fOp !== null },
-      { target: '[data-tour="f3"]', done: fTip.trim() !== '' },
+      { target: '[data-tour="f3"]', done: tipTyped },
       { target: '[data-tour="f4"]', done: fDst !== null },
       // the last mark turns green when the frame is ready; the light follows it
       { target: '[data-tour="send"]', done: sent, tone: 'ok' as const },
     ];
 
   // which of the four fields the coach mark is currently pointing at, 5 = ready to send
-  const guide = !fEth ? 1 : !fOp ? 2 : !fTip.trim() ? 3 : !fDst ? 4 : 5;
+  const guide = !fEth ? 1 : !fOp ? 2 : !tipTyped ? 3 : !fDst ? 4 : 5;
   const tipOk = fTip.trim() === '192.168.1.7';
   const cached = beat >= 7;
   const poisoned = beat >= 4;
