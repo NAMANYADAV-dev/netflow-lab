@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import styles from './lab-hints.module.css';
 
 type Vars = CSSProperties & Record<`--${string}`, string>;
@@ -13,10 +14,16 @@ const EDGE = 150;
    says, on hover or keyboard focus, what clicking it will do.
 
    It listens once on the wrapper rather than on every button, and draws the
-   bubble with position: fixed, so it is never clipped by a panel with
-   overflow: hidden — the copy buttons sit inside exactly such a panel. After a
-   click it re-reads the element on the next frame, because the action usually
-   changes what the same button will do next. */
+   bubble in a portal on the body, so it is never clipped by a panel with
+   overflow: hidden — the copy buttons sit inside exactly such a panel.
+
+   The bubble is placed in page coordinates, which is what keeps it stuck to
+   its control while the page scrolls under the pointer. Placing it against
+   the viewport instead means re-placing it on every scroll event, always a
+   frame late, and the bubble visibly drags behind the button it belongs to.
+
+   After a click it re-reads the element on the next frame, because the action
+   usually changes what the same button will do next. */
 export default function HintLayer({ children }: { children: ReactNode }) {
   const root = useRef<HTMLDivElement>(null);
   const last = useRef<Element | null>(null);
@@ -36,11 +43,12 @@ export default function HintLayer({ children }: { children: ReactNode }) {
       const rect = node.getBoundingClientRect();
       const below = node.dataset.hintSide === 'bottom' || rect.top < 96;
       const centre = rect.left + rect.width / 2;
+      // kept clear of the window edges, then written down as a place on the page
       const left = Math.min(Math.max(centre, EDGE), window.innerWidth - EDGE);
       setHint({
         text: node.dataset.hint,
-        left,
-        top: below ? rect.bottom : rect.top,
+        left: left + window.scrollX,
+        top: (below ? rect.bottom : rect.top) + window.scrollY,
         below,
         tail: Math.max(-110, Math.min(110, centre - left)),
       });
@@ -59,9 +67,9 @@ export default function HintLayer({ children }: { children: ReactNode }) {
       last.current = null;
       setHint(null);
     };
-    /* a scroll or resize moves the control, so the bubble moves with it;
-       hiding instead would drop the hint whenever the page shifts under a
-       still pointer — including the shift the lab makes on purpose */
+    /* scrolling needs no help — the bubble is on the page and travels with
+       the control. A resize can still move the control under a still pointer,
+       and hiding the hint then would drop it for no reason the reader did. */
     let frame = 0;
     const follow = () => {
       if (frame) return;
@@ -86,7 +94,6 @@ export default function HintLayer({ children }: { children: ReactNode }) {
     host.addEventListener('focusin', focus);
     host.addEventListener('focusout', hide);
     host.addEventListener('click', click);
-    window.addEventListener('scroll', follow, { capture: true, passive: true });
     window.addEventListener('resize', follow);
     window.addEventListener('keydown', key);
 
@@ -97,7 +104,6 @@ export default function HintLayer({ children }: { children: ReactNode }) {
       host.removeEventListener('focusout', hide);
       host.removeEventListener('click', click);
       cancelAnimationFrame(frame);
-      window.removeEventListener('scroll', follow, { capture: true });
       window.removeEventListener('resize', follow);
       window.removeEventListener('keydown', key);
     };
@@ -106,7 +112,7 @@ export default function HintLayer({ children }: { children: ReactNode }) {
   return (
     <div ref={root} className={styles.layer}>
       {children}
-      {hint && (
+      {hint && createPortal(
         <div
           key={hint.text}
           role="tooltip"
@@ -115,7 +121,8 @@ export default function HintLayer({ children }: { children: ReactNode }) {
           style={{ left: hint.left, top: hint.top, '--tail': `${hint.tail}px` } as Vars}
         >
           {hint.text}
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );

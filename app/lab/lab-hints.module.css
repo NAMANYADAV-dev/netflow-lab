@@ -4,9 +4,11 @@
 
 .layer { position: relative; z-index: 1; }
 
+/* on the page rather than against the window, so it stays put on its control
+   while the page scrolls instead of being chased frame by frame */
 .bubble {
-  position: fixed;
-  z-index: 90;
+  position: absolute;
+  z-index: 130;
   width: max-content;
   max-width: 270px;
   padding: 8px 12px;

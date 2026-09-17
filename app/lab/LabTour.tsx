@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
+import { createPortal } from 'react-dom';
 import { Question as QuestionIcon } from '@phosphor-icons/react';
 import styles from './lab-tour.module.css';
 
@@ -9,9 +10,13 @@ export type TourStep = {
   target: string;
   /** true once the reader has done this step; the tour then moves on by itself */
   done: boolean;
+  /** which accent to ring it in, so the light matches the step's own mark */
+  tone?: 'a' | 'b' | 'ok' | 'rst';
 };
 
-type Box = { x: number; y: number; w: number; h: number };
+type Vars = CSSProperties & Record<`--${string}`, string>;
+/** the lit area and the page it sits on, both in page coordinates */
+type Box = { x: number; y: number; w: number; h: number; pw: number; ph: number };
 
 /* The walkthrough that opens with the lab.
 
@@ -22,6 +27,12 @@ type Box = { x: number; y: number; w: number; h: number };
    There is no Skip either — the dimming takes no clicks, so it is a way of
    pointing rather than a gate, and it lifts on its own the moment the lab
    starts running.
+
+   The light is drawn in page coordinates, in a portal on the body, so it is
+   part of the page and scrolls with it. Measuring it against the viewport
+   instead means re-placing it on every scroll event, always a frame late —
+   which is exactly how a highlight ends up sliding around behind the thing it
+   is supposed to be stuck to.
 
    It runs every time the lab is opened. Nothing is remembered between visits,
    on purpose: a lab that walks one reader through and then silently drops the
@@ -37,9 +48,14 @@ export default function LabTour({ steps, active, question }: {
 }) {
   const [open, setOpen] = useState(true);
   const [box, setBox] = useState<Box | null>(null);
+  const [ink, setInk] = useState<string | null>(null);
+  const shown = useRef<Box | null>(null);
+  const inked = useRef<string | null>(null);
 
   const index = steps.findIndex((step) => !step.done);
-  const target = index === -1 ? null : steps[index].target;
+  const current = index === -1 ? null : steps[index];
+  const target = current?.target ?? null;
+  const tone = current?.tone ?? 'a';
   const visible = open && active;
   const showing = visible && target !== null;
 
@@ -48,10 +64,21 @@ export default function LabTour({ steps, active, question }: {
   useEffect(() => {
     const found = showing && target ? [...document.querySelectorAll(target)] : [];
 
+    /* the timer below re-reads the position several times a second; without
+       this the identical result would still be a new object, and the whole
+       lab would re-render four times a second for nothing */
+    const settle = (next: Box | null) => {
+      const was = shown.current;
+      if (next && was && (Object.keys(next) as (keyof Box)[]).every((k) => Math.abs(next[k] - was[k]) < 0.5)) return;
+      if (!next && !was) return;
+      shown.current = next;
+      setBox(next);
+    };
+
     /* one area around everything the step names, so a field and the note
        above it are lit together rather than the note being dimmed out */
     const measure = () => {
-      if (!found.length) { setBox(null); return; }
+      if (!found.length) { settle(null); return; }
       let left = Infinity; let top = Infinity; let right = -Infinity; let bottom = -Infinity;
       for (const el of found) {
         const rect = el.getBoundingClientRect();
@@ -60,7 +87,22 @@ export default function LabTour({ steps, active, question }: {
         right = Math.max(right, rect.right);
         bottom = Math.max(bottom, rect.bottom);
       }
-      setBox({ x: left, y: top, w: right - left, h: bottom - top });
+      /* The light is drawn on the body, where the lab's own tokens do not
+         reach, so the accent is read off the lit element itself and handed
+         over as a plain colour. Passing var(--a) across would simply resolve
+         to nothing and leave the ring the colour of body text. */
+      const paint = getComputedStyle(found[0]).getPropertyValue(`--${tone}`).trim();
+      if (paint && paint !== inked.current) { inked.current = paint; setInk(paint); }
+
+      const page = document.documentElement;
+      settle({
+        x: left + window.scrollX,
+        y: top + window.scrollY,
+        w: right - left,
+        h: bottom - top,
+        pw: Math.max(page.scrollWidth, page.clientWidth),
+        ph: Math.max(page.scrollHeight, page.clientHeight),
+      });
     };
 
     const frame = requestAnimationFrame(() => {
@@ -75,23 +117,23 @@ export default function LabTour({ steps, active, question }: {
     });
     if (!found.length) return () => cancelAnimationFrame(frame);
 
+    /* no scroll listener: the light is part of the page and travels with it.
+       What can still move it is the page changing shape underneath. */
     const observer = new ResizeObserver(measure);
     for (const el of found) observer.observe(el);
-    window.addEventListener('scroll', measure, { capture: true, passive: true });
+    observer.observe(document.body);
     window.addEventListener('resize', measure);
-    /* the panel also shifts when a note appears above a field, which changes
-       no size the observer can see — so the position is re-read on a slow
-       timer as well */
+    /* a note appearing above a field shifts the panel without changing any
+       size the observer watches, so the position is re-read on a slow timer */
     const timer = window.setInterval(measure, 250);
 
     return () => {
       cancelAnimationFrame(frame);
       observer.disconnect();
-      window.removeEventListener('scroll', measure, { capture: true });
       window.removeEventListener('resize', measure);
       window.clearInterval(timer);
     };
-  }, [showing, target]);
+  }, [showing, target, tone]);
 
   /* no button offers this, but a reader who wants the page plain should not
      have to finish the lab to get it */
@@ -104,35 +146,36 @@ export default function LabTour({ steps, active, question }: {
 
   if (!visible) return null;
 
-  let spotlight = null;
-  if (showing && box) {
-    const pad = 8;
-    const x = Math.max(0, box.x - pad);
-    const y = Math.max(0, box.y - pad);
-    const w = box.w + pad * 2;
-    const h = box.h + pad * 2;
-
-    spotlight = (
-      <>
-        {/* four panes around the lit area — no mask, and nothing at all over
-            the thing itself, so every click still lands where it is aimed */}
-        <div className={styles.shade} style={{ top: 0, left: 0, right: 0, height: y }} />
-        <div className={styles.shade} style={{ top: y + h, left: 0, right: 0, bottom: 0 }} />
-        <div className={styles.shade} style={{ top: y, left: 0, width: x, height: h }} />
-        <div className={styles.shade} style={{ top: y, left: x + w, right: 0, height: h }} />
-        <div
-          className={styles.ring}
-          style={{ top: y, left: x, width: w, height: h }}
-          role="presentation"
-          aria-label={`Step ${index + 1} of ${steps.length}`}
-        />
-      </>
-    );
-  }
+  const pad = 8;
+  const light = showing && box
+    ? {
+      x: Math.max(0, box.x - pad),
+      y: Math.max(0, box.y - pad),
+      w: box.w + pad * 2,
+      h: box.h + pad * 2,
+      pw: box.pw,
+      ph: box.ph,
+    }
+    : null;
 
   return (
-    <div className={styles.tour} aria-live="polite">
-      {spotlight}
+    <>
+      {light && createPortal(
+        <div
+          className={styles.tour}
+          style={{ width: light.pw, height: light.ph, '--tour-tone': ink ?? '#9a5f02' } as Vars}
+          aria-hidden="true"
+        >
+          {/* four panes around the lit area — no mask, and nothing at all over
+              the thing itself, so every click still lands where it is aimed */}
+          <div className={styles.shade} style={{ top: 0, left: 0, width: light.pw, height: light.y }} />
+          <div className={styles.shade} style={{ top: light.y + light.h, left: 0, width: light.pw, height: Math.max(0, light.ph - light.y - light.h) }} />
+          <div className={styles.shade} style={{ top: light.y, left: 0, width: light.x, height: light.h }} />
+          <div className={styles.shade} style={{ top: light.y, left: light.x + light.w, width: Math.max(0, light.pw - light.x - light.w), height: light.h }} />
+          <div className={styles.ring} style={{ top: light.y, left: light.x, width: light.w, height: light.h }} />
+        </div>,
+        document.body,
+      )}
 
       {question && (
         <aside className={styles.question} aria-label={question.label}>
@@ -144,6 +187,6 @@ export default function LabTour({ steps, active, question }: {
           <span className={styles.questionNote}>keep it in mind while the beats play</span>
         </aside>
       )}
-    </div>
+    </>
   );
 }

@@ -2,30 +2,39 @@
    and a ring on it. Nothing else — the lab labels its own steps where they
    happen, so there is no card repeating that text and no Skip to dismiss.
 
+   All of it is laid out in page coordinates on the body, so it scrolls with
+   the page rather than being re-placed by script on every scroll event. A
+   highlight that is measured against the viewport is always a frame behind
+   the thing it rings, and slides about while you scroll.
+
    The panes never take a click — dimming here is a way of pointing, not a way
    of blocking, so a reader who wants to do something else can always do it. */
 
-.tour { position: fixed; inset: 0; z-index: 120; pointer-events: none; }
+.tour { position: absolute; top: 0; left: 0; z-index: 120; pointer-events: none; }
 
 .shade {
-  position: fixed;
-  background: rgb(14 20 26 / 52%);
+  position: absolute;
+  background: rgb(14 20 26 / 46%);
   transition: opacity 160ms var(--ease);
 }
 
+/* the ring takes the colour of the step's own mark, so the lit area reads as
+   one thing rather than an unrelated blue box drawn around it */
 .ring {
-  position: fixed;
-  border: 2px solid var(--b, #0b6b80);
-  border-radius: 12px;
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--b, #0b6b80) 28%, transparent);
-  transition: top 180ms var(--ease), left 180ms var(--ease), width 180ms var(--ease), height 180ms var(--ease);
+  position: absolute;
+  border: 2px solid var(--tour-tone, var(--a));
+  border-radius: 11px;
+  box-shadow:
+    0 0 0 5px color-mix(in srgb, var(--tour-tone, var(--a)) 16%, transparent),
+    0 10px 30px -14px color-mix(in srgb, var(--tour-tone, var(--a)) 70%, transparent);
+  transition: top 200ms var(--ease), left 200ms var(--ease), width 200ms var(--ease), height 200ms var(--ease);
 }
 
-@keyframes tourIn { from { opacity: 0; } to { opacity: 1; } }
+/* a reader who prefers no movement gets the light placed, not slid */
+@media (prefers-reduced-motion: reduce) {
+  .ring { transition: none; }
+}
 
-/* The challenge, shown from the start rather than sprung at the end. It sits
-   clear of the lit area, in the corner, and leaves with the rest of the
-   walkthrough when the lab starts running. */
 .question {
   position: fixed;
   bottom: 24px;

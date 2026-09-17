@@ -291,13 +291,14 @@ export default function ArpLab() {
      lit area walks down the builder as the reader fills it in. The marks carry
      the wording; the tour only says where to look. */
   const tourSteps: TourStep[] = attack
-    ? [{ target: '[data-tour="launch"]', done: sent }]
+    ? [{ target: '[data-tour="launch"]', done: sent, tone: 'rst' as const }]
     : [
       { target: '[data-tour="f1"]', done: fEth !== null },
       { target: '[data-tour="f2"]', done: fOp !== null },
       { target: '[data-tour="f3"]', done: fTip.trim() !== '' },
       { target: '[data-tour="f4"]', done: fDst !== null },
-      { target: '[data-tour="send"]', done: sent },
+      // the last mark turns green when the frame is ready; the light follows it
+      { target: '[data-tour="send"]', done: sent, tone: 'ok' as const },
     ];
 
   // which of the four fields the coach mark is currently pointing at, 5 = ready to send
