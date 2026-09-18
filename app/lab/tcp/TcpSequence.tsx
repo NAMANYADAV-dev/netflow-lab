@@ -1,7 +1,7 @@
 'use client';
 
 import type { CSSProperties } from 'react';
-import { Desktop, HardDrives } from '@phosphor-icons/react';
+import NetNode from '../NetNode';
 import StepCallout from '../StepCallout';
 import styles from './tcp-lab.module.css';
 
@@ -41,25 +41,13 @@ const TOP = 64;
 const GAP = 64;
 const W = 550;
 
-function Head({ x, label, ip, color, kind, height }: {
-  x: number; label: string; ip: string; color: string; kind: 'client' | 'server'; height: number;
+/* each end of the connection as a network card, with its lifeline below */
+function Head({ x, label, ip, color, kind }: {
+  x: number; label: string; ip: string; color: string; kind: 'client' | 'server';
 }) {
-  const Icon = kind === 'client' ? Desktop : HardDrives;
   return (
-    <g>
-      <rect x={x - 54} y={20} width={108} height={30} rx={4} fill="var(--surface2)" stroke={color} strokeWidth={1.5} />
-      <foreignObject x={x - 42} y={27} width={18} height={18}>
-        <div className={styles.node}>
-          <Icon weight="duotone" size={16} color={color} />
-        </div>
-      </foreignObject>
-      <text x={x + 10} y={39} textAnchor="middle" fontFamily="var(--sans)" fontWeight={650} fontSize={13} fill={color}>
-        {label}
-      </text>
-      <text x={x} y={height - 6} textAnchor="middle" fontFamily="var(--mono)" fontSize={9.5} fill="var(--text3)">
-        {ip}
-      </text>
-    </g>
+    <NetNode cx={x} cy={30} w={172} h={48} kind={kind === 'client' ? 'pc' : 'server'}
+      title={label} sub={ip} tone={color} subTone="var(--text3)" />
   );
 }
 
@@ -84,8 +72,8 @@ export default function TcpSequence({ phase, segments, tick }: {
       <line x1={C_X} y1={TOP - 6} x2={C_X} y2={H - 20} stroke="var(--line)" strokeWidth={1.5} strokeDasharray="2 5" />
       <line x1={S_X} y1={TOP - 6} x2={S_X} y2={H - 20} stroke="var(--line)" strokeWidth={1.5} strokeDasharray="2 5" />
 
-      <Head x={C_X} label="CLIENT" ip="10.0.0.5:49152" color="var(--a)" kind="client" height={H} />
-      <Head x={S_X} label="SERVER" ip="…216.34:443" color="var(--b)" kind="server" height={H} />
+      <Head x={C_X} label="Client" ip="10.0.0.5:49152" color="var(--a)" kind="client" />
+      <Head x={S_X} label="Server" ip="93.184.216.34:443" color="var(--b)" kind="server" />
 
       {segments.slice(0, phase).map((segment, index) => {
         const y0 = TOP + index * GAP + 18;

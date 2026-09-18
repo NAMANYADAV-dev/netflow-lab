@@ -1,6 +1,7 @@
 'use client';
 
 import type { CSSProperties } from 'react';
+import NetNode, { NetTile } from '../NetNode';
 import StepCallout from '../StepCallout';
 import { LOST_DG, type UdpStep } from './udp-data';
 import styles from './udp-lab.module.css';
@@ -35,9 +36,10 @@ export default function UdpStream({ step, current, lossy, tick }: {
 
       {/* ------------------------------------------------------------ sender */}
       <rect x={10} y={34} width={172} height={236} rx={6} fill="var(--surface2)" stroke={A} strokeWidth={1.4} />
-      <text x={22} y={54} fontFamily="var(--sans)" fontWeight={650} fontSize={11} fill="var(--text)">PC-1  sender</text>
-      <text x={22} y={69} fontFamily="var(--mono)" fontSize={9} fill={T3}>192.168.1.10:52310</text>
-      <text x={22} y={88} fontFamily="var(--mono)" fontSize={9} fill={A}>send queue — no waiting</text>
+      <NetTile kind="pc" x={20} y={42} size={32} tone={A} />
+      <text x={60} y={55} fontFamily="var(--sans)" fontWeight={700} fontSize={12} fill="var(--text)">PC-1 · sender</text>
+      <text x={60} y={70} fontFamily="var(--mono)" fontSize={9} fill={T3}>192.168.1.10:52310</text>
+      <text x={22} y={90} fontFamily="var(--mono)" fontSize={9} fill={A}>send queue — no waiting</text>
 
       {[1, 2, 3, 4].map((n) => {
         const gone = n <= sent;
@@ -58,18 +60,17 @@ export default function UdpStream({ step, current, lossy, tick }: {
       {/* ------------------------------------------- the wire and its router */}
       <line x1={SX} y1={LANE_Y} x2={EX} y2={LANE_Y} stroke={LINE} strokeWidth={1.6} />
       <text x={SX + 6} y={LANE_Y - 14} fontFamily="var(--mono)" fontSize={9} fill={T3}>ip · proto 17 · best effort</text>
-      <rect x={DROP_X - 46} y={LANE_Y - 24} width={92} height={48} rx={5} fill="var(--surface2)"
-        stroke={lossy ? RST : LINE} strokeWidth={1.4} />
-      <text x={DROP_X} y={LANE_Y - 6} textAnchor="middle" fontFamily="var(--sans)" fontWeight={650} fontSize={10} fill="var(--text)">router</text>
-      <text x={DROP_X} y={LANE_Y + 10} textAnchor="middle" fontFamily="var(--mono)" fontSize={8.5} fill={lossy ? RST : T3}>
-        {lossy ? 'queue 100% full' : 'queue 12%'}
-      </text>
+      {/* shifted right so the router icon, not its name, sits on the drop point */}
+      <NetNode cx={DROP_X + 51} cy={LANE_Y} w={156} h={52} kind="router" title="Router"
+        sub={lossy ? 'queue 100% full' : 'queue 12%'} tone={lossy ? RST : T3} faint={!lossy}
+        fill="var(--surface)" lit={lossy && current?.lost === true} />
 
       {/* ---------------------------------------------------------- receiver */}
       <rect x={774} y={34} width={162} height={236} rx={6} fill="var(--surface2)" stroke={B} strokeWidth={1.4} />
-      <text x={786} y={54} fontFamily="var(--sans)" fontWeight={650} fontSize={11} fill="var(--text)">SERVER  receiver</text>
-      <text x={786} y={69} fontFamily="var(--mono)" fontSize={9} fill={T3}>203.0.113.20:5060</text>
-      <text x={786} y={88} fontFamily="var(--mono)" fontSize={9} fill={B}>delivered to the app</text>
+      <NetTile kind="server" x={784} y={42} size={32} tone={B} />
+      <text x={824} y={55} fontFamily="var(--sans)" fontWeight={700} fontSize={12} fill="var(--text)">Server · receiver</text>
+      <text x={824} y={70} fontFamily="var(--mono)" fontSize={9} fill={T3}>203.0.113.20:5060</text>
+      <text x={786} y={90} fontFamily="var(--mono)" fontSize={9} fill={B}>delivered to the app</text>
 
       {Array.from({ length: sent }, (_, index) => {
         const n = index + 1;

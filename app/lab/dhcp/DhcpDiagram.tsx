@@ -1,6 +1,7 @@
 'use client';
 
 import type { CSSProperties, ReactNode } from 'react';
+import NetNode, { NetGlyph, type NetKind } from '../NetNode';
 import StepCallout from '../StepCallout';
 import { CLIENT_MAC, XID, type DhcpStep } from './dhcp-data';
 import styles from './dhcp-lab.module.css';
@@ -77,37 +78,32 @@ export default function DhcpDiagram({ steps, step, renew, tick }: {
   /* ------------------------------------------------------------- the wires */
   kids.push(
     <g key="wires" stroke="var(--line)" strokeWidth={1.5}>
-      <line x1={N.pc1.x + 88} y1={N.pc1.y} x2={N.sw.x - 96} y2={N.sw.y} />
-      <line x1={N.sw.x + 96} y1={N.sw.y} x2={N.srv.x - 88} y2={N.srv.y} />
+      <line x1={N.pc1.x + 98} y1={N.pc1.y} x2={N.sw.x - 96} y2={N.sw.y} />
+      <line x1={N.sw.x + 96} y1={N.sw.y} x2={N.srv.x - 98} y2={N.srv.y} />
       <line x1={N.sw.x} y1={N.sw.y - 30} x2={N.pc2.x} y2={N.pc2.y + 37} />
       <line x1={N.sw.x} y1={N.sw.y + 30} x2={N.pc3.x} y2={N.pc3.y - 37} />
     </g>,
   );
 
   /* ------------------------------------------------------------- the hosts */
-  const box = (key: keyof typeof N, label: string, sub: string, sub2: string, accent: string, dim: boolean) => {
+  /* each machine as a network card: its icon, its name, its address */
+  const box = (key: keyof typeof N, kind: NetKind, label: string, sub: string, sub2: string, accent: string, dim: boolean) => {
     const n = N[key];
-    const w = 176;
-    const h = 74;
+    const quiet = accent === 'var(--line)';
     return (
-      <g key={`box-${key}`}>
-        <rect x={n.x - w / 2} y={n.y - h / 2} width={w} height={h} rx={8}
-          fill={dim ? 'var(--surface2)' : `color-mix(in srgb, ${accent} 9%, var(--surface2))`}
-          stroke={dim ? 'var(--line)' : accent} strokeWidth={dim ? 1 : 1.5} opacity={dim ? 0.45 : 1} />
-        <text x={n.x} y={n.y - 16} textAnchor="middle" fill={dim ? 'var(--text3)' : 'var(--text)'} className={styles.nodeName}>{label}</text>
-        <text x={n.x} y={n.y + 4} textAnchor="middle"
-          fill={dim || accent === 'var(--line)' ? 'var(--text3)' : accent} className={styles.nodeAddr}>{sub}</text>
-        {sub2 && <text x={n.x} y={n.y + 23} textAnchor="middle" fill="var(--text3)" className={styles.nodeNote}>{sub2}</text>}
-      </g>
+      <NetNode key={`box-${key}`} cx={n.x} cy={n.y} w={196} h={74} kind={kind}
+        title={label} sub={sub} sub2={sub2}
+        tone={quiet ? 'var(--text3)' : accent} faint={quiet} dim={dim}
+        lit={!dim && !quiet && current !== null && ((key === 'pc1' && flow === 'up') || (key === 'srv' && flow === 'down'))} />
     );
   };
 
   kids.push(
-    box('pc1', 'PC-1', bound ? '192.168.1.10' : '0.0.0.0', bound ? 'leased · 24 h' : 'no address yet',
+    box('pc1', 'pc', 'PC-1', bound ? '192.168.1.10' : '0.0.0.0', bound ? 'leased · 24 h' : 'no address yet',
       bound ? 'var(--ok)' : 'var(--rst)', false),
-    box('pc2', 'PC-2', '192.168.1.20', onePort ? 'never hears it' : 'not a server · discards', 'var(--line)', onePort),
-    box('pc3', 'PC-3', '192.168.1.23', onePort ? 'never hears it' : 'not a server · discards', 'var(--line)', onePort),
-    box('srv', 'ROUTER · DHCP', '192.168.1.1', 'pool .10 – .200', 'var(--a)', false),
+    box('pc2', 'pc', 'PC-2', '192.168.1.20', onePort ? 'never hears it' : 'not a server', 'var(--line)', onePort),
+    box('pc3', 'pc', 'PC-3', '192.168.1.23', onePort ? 'never hears it' : 'not a server', 'var(--line)', onePort),
+    box('srv', 'router', 'Router · DHCP', '192.168.1.1', 'pool .10 – .200', 'var(--a)', false),
     <text key="mac1" x={N.pc1.x} y={N.pc1.y + 50} textAnchor="middle" fill="var(--text3)" className={styles.nodeNote}>
       mac {CLIENT_MAC}
     </text>,
@@ -123,7 +119,8 @@ export default function DhcpDiagram({ steps, step, renew, tick }: {
       <rect x={sx} y={sy} width={swW} height={swH} rx={7}
         fill={flooding ? 'color-mix(in srgb, var(--b) 11%, var(--surface2))' : 'var(--surface2)'}
         stroke={flooding ? 'var(--b)' : 'var(--line)'} strokeWidth={flooding ? 1.6 : 1} />
-      <text x={N.sw.x} y={sy + 21} textAnchor="middle" fill="var(--text)" className={styles.switchName}>LAN SWITCH · L2</text>
+      <NetGlyph kind="switch" x={N.sw.x - 80} y={sy + 7} size={18} color={flooding ? 'var(--b)' : 'var(--text2)'} />
+      <text x={N.sw.x + 10} y={sy + 21} textAnchor="middle" fill="var(--text)" className={styles.switchName}>LAN SWITCH · L2</text>
       {[0, 1, 2, 3, 4, 5].map((i) => {
         const lit = flooding || (onePort && i === 1);
         const tone = onePort ? 'var(--ok)' : 'var(--b)';
@@ -171,8 +168,8 @@ export default function DhcpDiagram({ steps, step, renew, tick }: {
     const up = flow === 'up';
     if (up) {
       kids.push(
-        seg(N.pc1.x + 88, N.pc1.y, N.sw.x - 96, N.sw.y, 'a1', true, 0),
-        seg(N.sw.x + 96, N.sw.y, N.srv.x - 88, N.srv.y, 'a2', true, 180),
+        seg(N.pc1.x + 98, N.pc1.y, N.sw.x - 96, N.sw.y, 'a1', true, 0),
+        seg(N.sw.x + 96, N.sw.y, N.srv.x - 98, N.srv.y, 'a2', true, 180),
       );
       if (flooding) {
         kids.push(
@@ -180,11 +177,11 @@ export default function DhcpDiagram({ steps, step, renew, tick }: {
           seg(N.sw.x, N.sw.y + 30, N.pc3.x, N.pc3.y - 37, 'a4', false, 240),
         );
       }
-      kids.push(chip((N.sw.x + 96 + N.srv.x - 88) / 2, N.srv.y, current.tag, `xid ${XID}`));
+      kids.push(chip((N.sw.x + 96 + N.srv.x - 98) / 2, N.srv.y, current.tag, `xid ${XID}`));
     } else {
       kids.push(
-        seg(N.srv.x - 88, N.srv.y, N.sw.x + 96, N.sw.y, 'b1', true, 0),
-        seg(N.sw.x - 96, N.sw.y, N.pc1.x + 88, N.pc1.y, 'b2', true, 180),
+        seg(N.srv.x - 98, N.srv.y, N.sw.x + 96, N.sw.y, 'b1', true, 0),
+        seg(N.sw.x - 96, N.sw.y, N.pc1.x + 98, N.pc1.y, 'b2', true, 180),
       );
       if (flooding) {
         kids.push(
@@ -194,7 +191,7 @@ export default function DhcpDiagram({ steps, step, renew, tick }: {
       }
       // the client-side leg is only ~120px of clear wire, so label the reply
       // over the roomy switch↔server span it has just crossed
-      kids.push(chip((N.srv.x - 88 + N.sw.x + 96) / 2, N.srv.y, current.tag, `xid ${XID} · yiaddr 192.168.1.10`));
+      kids.push(chip((N.srv.x - 98 + N.sw.x + 96) / 2, N.srv.y, current.tag, `xid ${XID} · yiaddr 192.168.1.10`));
     }
 
     const addr = flooding

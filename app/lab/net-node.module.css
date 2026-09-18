@@ -1,0 +1,29 @@
+/* The machine cards drawn by NetNode, inside each lab's SVG diagram. */
+
+.node { transition: opacity 220ms ease; }
+
+/* the machine this step is about glows in its own colour */
+.node[data-lit] > rect:first-child {
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--node-tone) 55%, transparent));
+}
+
+.title {
+  font-family: var(--sans, inherit);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.sub {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 10.5px;
+}
+
+.note {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 9.5px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .node { transition: none; }
+}

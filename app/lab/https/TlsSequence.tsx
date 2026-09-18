@@ -1,6 +1,7 @@
 'use client';
 
 import type { CSSProperties } from 'react';
+import NetNode from '../NetNode';
 import StepCallout from '../StepCallout';
 import { ENCRYPTED_FROM, startLine, type Dir, type TlsStep } from './https-data';
 import styles from './https-lab.module.css';
@@ -48,10 +49,10 @@ export default function TlsSequence({ steps, step, plain, packetMode, tick }: {
   // on the plain wire nothing is ever sealed, so push the boundary out of reach
   const encFrom = plain ? Number.POSITIVE_INFINITY : ENCRYPTED_FROM;
 
-  const actors: [number, string, string][] = [
-    [CX, 'BROWSER', 'PC-1 · 192.168.1.10'],
-    [SX, 'WEB SERVER', plain ? '203.0.113.20 : 80' : '203.0.113.20 : 443'],
-  ];
+  const actors = [
+    [CX, 'Browser', 'PC-1 · 192.168.1.10', 'laptop', 'var(--b)'],
+    [SX, 'Web server', plain ? '203.0.113.20 : 80' : '203.0.113.20 : 443', 'server', 'var(--a)'],
+  ] as const;
 
   return (
     <svg key={`${tick}-${plain}`} viewBox={`0 0 ${W} ${H}`} role="img"
@@ -71,20 +72,16 @@ export default function TlsSequence({ steps, step, plain, packetMode, tick }: {
         </marker>
       </defs>
 
-      {actors.map(([x, title, sub]) => (
+      {actors.map(([x, title, sub, kind, tone]) => (
         <g key={title}>
-          <rect x={x - 100} y={14} width={200} height={60} rx={7} fill="var(--surface2)" stroke="var(--line)" />
-          <text x={x} y={37} textAnchor="middle" fill="var(--text)" className={styles.actorName}>{title}</text>
-          <text x={x} y={57} textAnchor="middle" fill="var(--text3)" className={styles.actorAddr}>{sub}</text>
+          <NetNode cx={x} cy={44} w={200} h={60} kind={kind} title={title} sub={sub} tone={tone} />
           <line x1={x} y1={76} x2={x} y2={H - 14} stroke="var(--line)" strokeWidth={1} strokeDasharray="3 5" />
         </g>
       ))}
 
       {/* the on-path observer lane — the whole point of the lab */}
-      <rect x={MX - 104} y={14} width={208} height={60} rx={7}
-        fill={`color-mix(in srgb, ${tapCol} 10%, var(--surface2))`} stroke={tapCol} strokeDasharray="4 3" />
-      <text x={MX} y={37} textAnchor="middle" fill={tapCol} className={styles.actorName}>ON-PATH OBSERVER</text>
-      <text x={MX} y={57} textAnchor="middle" fill="var(--text3)" className={styles.observerSub}>café wi-fi · isp · proxy</text>
+      <NetNode cx={MX} cy={44} w={208} h={60} kind="observer" title="On-path observer" sub="wi-fi · isp · proxy"
+        tone={tapCol} subTone="var(--text3)" dashed lit={plain && step >= 2} />
       <line x1={MX} y1={76} x2={MX} y2={H - 14} stroke={tapCol} strokeWidth={1} strokeDasharray="2 6" opacity={0.7} />
 
       {/* transport rail */}

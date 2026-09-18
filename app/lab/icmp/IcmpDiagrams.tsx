@@ -1,13 +1,7 @@
 'use client';
 
-import type { CSSProperties, ReactNode } from 'react';
-import {
-  Cloud,
-  Desktop,
-  GlobeHemisphereWest,
-  HardDrives,
-  Network,
-} from '@phosphor-icons/react';
+import type { CSSProperties } from 'react';
+import { NetTile, type NetKind } from '../NetNode';
 import StepCallout from '../StepCallout';
 import type { IcmpStep } from './icmp-data';
 import styles from './icmp-lab.module.css';
@@ -25,20 +19,18 @@ const T3 = 'var(--text3)';
 
 type Node = {
   x: number; y: number; w: number; h: number;
-  label: string; sub: string; icon: ReactNode; color: string;
+  label: string; sub: string; kind: NetKind; color: string;
 };
 
-const icon = (node: ReactNode) => node;
-
 const nodes: Record<string, Node> = {
-  pc1: { x: 10, y: 18, w: 124, h: 44, label: 'PC-1', sub: '192.168.1.10', icon: icon(<Desktop weight="duotone" size={14} />), color: A },
-  pc2: { x: 10, y: 86, w: 124, h: 44, label: 'PC-2', sub: '192.168.1.20', icon: icon(<Desktop weight="duotone" size={14} />), color: T3 },
-  pc3: { x: 10, y: 154, w: 124, h: 44, label: 'PC-3', sub: '192.168.1.23', icon: icon(<Desktop weight="duotone" size={14} />), color: T3 },
-  pc4: { x: 10, y: 222, w: 124, h: 44, label: 'PC-4', sub: '192.168.1.25', icon: icon(<Desktop weight="duotone" size={14} />), color: T3 },
-  sw: { x: 196, y: 120, w: 112, h: 46, label: 'LAN SWITCH', sub: 'layer 2', icon: icon(<Network weight="duotone" size={14} />), color: 'var(--text2)' },
-  rt: { x: 368, y: 100, w: 168, h: 86, label: 'ROUTER  hop 1', sub: '192.168.1.1', icon: icon(<HardDrives weight="duotone" size={14} />), color: B },
-  isp: { x: 596, y: 110, w: 126, h: 66, label: 'ISP  hop 2', sub: '80.12.16.1', icon: icon(<GlobeHemisphereWest weight="duotone" size={14} />), color: 'var(--text2)' },
-  web: { x: 782, y: 104, w: 150, h: 78, label: 'WEB SERVER', sub: '203.0.113.20', icon: icon(<Cloud weight="duotone" size={14} />), color: B },
+  pc1: { x: 10, y: 18, w: 124, h: 44, label: 'PC-1', sub: '192.168.1.10', kind: 'pc', color: A },
+  pc2: { x: 10, y: 86, w: 124, h: 44, label: 'PC-2', sub: '192.168.1.20', kind: 'pc', color: T3 },
+  pc3: { x: 10, y: 154, w: 124, h: 44, label: 'PC-3', sub: '192.168.1.23', kind: 'pc', color: T3 },
+  pc4: { x: 10, y: 222, w: 124, h: 44, label: 'PC-4', sub: '192.168.1.25', kind: 'pc', color: T3 },
+  sw: { x: 196, y: 120, w: 112, h: 46, label: 'LAN SWITCH', sub: 'layer 2', kind: 'switch', color: 'var(--text2)' },
+  rt: { x: 368, y: 100, w: 168, h: 86, label: 'ROUTER  hop 1', sub: '192.168.1.1', kind: 'router', color: B },
+  isp: { x: 596, y: 110, w: 126, h: 66, label: 'ISP  hop 2', sub: '80.12.16.1', kind: 'cloud', color: 'var(--text2)' },
+  web: { x: 782, y: 104, w: 150, h: 78, label: 'WEB SERVER', sub: '203.0.113.20', kind: 'server', color: B },
 };
 
 const links: [string, string][] = [
@@ -107,12 +99,10 @@ export function PingTopology({ step, current, tick }: {
                 fill="none" stroke={stroke} strokeWidth={1.4} className={styles.ring}
                 style={{ transformOrigin: `${node.x + node.w / 2}px ${node.y + node.h / 2}px` }} />
             )}
-            <foreignObject x={node.x + 8} y={node.y + 7} width={16} height={16}>
-              <div className={styles.icon} style={{ color: stroke }}>{node.icon}</div>
-            </foreignObject>
-            <text x={node.x + 28} y={node.y + 19} fontFamily="var(--sans)" fontWeight={650} fontSize={10.5}
+            <NetTile kind={node.kind} x={node.x + 7} y={node.y + 9} size={26} tone={stroke === LINE ? T3 : stroke} />
+            <text x={node.x + 40} y={node.y + 19} fontFamily="var(--sans)" fontWeight={650} fontSize={10.5}
               fill="var(--text)" opacity={inPath ? 1 : 0.7}>{node.label}</text>
-            <text x={node.x + 28} y={node.y + 33} fontFamily="var(--mono)" fontSize={9} fill={T3}>{node.sub}</text>
+            <text x={node.x + 40} y={node.y + 33} fontFamily="var(--mono)" fontSize={9} fill={T3}>{node.sub}</text>
 
             {(key === 'rt' || key === 'isp') && ttl !== null && (
               <g key={`ttl-${tick}`}>

@@ -1,6 +1,7 @@
 'use client';
 
 import type { CSSProperties } from 'react';
+import NetNode from '../NetNode';
 import StepCallout from '../StepCallout';
 import type { Row, RowKind, TelnetStep } from './telnet-data';
 import styles from './telnet-lab.module.css';
@@ -26,11 +27,11 @@ const tagFor = (kind: RowKind, line: boolean) =>
       : kind === 'keys' ? (line ? 'LINE' : 'KEYS')
         : kind === 'tcp' ? 'TCP' : 'DATA';
 
-const heads: [number, string, string, string, boolean][] = [
-  [CX, 'TELNET CLIENT', '192.168.1.10:54118', 'var(--b)', false],
-  [TX, 'CAFÉ WI-FI · ON PATH', 'tcpdump -A port 23', 'var(--rst)', true],
-  [SX, 'ROUTER · TELNETD', '203.0.113.20:23', 'var(--a)', false],
-];
+const heads = [
+  [CX, 'Telnet client', '192.168.1.10:54118', 'var(--b)', false, 'laptop'],
+  [TX, 'Café wi-fi · on path', 'tcpdump -A port 23', 'var(--rst)', true, 'observer'],
+  [SX, 'Router · telnetd', '203.0.113.20:23', 'var(--a)', false, 'router'],
+] as const;
 
 const characterCallouts = [
   'Port 23 — no encryption',
@@ -66,13 +67,9 @@ export default function TelnetSequence({ steps, step, line, detailed, tick }: {
         ))}
       </defs>
 
-      {heads.map(([x, title, sub, color, dashed]) => (
+      {heads.map(([x, title, sub, color, dashed, kind]) => (
         <g key={title}>
-          <rect x={x - 117} y={10} width={234} height={56} rx={7}
-            fill={`color-mix(in srgb, ${color} 8%, var(--surface2))`} stroke={color} strokeWidth={1.3}
-            strokeDasharray={dashed ? '5 4' : undefined} />
-          <text x={x} y={32} textAnchor="middle" fill="var(--text)" className={styles.actorName}>{title}</text>
-          <text x={x} y={51} textAnchor="middle" fill={color} className={styles.actorAddr}>{sub}</text>
+          <NetNode cx={x} cy={38} w={234} h={56} kind={kind} title={title} sub={sub} tone={color} dashed={dashed} faint />
           <line x1={x} y1={66} x2={x} y2={H - 24} stroke={color} strokeWidth={1} strokeDasharray="4 5" opacity={0.5} />
         </g>
       ))}

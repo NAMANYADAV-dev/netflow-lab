@@ -1,6 +1,7 @@
 'use client';
 
 import type { CSSProperties } from 'react';
+import NetNode from '../NetNode';
 import StepCallout from '../StepCallout';
 import { startLine, type HttpStep } from './http-data';
 import styles from './http-lab.module.css';
@@ -21,9 +22,9 @@ const dirColor: Record<HttpStep['dir'], string> = {
 };
 
 const lifelines = [
-  { x: CX, title: 'BROWSER', sub: 'PC-1 · 192.168.1.10' },
-  { x: SX, title: 'WEB SERVER', sub: '203.0.113.20 : 80' },
-];
+  { x: CX, title: 'Browser', sub: 'PC-1 · 192.168.1.10', kind: 'browser', tone: 'var(--b)' },
+  { x: SX, title: 'Web server', sub: '203.0.113.20 : 80', kind: 'server', tone: 'var(--a)' },
+] as const;
 
 const calloutFor = (at: string) => {
   if (at.startsWith('TCP connection already')) return 'The transport pipe is ready';
@@ -62,9 +63,7 @@ export default function HttpSequence({ steps, step, packetMode, tick }: {
 
       {lifelines.map((line) => (
         <g key={line.title}>
-          <rect x={line.x - 104} y={14} width={208} height={62} rx={7} fill="var(--surface2)" stroke="var(--line)" />
-          <text x={line.x} y={38} textAnchor="middle" fill="var(--text)" className={styles.actorName}>{line.title}</text>
-          <text x={line.x} y={58} textAnchor="middle" fill="var(--text3)" className={styles.actorAddr}>{line.sub}</text>
+          <NetNode cx={line.x} cy={45} w={208} h={62} kind={line.kind} title={line.title} sub={line.sub} tone={line.tone} />
           <line x1={line.x} y1={78} x2={line.x} y2={H - 18} stroke="var(--line)" strokeWidth={1} strokeDasharray="3 5" />
         </g>
       ))}

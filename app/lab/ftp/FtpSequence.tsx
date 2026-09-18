@@ -1,6 +1,7 @@
 'use client';
 
 import type { CSSProperties } from 'react';
+import NetNode from '../NetNode';
 import StepCallout from '../StepCallout';
 import { startLine, type Dir, type FtpStep } from './ftp-data';
 import styles from './ftp-lab.module.css';
@@ -64,22 +65,17 @@ export default function FtpSequence({ steps, step, active, packetMode, tick }: {
         </marker>
       </defs>
 
-      {([[CX, 'FTP CLIENT', '192.168.1.10'], [SX, 'FTP SERVER', '203.0.113.20']] as [number, string, string][])
-        .map(([x, title, sub]) => (
+      {([[CX, 'FTP client', '192.168.1.10', 'pc', 'var(--b)'], [SX, 'FTP server', '203.0.113.20', 'server', 'var(--a)']] as const)
+        .map(([x, title, sub, kind, tone]) => (
           <g key={title}>
-            <rect x={x - 100} y={14} width={200} height={60} rx={7} fill="var(--surface2)" stroke="var(--line)" />
-            <text x={x} y={37} textAnchor="middle" fill="var(--text)" className={styles.actorName}>{title}</text>
-            <text x={x} y={57} textAnchor="middle" fill="var(--text3)" className={styles.actorAddr}>{sub}</text>
+            <NetNode cx={x} cy={44} w={200} h={60} kind={kind} title={title} sub={sub} tone={tone} />
             <line x1={x} y1={76} x2={x} y2={H - 14} stroke="var(--line)" strokeWidth={1} strokeDasharray="3 5" />
           </g>
         ))}
 
       {/* the router lane — benign in passive, fatal in active */}
-      <rect x={MX - 104} y={14} width={208} height={60} rx={7}
-        fill={failed ? 'color-mix(in srgb, var(--rst) 12%, var(--surface2))' : 'var(--surface2)'}
-        stroke={routerColor} strokeDasharray="4 3" />
-      <text x={MX} y={37} textAnchor="middle" fill={routerColor} className={styles.actorName}>HOME ROUTER · NAT</text>
-      <text x={MX} y={57} textAnchor="middle" fill="var(--text3)" className={styles.routerSub}>wan 80.12.16.10</text>
+      <NetNode cx={MX} cy={44} w={208} h={60} kind="router" title="Home router · NAT" sub="wan 80.12.16.10"
+        tone={routerColor} subTone="var(--text3)" dashed lit={failed} />
       <line x1={MX} y1={76} x2={MX} y2={H - 14} stroke={routerColor} strokeWidth={1} strokeDasharray="2 6" opacity={0.7} />
 
       {/* the control rail — open the whole session, never carrying a file */}

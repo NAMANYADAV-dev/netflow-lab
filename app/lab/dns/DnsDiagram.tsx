@@ -1,15 +1,7 @@
 'use client';
 
-import type { CSSProperties, ReactNode } from 'react';
-import {
-  Browser,
-  Database,
-  Folders,
-  HardDrive,
-  HardDrives,
-  TreeStructure,
-  WifiHigh,
-} from '@phosphor-icons/react';
+import type { CSSProperties } from 'react';
+import { NetTile, type NetKind } from '../NetNode';
 import StepCallout from '../StepCallout';
 import type { DnsStep } from './dns-data';
 import styles from './dns-lab.module.css';
@@ -33,13 +25,13 @@ const LY = 44;
 const LH = 84;
 const LMY = LY + LH / 2;
 
-type Rung = { k: 'br' | 'os' | 'rt' | 'rs'; x: number; t: string; s: string; n: string; icon: ReactNode };
+type Rung = { k: 'br' | 'os' | 'rt' | 'rs'; x: number; t: string; s: string; n: string; kind: NetKind };
 
 const ladder: Rung[] = [
-  { k: 'br', x: 4, t: 'BROWSER CACHE', s: 'inside Chrome', n: 'nothing has left the machine', icon: <Browser weight="duotone" size={14} /> },
-  { k: 'os', x: 252, t: 'OS CACHE + hosts', s: 'on the machine', n: 'still nothing on the wire', icon: <HardDrive weight="duotone" size={14} /> },
-  { k: 'rt', x: 500, t: 'ROUTER  (forwarder)', s: '192.168.1.1', n: 'small cache — cannot walk', icon: <WifiHigh weight="duotone" size={14} /> },
-  { k: 'rs', x: 748, t: 'RESOLVER CACHE', s: '1.1.1.1', n: 'big cache — and it can walk', icon: <HardDrives weight="duotone" size={14} /> },
+  { k: 'br', x: 4, t: 'BROWSER CACHE', s: 'inside Chrome', n: 'nothing has left the machine', kind: 'browser' },
+  { k: 'os', x: 252, t: 'OS CACHE + hosts', s: 'on the machine', n: 'still nothing on the wire', kind: 'pc' },
+  { k: 'rt', x: 500, t: 'ROUTER  (forwarder)', s: '192.168.1.1', n: 'small cache — cannot walk', kind: 'router' },
+  { k: 'rs', x: 748, t: 'RESOLVER CACHE', s: '1.1.1.1', n: 'big cache — and it can walk', kind: 'server' },
 ];
 
 /* ---------- band 2: the resolver and the three servers ---------- */
@@ -55,12 +47,12 @@ const SX = 628;
 const SW = 310;
 const SH = 64;
 
-type Server = { y: number; tag: string; addr: string; role: string; q: string; ans: string; icon: ReactNode };
+type Server = { y: number; tag: string; addr: string; role: string; q: string; ans: string; kind: NetKind };
 
 const servers: Server[] = [
-  { y: 190, tag: 'ROOT  ·  "."', addr: '198.41.0.4', role: 'knows who owns .com', q: 'www.example.com  A?', ans: 'referral → ask .com', icon: <TreeStructure weight="duotone" size={14} /> },
-  { y: 272, tag: 'TLD  ·  ".com"', addr: '192.5.6.30', role: 'knows who owns example.com', q: 'www.example.com  A?', ans: 'referral → ask ns1.example.com', icon: <Folders weight="duotone" size={14} /> },
-  { y: 354, tag: 'AUTHORITATIVE  ·  example.com', addr: '198.51.100.5', role: 'owns the record itself', q: 'www.example.com  A?', ans: 'ANSWER → 93.184.216.34', icon: <Database weight="duotone" size={14} /> },
+  { y: 190, tag: 'ROOT  ·  "."', addr: '198.41.0.4', role: 'knows who owns .com', q: 'www.example.com  A?', ans: 'referral → ask .com', kind: 'dns' },
+  { y: 272, tag: 'TLD  ·  ".com"', addr: '192.5.6.30', role: 'knows who owns example.com', q: 'www.example.com  A?', ans: 'referral → ask ns1.example.com', kind: 'dns' },
+  { y: 354, tag: 'AUTHORITATIVE  ·  example.com', addr: '198.51.100.5', role: 'owns the record itself', q: 'www.example.com  A?', ans: 'ANSWER → 93.184.216.34', kind: 'database' },
 ];
 
 const coldCallouts = [
@@ -145,10 +137,8 @@ export default function DnsDiagram({ step, current, warm, tick }: {
                 fill="none" stroke={isHit ? OK : B} strokeWidth={1.4} className={styles.ring}
                 style={{ transformOrigin: `${rung.x + LW / 2}px ${LMY}px` }} />
             )}
-            <foreignObject x={rung.x + 12} y={LY + 11} width={16} height={16}>
-              <div className={styles.icon} style={{ color: active ? B : T2 }}>{rung.icon}</div>
-            </foreignObject>
-            <text x={rung.x + 34} y={LY + 24} fontFamily="var(--sans)" fontWeight={650} fontSize={10.5} fill="var(--text)">{rung.t}</text>
+            <NetTile kind={rung.kind} x={rung.x + 9} y={LY + 8} size={24} tone={active ? B : T2} />
+            <text x={rung.x + 40} y={LY + 24} fontFamily="var(--sans)" fontWeight={650} fontSize={10.5} fill="var(--text)">{rung.t}</text>
             <text x={rung.x + 12} y={LY + 43} fontFamily="var(--mono)" fontSize={9} fill={B}>{rung.s}</text>
             <text x={rung.x + 12} y={LY + 58} fontFamily="var(--mono)" fontSize={8.5} fill={T3}>{rung.n}</text>
             <circle cx={rung.x + LW - 16} cy={LY + 16} r={9} fill="var(--surface2)"
@@ -216,10 +206,8 @@ export default function DnsDiagram({ step, current, warm, tick }: {
 
       <rect x={RX} y={RY} width={RW} height={RH} rx={7} fill="var(--surface2)"
         stroke={resActive ? B : LINE} strokeWidth={resActive ? 2 : 1.4} />
-      <foreignObject x={RX + 12} y={RY + 12} width={16} height={16}>
-        <div className={styles.icon} style={{ color: B }}><HardDrives weight="duotone" size={14} /></div>
-      </foreignObject>
-      <text x={RX + 34} y={RY + 24} fontFamily="var(--sans)" fontWeight={650} fontSize={11} fill="var(--text)">RECURSIVE RESOLVER</text>
+      <NetTile kind="server" x={RX + 9} y={RY + 8} size={24} tone={B} />
+      <text x={RX + 40} y={RY + 24} fontFamily="var(--sans)" fontWeight={650} fontSize={11} fill="var(--text)">RECURSIVE RESOLVER</text>
       <text x={RX + 12} y={RY + 43} fontFamily="var(--mono)" fontSize={9.5} fill={B}>1.1.1.1:53  ·  udp</text>
       <text x={RX + 12} y={RY + 58} fontFamily="var(--mono)" fontSize={8.5} fill={T3}>the only box that walks</text>
 
@@ -246,10 +234,8 @@ export default function DnsDiagram({ step, current, warm, tick }: {
           <g key={server.tag}>
             <rect x={SX} y={server.y} width={SW} height={SH} rx={6} fill="var(--surface2)"
               stroke={active ? accent : LINE} strokeWidth={active ? 2 : 1.4} opacity={dim} />
-            <foreignObject x={SX + 12} y={server.y + 11} width={16} height={16}>
-              <div className={styles.icon} style={{ color: active ? accent : T2, opacity: dim }}>{server.icon}</div>
-            </foreignObject>
-            <text x={SX + 34} y={server.y + 23} fontFamily="var(--sans)" fontWeight={650} fontSize={10.5}
+            <g opacity={dim}><NetTile kind={server.kind} x={SX + 9} y={server.y + 7} size={24} tone={active ? accent : T2} /></g>
+            <text x={SX + 40} y={server.y + 23} fontFamily="var(--sans)" fontWeight={650} fontSize={10.5}
               fill="var(--text)" opacity={dim}>{server.tag}</text>
             <text x={SX + 12} y={server.y + 41} fontFamily="var(--mono)" fontSize={9} fill={T3} opacity={dim}>{server.addr}</text>
             <text x={SX + 12} y={server.y + 56} fontFamily="var(--mono)" fontSize={8.5}
