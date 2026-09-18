@@ -89,10 +89,16 @@
   align-items: flex-start;
 }
 
+/* set solid in the page's text colour, like the headline above it, rather
+   than as the three-plate print numeral: the coloured fringes read as a
+   mismatch next to everything else on the page */
 .statNum {
   display: inline-block;
   font-size: 64px;
   font-weight: 600;
+  line-height: 0.9;
+  font-feature-settings: 'pnum' 1;
+  color: var(--color-text);
 }
 
 .statLabel {

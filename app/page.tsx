@@ -2,7 +2,7 @@ import Link from 'next/link';
 import AtlasCanvas from '@/components/AtlasCanvas';
 import SiteFooter from '@/components/SiteFooter';
 import SiteHeader from '@/components/SiteHeader';
-import { PlateLine, PlateNumber } from '@/components/PlateText';
+import { PlateLine } from '@/components/PlateText';
 import {
   BENCH_HREF,
   STACK_HREF,
@@ -56,7 +56,7 @@ export default function ProtocolAtlas() {
             <div className={styles.statRow}>
               {stats.map((s) => (
                 <div className={styles.stat} key={s.num}>
-                  <PlateNumber value={s.num} className={styles.statNum} />
+                  <span className={styles.statNum}>{s.num}</span>
                   <div className={styles.statLabel}>{s.label}</div>
                 </div>
               ))}
