@@ -14,6 +14,9 @@ import {
 import { sayAt, stepsFor, toneVar, type Pickup } from './mail-data';
 import MailMap, { type Box, type Msg, type Rail } from './MailMap';
 import styles from './mail-lab.module.css';
+import MissionBriefing from '../MissionBriefing';
+import MissionPanel, { BriefingButton, useLabMission } from '../LabMission';
+import { MISSIONS } from './mail-mission';
 
 type ReadingMode = 'Simple' | 'Technical' | 'Packet';
 
@@ -29,6 +32,8 @@ export default function MailLab() {
   const [mode, setMode] = useState<ReadingMode>('Simple');
   const pop = pickup === 'pop';
   const steps = stepsFor(pickup);
+  const mission = MISSIONS[pickup];
+  const { briefingOpen, closeBriefing, openBriefing } = useLabMission(pickup);
   const maxStep = steps.length;
   const s = step;
   const current = s > 0 ? steps[s - 1] : null;
@@ -172,9 +177,7 @@ export default function MailLab() {
 
       <div className={styles.missionBar}>
         <span className={styles.missionTag}>Mission</span>
-        <h1 className={styles.missionLine}>
-          Follow one email from Alice’s laptop to Bob’s phone — and name the protocol at every box.
-        </h1>
+        <h1 className={styles.missionLine}>{mission.mission}</h1>
         <div className={styles.modeTabs}>
           {modes.map((option) => (
             <button key={option} type="button" data-active={mode === option} aria-pressed={mode === option} onClick={() => setMode(option)}>
@@ -182,6 +185,7 @@ export default function MailLab() {
             </button>
           ))}
         </div>
+        <BriefingButton onClick={openBriefing} />
       </div>
 
       <div className={styles.workspace}>
@@ -256,6 +260,7 @@ export default function MailLab() {
                 {s === 0 ? 'Press Send' : done ? 'Journey complete' : `Next — ${steps[s].tag}`}
               </button>
               <button type="button" className={styles.reset} onClick={reset}>Start over</button>
+              <MissionPanel key={pickup} mission={mission} step={step} total={maxStep} next={steps[step]?.at} />
             </div>
           </div>
 
@@ -336,6 +341,13 @@ export default function MailLab() {
         </div>
       )}
 
+      <MissionBriefing
+        open={briefingOpen}
+        onStart={closeBriefing}
+        tag="Mission"
+        mission={mission.mission}
+        questions={mission.checks.map((check) => check.q)}
+      />
     </main>
   );
 }

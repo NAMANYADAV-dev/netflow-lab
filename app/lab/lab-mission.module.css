@@ -1,0 +1,214 @@
+/* The mission kit for the step-through labs: the "think first" prompt under
+   the step button, the mission check at the end, and the button that brings
+   the briefing back. Colours come from the lab's own tokens. */
+
+.briefingButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid color-mix(in srgb, var(--a) 55%, var(--line));
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--a) 8%, transparent);
+  color: var(--a) !important;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.briefingButton:hover { background: color-mix(in srgb, var(--a) 15%, transparent); }
+
+/* ---------- think first ---------- */
+.think {
+  margin-top: 14px;
+  padding: 12px 13px;
+  border: 1px solid color-mix(in srgb, var(--a) 35%, var(--line));
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--a) 6%, var(--surface));
+  animation: kitIn 220ms ease both;
+}
+
+.thinkHead {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--a);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.thinkText {
+  margin: 7px 0 0;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 550;
+  line-height: 1.5;
+}
+
+.thinkReveal {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 1px dashed color-mix(in srgb, var(--a) 60%, var(--line));
+  border-radius: 999px;
+  background: transparent;
+  color: var(--a) !important;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 650;
+}
+
+.thinkReveal:hover { border-style: solid; background: color-mix(in srgb, var(--a) 8%, transparent); }
+
+.thinkAnswer {
+  margin: 10px 0 0;
+  padding: 8px 10px;
+  border-left: 3px solid var(--ok);
+  border-radius: 0 7px 7px 0;
+  background: color-mix(in srgb, var(--ok) 9%, var(--surface));
+  color: var(--text);
+  font-size: 12.5px;
+  line-height: 1.5;
+  animation: kitIn 200ms ease both;
+}
+
+.thinkAnswer b {
+  display: block;
+  margin-bottom: 2px;
+  color: var(--ok);
+  font-size: 9.5px;
+  font-weight: 750;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+/* ---------- mission check ---------- */
+.check {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid color-mix(in srgb, var(--a) 45%, var(--line));
+  border-top: 3px solid var(--a);
+  border-radius: 8px;
+  background: var(--surface);
+  animation: kitIn 260ms ease both;
+}
+
+.checkHead {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+  color: var(--a);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.question + .question { margin-top: 4px; padding-top: 12px; border-top: 1px dashed var(--line); }
+
+.questionText { margin: 10px 0 8px; color: var(--text); font-size: 13.5px; font-weight: 600; line-height: 1.45; }
+.questionText b { color: var(--a); }
+
+.options { display: flex; flex-direction: column; gap: 6px; }
+
+.options button {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface2);
+  color: var(--text2) !important;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12.5px;
+  line-height: 1.45;
+  text-align: left;
+  transition: border-color 140ms ease, background 140ms ease;
+}
+
+.options button svg { flex: none; margin-top: 1px; }
+.options button:not(:disabled):hover { border-color: var(--a); background: color-mix(in srgb, var(--a) 7%, var(--surface)); }
+.options button:disabled { cursor: default; }
+.options button:disabled:not([data-state]) { opacity: 0.55; }
+
+.options button[data-state='correct'] {
+  border-color: var(--ok);
+  background: color-mix(in srgb, var(--ok) 12%, var(--surface));
+  color: var(--text) !important;
+  font-weight: 600;
+}
+
+.options button[data-state='correct'] svg { color: var(--ok); }
+
+.options button[data-state='wrong'] {
+  border-color: color-mix(in srgb, var(--rst) 55%, var(--line));
+  background: color-mix(in srgb, var(--rst) 7%, var(--surface));
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--rst) 50%, transparent);
+}
+
+.options button[data-state='wrong'] svg { color: var(--rst); }
+
+.why {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  border-left: 3px solid var(--ok);
+  border-radius: 0 6px 6px 0;
+  background: color-mix(in srgb, var(--ok) 7%, transparent);
+  color: var(--text2);
+  font-size: 12.5px;
+  line-height: 1.5;
+  animation: kitIn 200ms ease both;
+}
+
+.retry { margin: 8px 0 0; color: var(--rst); font-size: 12px; }
+
+.score {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--a) 10%, var(--surface));
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.score svg { flex: none; color: var(--a); }
+.score span { flex: 1; min-width: 160px; }
+.score[data-perfect='true'] { background: color-mix(in srgb, var(--ok) 13%, var(--surface)); }
+.score[data-perfect='true'] svg { color: var(--ok); }
+
+.score button {
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--surface);
+  color: var(--text2) !important;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 650;
+}
+
+@keyframes kitIn { from { opacity: 0; transform: translateY(-4px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .think, .thinkAnswer, .check, .why { animation: none; }
+}

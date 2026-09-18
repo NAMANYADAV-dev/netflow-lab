@@ -15,6 +15,9 @@ import {
 import { secretStep, segmentsSent, stepsFor, tapColor, type TerminalMode } from './telnet-data';
 import TelnetSequence from './TelnetSequence';
 import styles from './telnet-lab.module.css';
+import MissionBriefing from '../MissionBriefing';
+import MissionPanel, { BriefingButton, useLabMission } from '../LabMission';
+import { MISSIONS } from './telnet-mission';
 
 type ReadingMode = 'Simple' | 'Technical' | 'Packet';
 
@@ -27,6 +30,8 @@ export default function TelnetLab() {
   const [tick, setTick] = useState(0);
   const line = mm === 'line';
   const steps = stepsFor(mm);
+  const mission = MISSIONS[mm];
+  const { briefingOpen, closeBriefing, openBriefing } = useLabMission(mm);
   const maxStep = steps.length;
   const current = step > 0 ? steps[step - 1] : null;
 
@@ -107,11 +112,7 @@ export default function TelnetLab() {
 
       <div className={styles.missionBar}>
         <span className={styles.missionTag}>Mission</span>
-        <h1 className={styles.missionLine}>
-          {line
-            ? 'Prove that line mode fixes the chattiness and nothing else.'
-            : 'Watch a password cross a café network in plain ASCII — one byte at a time.'}
-        </h1>
+        <h1 className={styles.missionLine}>{mission.mission}</h1>
         <div className={styles.modeTabs}>
           {modes.map((option) => (
             <button key={option} type="button" data-active={mode === option} aria-pressed={mode === option} onClick={() => setMode(option)}>
@@ -119,6 +120,7 @@ export default function TelnetLab() {
             </button>
           ))}
         </div>
+        <BriefingButton onClick={openBriefing} />
       </div>
 
       <div className={styles.workspace}>
@@ -203,6 +205,7 @@ export default function TelnetLab() {
                 {advanceLabel}
               </button>
               <button type="button" className={styles.reset} onClick={reset}>Close session</button>
+              <MissionPanel key={mm} mission={mission} step={step} total={maxStep} next={steps[step]?.at} />
             </div>
           </div>
 
@@ -284,6 +287,13 @@ export default function TelnetLab() {
         </div>
       )}
 
+      <MissionBriefing
+        open={briefingOpen}
+        onStart={closeBriefing}
+        tag="Mission"
+        mission={mission.mission}
+        questions={mission.checks.map((check) => check.q)}
+      />
     </main>
   );
 }

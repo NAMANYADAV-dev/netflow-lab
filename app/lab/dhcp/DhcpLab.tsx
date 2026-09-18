@@ -15,6 +15,9 @@ import {
 import { CLIENT_MAC, XID, freshWire, renewWire, stepsFor, wireCounts, type Scenario } from './dhcp-data';
 import DhcpDiagram from './DhcpDiagram';
 import styles from './dhcp-lab.module.css';
+import MissionBriefing from '../MissionBriefing';
+import MissionPanel, { BriefingButton, useLabMission } from '../LabMission';
+import { MISSIONS } from './dhcp-mission';
 
 type ReadingMode = 'Simple' | 'Technical' | 'Packet';
 
@@ -32,6 +35,8 @@ export default function DhcpLab() {
   const [tick, setTick] = useState(0);
   const renew = sc === 'renew';
   const steps = stepsFor(sc);
+  const mission = MISSIONS[sc];
+  const { briefingOpen, closeBriefing, openBriefing } = useLabMission(sc);
   const maxStep = steps.length;
   const current = step > 0 ? steps[step - 1] : null;
   const bound = renew ? true : step >= 4;
@@ -151,11 +156,7 @@ export default function DhcpLab() {
 
       <div className={styles.missionBar}>
         <span className={styles.missionTag}>Mission</span>
-        <h1 className={styles.missionLine}>
-          {renew
-            ? 'Keep the address you already have — with two packets and no broadcast.'
-            : 'Get PC-1 onto the network from nothing but a MAC address.'}
-        </h1>
+        <h1 className={styles.missionLine}>{mission.mission}</h1>
         <div className={styles.modeTabs}>
           {modes.map((option) => (
             <button key={option} type="button" data-active={mode === option} aria-pressed={mode === option} onClick={() => setMode(option)}>
@@ -163,6 +164,7 @@ export default function DhcpLab() {
             </button>
           ))}
         </div>
+        <BriefingButton onClick={openBriefing} />
       </div>
 
       <div className={styles.workspace}>
@@ -248,6 +250,7 @@ export default function DhcpLab() {
                 {advanceLabels[sc][Math.min(step, maxStep)]}
               </button>
               <button type="button" className={styles.reset} onClick={reset}>Release lease</button>
+              <MissionPanel key={sc} mission={mission} step={step} total={maxStep} next={steps[step]?.walkLabel} />
             </div>
           </div>
 
@@ -346,6 +349,13 @@ export default function DhcpLab() {
         </div>
       )}
 
+      <MissionBriefing
+        open={briefingOpen}
+        onStart={closeBriefing}
+        tag="Mission"
+        mission={mission.mission}
+        questions={mission.checks.map((check) => check.q)}
+      />
     </main>
   );
 }

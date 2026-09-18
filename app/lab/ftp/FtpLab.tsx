@@ -16,6 +16,9 @@ import {
 import { activeWire, passiveWire, stepsFor, wireCounts, type DataMode } from './ftp-data';
 import FtpSequence from './FtpSequence';
 import styles from './ftp-lab.module.css';
+import MissionBriefing from '../MissionBriefing';
+import MissionPanel, { BriefingButton, useLabMission } from '../LabMission';
+import { MISSIONS } from './ftp-mission';
 
 type ReadingMode = 'Simple' | 'Technical' | 'Packet';
 
@@ -50,6 +53,8 @@ export default function FtpLab() {
   const [tick, setTick] = useState(0);
   const active = dm === 'active';
   const steps = stepsFor(dm);
+  const mission = MISSIONS[dm];
+  const { briefingOpen, closeBriefing, openBriefing } = useLabMission(dm);
   const maxStep = steps.length;
   const current = step > 0 ? steps[step - 1] : null;
   const done = step >= maxStep;
@@ -136,11 +141,7 @@ export default function FtpLab() {
 
       <div className={styles.missionBar}>
         <span className={styles.missionTag}>Mission</span>
-        <h1 className={styles.missionLine}>
-          {active
-            ? 'Fetch the same file the original way — and find out where it dies.'
-            : 'Download report.pdf, and count how many TCP connections it really takes.'}
-        </h1>
+        <h1 className={styles.missionLine}>{mission.mission}</h1>
         <div className={styles.modeTabs}>
           {modes.map((option) => (
             <button key={option} type="button" data-active={mode === option} aria-pressed={mode === option} onClick={() => setMode(option)}>
@@ -148,6 +149,7 @@ export default function FtpLab() {
             </button>
           ))}
         </div>
+        <BriefingButton onClick={openBriefing} />
       </div>
 
       <div className={styles.workspace}>
@@ -234,6 +236,7 @@ export default function FtpLab() {
                 {advanceLabels[dm][Math.min(step, maxStep)]}
               </button>
               <button type="button" className={styles.reset} onClick={reset}>Reset session</button>
+              <MissionPanel key={dm} mission={mission} step={step} total={maxStep} next={steps[step]?.at} />
             </div>
           </div>
 
@@ -320,6 +323,13 @@ export default function FtpLab() {
         </div>
       )}
 
+      <MissionBriefing
+        open={briefingOpen}
+        onStart={closeBriefing}
+        tag="Mission"
+        mission={mission.mission}
+        questions={mission.checks.map((check) => check.q)}
+      />
     </main>
   );
 }

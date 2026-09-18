@@ -12,6 +12,9 @@ import {
 import { stepsFor, type IpDest } from './ip-data';
 import IpTopology from './IpTopology';
 import styles from './ip-lab.module.css';
+import MissionBriefing from '../MissionBriefing';
+import MissionPanel, { BriefingButton, useLabMission } from '../LabMission';
+import { MISSIONS } from './ip-mission';
 
 type ReadingMode = 'Simple' | 'Technical' | 'Packet';
 
@@ -60,6 +63,8 @@ export default function IpLab() {
   const [tick, setTick] = useState(0);
   const isLocal = dest === 'local';
   const steps = stepsFor(dest);
+  const mission = MISSIONS[dest];
+  const { briefingOpen, closeBriefing, openBriefing } = useLabMission(dest);
   const maxStep = steps.length;
   const current = step > 0 ? steps[step - 1] : null;
 
@@ -159,10 +164,7 @@ export default function IpLab() {
 
       <div className={styles.missionBar}>
         <span className={styles.missionTag}>Mission</span>
-        <h1 className={styles.missionLine}>
-          Route one IP datagram from <code data-tone="a">PC-1 192.168.1.10</code> to{' '}
-          <code data-tone="b">203.0.113.20</code>. It carries a TCP segment for port 443 — watch what each layer changes.
-        </h1>
+        <h1 className={styles.missionLine}>{mission.mission}</h1>
         <div className={styles.modeTabs}>
           {modes.map((option) => (
             <button key={option} type="button" data-active={mode === option} aria-pressed={mode === option} onClick={() => setMode(option)}>
@@ -170,6 +172,7 @@ export default function IpLab() {
             </button>
           ))}
         </div>
+        <BriefingButton onClick={openBriefing} />
       </div>
 
       <div className={styles.workspace}>
@@ -241,6 +244,7 @@ export default function IpLab() {
                 {advanceLabels[dest][Math.min(step, maxStep)]}
               </button>
               <button type="button" className={styles.reset} onClick={reset}>Reset datagram</button>
+              <MissionPanel key={dest} mission={mission} step={step} total={maxStep} next={steps[step]?.simple} />
             </div>
           </div>
 
@@ -278,6 +282,13 @@ export default function IpLab() {
         </div>
       )}
 
+      <MissionBriefing
+        open={briefingOpen}
+        onStart={closeBriefing}
+        tag="Mission"
+        mission={mission.mission}
+        questions={mission.checks.map((check) => check.q)}
+      />
     </main>
   );
 }

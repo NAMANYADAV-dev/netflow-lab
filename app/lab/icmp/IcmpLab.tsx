@@ -13,6 +13,9 @@ import {
 import { stepsFor, type IcmpTool } from './icmp-data';
 import { PingTopology, TraceLadder } from './IcmpDiagrams';
 import styles from './icmp-lab.module.css';
+import MissionBriefing from '../MissionBriefing';
+import MissionPanel, { BriefingButton, useLabMission } from '../LabMission';
+import { MISSIONS } from './icmp-mission';
 
 type ReadingMode = 'Simple' | 'Technical' | 'Packet';
 
@@ -65,6 +68,8 @@ export default function IcmpLab() {
   const [tick, setTick] = useState(0);
   const isPing = tool === 'ping';
   const steps = stepsFor(tool);
+  const mission = MISSIONS[tool];
+  const { briefingOpen, closeBriefing, openBriefing } = useLabMission(tool);
   const maxStep = steps.length;
   const current = step > 0 ? steps[step - 1] : null;
 
@@ -153,11 +158,7 @@ export default function IcmpLab() {
 
       <div className={styles.missionBar}>
         <span className={styles.missionTag}>Mission</span>
-        <h1 className={styles.missionLine}>
-          {isPing
-            ? 'Ping the web server at 203.0.113.20 and watch the hop counter fall on the way there.'
-            : 'Map the path to 203.0.113.20 using nothing but packets that die on purpose.'}
-        </h1>
+        <h1 className={styles.missionLine}>{mission.mission}</h1>
         <div className={styles.modeTabs}>
           {modes.map((option) => (
             <button key={option} type="button" data-active={mode === option} aria-pressed={mode === option} onClick={() => setMode(option)}>
@@ -165,6 +166,7 @@ export default function IcmpLab() {
             </button>
           ))}
         </div>
+        <BriefingButton onClick={openBriefing} />
       </div>
 
       <div className={styles.workspace}>
@@ -254,6 +256,7 @@ export default function IcmpLab() {
                 {advanceLabels[tool][Math.min(step, maxStep)]}
               </button>
               <button type="button" className={styles.reset} onClick={reset}>Reset</button>
+              <MissionPanel key={tool} mission={mission} step={step} total={maxStep} next={steps[step]?.simple} />
             </div>
           </div>
 
@@ -291,6 +294,13 @@ export default function IcmpLab() {
         </div>
       )}
 
+      <MissionBriefing
+        open={briefingOpen}
+        onStart={closeBriefing}
+        tag="Mission"
+        mission={mission.mission}
+        questions={mission.checks.map((check) => check.q)}
+      />
     </main>
   );
 }

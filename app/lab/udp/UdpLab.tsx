@@ -16,6 +16,9 @@ import {
 import { LOST_DG, stepsFor, tcpTraits, udpTraits, type Wire } from './udp-data';
 import UdpStream from './UdpStream';
 import styles from './udp-lab.module.css';
+import MissionBriefing from '../MissionBriefing';
+import MissionPanel, { BriefingButton, useLabMission } from '../LabMission';
+import { MISSIONS } from './udp-mission';
 
 type ReadingMode = 'Simple' | 'Technical' | 'Packet';
 
@@ -32,6 +35,8 @@ export default function UdpLab() {
   const [tick, setTick] = useState(0);
   const lossy = wire === 'lossy';
   const steps = stepsFor(wire);
+  const mission = MISSIONS[wire];
+  const { briefingOpen, closeBriefing, openBriefing } = useLabMission(wire);
   const current = step > 0 ? steps[step - 1] : null;
 
   const chooseWire = (next: Wire) => {
@@ -112,11 +117,7 @@ export default function UdpLab() {
 
       <div className={styles.missionBar}>
         <span className={styles.missionTag}>Mission</span>
-        <h1 className={styles.missionLine}>
-          {lossy
-            ? 'Send the same four datagrams across a congested wire — and find out who reports the one that vanishes.'
-            : 'Send four datagrams to 203.0.113.20:5060 with no handshake, no acknowledgement, and no waiting.'}
-        </h1>
+        <h1 className={styles.missionLine}>{mission.mission}</h1>
         <div className={styles.modeTabs}>
           {modes.map((option) => (
             <button key={option} type="button" data-active={mode === option} aria-pressed={mode === option} onClick={() => setMode(option)}>
@@ -124,6 +125,7 @@ export default function UdpLab() {
             </button>
           ))}
         </div>
+        <BriefingButton onClick={openBriefing} />
       </div>
 
       <div className={styles.workspace}>
@@ -220,6 +222,7 @@ export default function UdpLab() {
                 {advanceLabels[Math.min(step, MAX_STEP)]}
               </button>
               <button type="button" className={styles.reset} onClick={reset}>Reset stream</button>
+              <MissionPanel key={wire} mission={mission} step={step} total={MAX_STEP} next={walkLabels[step]} />
             </div>
           </div>
 
@@ -268,6 +271,13 @@ export default function UdpLab() {
         </div>
       )}
 
+      <MissionBriefing
+        open={briefingOpen}
+        onStart={closeBriefing}
+        tag="Mission"
+        mission={mission.mission}
+        questions={mission.checks.map((check) => check.q)}
+      />
     </main>
   );
 }

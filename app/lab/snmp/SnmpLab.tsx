@@ -30,6 +30,9 @@ import { practiceFor } from './snmp-practice';
 import guide from './snmp-guide.module.css';
 import hints from '../lab-hints.module.css';
 import styles from './snmp-lab.module.css';
+import MissionBriefing from '../MissionBriefing';
+import MissionPanel, { BriefingButton, useLabMission } from '../LabMission';
+import { MISSIONS } from './snmp-mission';
 
 type ReadingMode = 'Simple' | 'Technical' | 'Packet';
 type Vars = CSSProperties & Record<`--${string}`, string>;
@@ -108,6 +111,8 @@ export default function SnmpLab() {
 
   const poll = sc === 'poll';
   const steps = stepsFor(sc);
+  const mission = MISSIONS[sc];
+  const { briefingOpen, closeBriefing, openBriefing } = useLabMission(sc);
   const maxStep = steps.length;
   const current = step > 0 ? steps[step - 1] : null;
   const done = step >= maxStep;
@@ -244,13 +249,7 @@ export default function SnmpLab() {
         {/* ---------------------------------------------------- mission */}
         <div className={styles.missionBar}>
           <span className={styles.missionTag}>Mission</span>
-          <h1 className={styles.missionLine}>
-            {poll ? (
-              <>Watch a router: measure how busy port <code>Gi0/2</code> is, then <b>catch the alarm</b> when it fails.</>
-            ) : (
-              <>Ask the router the same question with <b>SNMPv3</b>, so nobody else can read the answer.</>
-            )}
-          </h1>
+          <h1 className={styles.missionLine}>{mission.mission}</h1>
         </div>
 
         {/* ------------------------------------------------- start here */}
@@ -289,6 +288,7 @@ export default function SnmpLab() {
             >
               <Question weight="duotone" size={17} /> How to use
             </button>
+            <BriefingButton onClick={openBriefing} />
           </div>
 
           <div className={styles.progress}>
@@ -362,6 +362,9 @@ export default function SnmpLab() {
             )}
             {nextLabels[sc][Math.min(step, maxStep)]} {!done && <ArrowRight weight="bold" size={17} />}
           </button>
+        </div>
+        <div className={styles.missionPanel}>
+          <MissionPanel key={sc} mission={mission} step={step} total={maxStep} next={steps[step]?.walkLabel} />
         </div>
 
         {/* ---------------------------------------------------- key idea */}
@@ -465,6 +468,13 @@ export default function SnmpLab() {
         <SetupGuide />
       </div>
       </HintLayer>
+      <MissionBriefing
+        open={briefingOpen}
+        onStart={closeBriefing}
+        tag="Mission"
+        mission={mission.mission}
+        questions={mission.checks.map((check) => check.q)}
+      />
     </main>
   );
 }

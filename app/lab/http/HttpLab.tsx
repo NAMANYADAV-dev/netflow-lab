@@ -15,6 +15,9 @@ import {
 import { firstWire, revisitWire, stepsFor, wireCounts, type Visit } from './http-data';
 import HttpSequence from './HttpSequence';
 import styles from './http-lab.module.css';
+import MissionBriefing from '../MissionBriefing';
+import MissionPanel, { BriefingButton, useLabMission } from '../LabMission';
+import { MISSIONS } from './http-mission';
 
 type ReadingMode = 'Simple' | 'Technical' | 'Packet';
 
@@ -46,6 +49,8 @@ export default function HttpLab() {
   const [tick, setTick] = useState(0);
   const revisit = visit === 'revisit';
   const steps = stepsFor(visit);
+  const mission = MISSIONS[visit];
+  const { briefingOpen, closeBriefing, openBriefing } = useLabMission(visit);
   const maxStep = steps.length;
   const current = step > 0 ? steps[step - 1] : null;
 
@@ -128,11 +133,7 @@ export default function HttpLab() {
 
       <div className={styles.missionBar}>
         <span className={styles.missionTag}>Mission</span>
-        <h1 className={styles.missionLine}>
-          {revisit
-            ? 'Reload the same page — and find the request that sends no page back.'
-            : 'Fetch example.com/index.html and count how many requests one page really takes.'}
-        </h1>
+        <h1 className={styles.missionLine}>{mission.mission}</h1>
         <div className={styles.modeTabs}>
           {modes.map((option) => (
             <button key={option} type="button" data-active={mode === option} aria-pressed={mode === option} onClick={() => setMode(option)}>
@@ -140,6 +141,7 @@ export default function HttpLab() {
             </button>
           ))}
         </div>
+        <BriefingButton onClick={openBriefing} />
       </div>
 
       <div className={styles.workspace}>
@@ -228,6 +230,7 @@ export default function HttpLab() {
                 {advanceLabels[visit][Math.min(step, maxStep)]}
               </button>
               <button type="button" className={styles.reset} onClick={reset}>Reset exchange</button>
+              <MissionPanel key={visit} mission={mission} step={step} total={maxStep} next={steps[step]?.at} />
             </div>
           </div>
 
@@ -291,6 +294,13 @@ export default function HttpLab() {
         </div>
       )}
 
+      <MissionBriefing
+        open={briefingOpen}
+        onStart={closeBriefing}
+        tag="Mission"
+        mission={mission.mission}
+        questions={mission.checks.map((check) => check.q)}
+      />
     </main>
   );
 }

@@ -14,6 +14,9 @@ import {
 import { coldTrace, stepsFor, warmTrace, type Cache } from './dns-data';
 import DnsDiagram from './DnsDiagram';
 import styles from './dns-lab.module.css';
+import MissionBriefing from '../MissionBriefing';
+import MissionPanel, { BriefingButton, useLabMission } from '../LabMission';
+import { MISSIONS } from './dns-mission';
 
 type ReadingMode = 'Simple' | 'Technical' | 'Packet';
 
@@ -70,6 +73,8 @@ export default function DnsLab() {
   const [tick, setTick] = useState(0);
   const warm = cache === 'warm';
   const steps = stepsFor(cache);
+  const mission = MISSIONS[cache];
+  const { briefingOpen, closeBriefing, openBriefing } = useLabMission(cache);
   const maxStep = steps.length;
   const current = step > 0 ? steps[step - 1] : null;
 
@@ -173,11 +178,7 @@ export default function DnsLab() {
 
       <div className={styles.missionBar}>
         <span className={styles.missionTag}>Mission</span>
-        <h1 className={styles.missionLine}>
-          {warm
-            ? 'Ask for the same name again and find out what the cache just saved you.'
-            : 'Turn www.example.com into an address, starting from a resolver that knows nothing.'}
-        </h1>
+        <h1 className={styles.missionLine}>{mission.mission}</h1>
         <div className={styles.modeTabs}>
           {modes.map((option) => (
             <button key={option} type="button" data-active={mode === option} aria-pressed={mode === option} onClick={() => setMode(option)}>
@@ -185,6 +186,7 @@ export default function DnsLab() {
             </button>
           ))}
         </div>
+        <BriefingButton onClick={openBriefing} />
       </div>
 
       <div className={styles.workspace}>
@@ -269,6 +271,7 @@ export default function DnsLab() {
                 {advanceLabels[cache][Math.min(step, maxStep)]}
               </button>
               <button type="button" className={styles.reset} onClick={reset}>Reset lookup</button>
+              <MissionPanel key={cache} mission={mission} step={step} total={maxStep} next={walkLabels[cache][step]} />
             </div>
           </div>
 
@@ -324,6 +327,13 @@ export default function DnsLab() {
         </div>
       )}
 
+      <MissionBriefing
+        open={briefingOpen}
+        onStart={closeBriefing}
+        tag="Mission"
+        mission={mission.mission}
+        questions={mission.checks.map((check) => check.q)}
+      />
     </main>
   );
 }
