@@ -20,6 +20,7 @@ import {
 import HintLayer from '../HintLayer';
 import LabTour, { type TourStep } from '../LabTour';
 import MissionBriefing from '../MissionBriefing';
+import StepHints, { type StepHint } from '../StepHints';
 import { AttackDiagram, NormalDiagram } from './ArpDiagram';
 import styles from './arp-lab.module.css';
 
@@ -175,6 +176,60 @@ const LAST_BEAT = 8;
 /** the four things the frame needs, in the order the builder asks for them */
 const STEP_NAMES = ['EtherType', 'Operation', 'Target IP', 'Dest MAC'];
 
+/* The hint ladder for each builder step, in STEP_NAMES order. The nudges
+   point at what to think about without naming the value; only the answer
+   does, and it takes one more click on purpose. */
+const STEP_HINTS: StepHint[] = [
+  {
+    nudges: [
+      'Every Ethernet frame has a label saying what is inside it. This frame doesn’t carry IP traffic yet. It carries a question about an address.',
+      '0x0800 means an IPv4 packet and 0x86DD means IPv6. PC-A can’t send IP to .7 yet, and that is the whole problem. Which value is left?',
+    ],
+    answer: '0x0806, the EtherType reserved for ARP.',
+  },
+  {
+    nudges: [
+      'Look at PC-A’s situation. Does it have information to give, or information it needs?',
+      'ARP has two messages. One asks “who has this IP?” and the other answers “I do, here is my MAC.” Which one is PC-A sending?',
+    ],
+    answer: '1 · request. PC-A is asking, so it is a request.',
+  },
+  {
+    nudges: [
+      'Read the mission again. Which host is PC-A trying to reach?',
+      'It isn’t PC-A’s own address (192.168.1.10, in the grey box above). It is the host whose MAC is missing.',
+    ],
+    answer: '192.168.1.7',
+  },
+  {
+    nudges: [
+      'To send a frame to one host directly, you need that host’s MAC. Do you have it?',
+      'PC-A doesn’t know which machine owns .7, so the question has to go to every host on the segment. The owner will answer.',
+    ],
+    answer: 'ff:ff:ff:ff:ff:ff, the broadcast address. Every host hears it.',
+  },
+];
+
+/* Why the value the reader chose is wrong, in terms of the mistake they
+   actually made. Returns null for a right answer. */
+function whyWrong(step: number, value: string | null): string | null {
+  if (step === 2) {
+    const ip = (value ?? '').trim();
+    if (ip === '192.168.1.7') return null;
+    if (!addressTypedOut(ip)) return 'Type a full IPv4 address: four numbers separated by dots.';
+    if (ip === '192.168.1.10') return 'That is PC-A’s own address, and PC-A already knows its own MAC. Which host is it trying to reach?';
+    return `${ip} isn’t the host PC-A wants to reach. Check the mission at the top.`;
+  }
+  if (value === null) return 'Nothing is picked here yet. Choose one of the options.';
+  switch (`${step}:${value}`) {
+    case '0:0x0800': return '0x0800 carries an IPv4 packet, but PC-A can’t send one to .7 until it knows .7’s MAC. This frame has to find that out first.';
+    case '0:0x86DD': return '0x86DD is IPv6. This network runs IPv4, and IPv6 doesn’t use ARP at all (it uses Neighbor Discovery).';
+    case '1:2': return 'A reply answers a question, and nobody has asked PC-A anything. PC-A is the one who needs to know.';
+    case '3:uni': return 'You can’t unicast to .7, because its MAC is exactly what PC-A is trying to find out. The frame has to reach everyone.';
+    default: return null;
+  }
+}
+
 /* Whether the target IP has actually been typed out, rather than merely
    started. Step 3 hands over to step 4 on the strength of this, and "not
    empty" is the wrong test for that: it turns true on the first keystroke,
@@ -224,6 +279,9 @@ export default function ArpLab() {
   /* the mission popup opens with the lab, and again for each story, so the
      question is read before the work starts; the walkthrough waits for it */
   const [briefing, setBriefing] = useState(true);
+  /* how far down each step's hint ladder the reader has gone; kept for the
+     whole attempt, so the sent summary can say how much help was used */
+  const [hintLevel, setHintLevel] = useState([0, 0, 0, 0]);
 
   const attack = scenario === 'attack';
   const beats = attack ? attackBeats : normalBeats;
@@ -281,6 +339,7 @@ export default function ArpLab() {
     setPlaying(false);
     setBeat(0);
     setAnswer(null);
+    setHintLevel([0, 0, 0, 0]);
   };
 
   const chooseScenario = (next: Scenario) => {
@@ -297,10 +356,13 @@ export default function ArpLab() {
     setFOp(null);
     setFTip('');
     setFDst(null);
+    setHintLevel([0, 0, 0, 0]);
   };
 
   const openInspect = () => setShowInspect(true);
   const closeBriefing = useCallback(() => setBriefing(false), []);
+  const revealHint = (step: number) =>
+    setHintLevel((levels) => levels.map((level, i) => (i === step ? level + 1 : level)));
 
   const pick = (index: number) => {
     setAnswer(index);
@@ -357,6 +419,22 @@ export default function ArpLab() {
      points at the first thing that is wrong with it; otherwise carry on. */
   const guide = redo ?? (tried && firstWrong !== -1 ? firstWrong + 1 : nextUp);
   const tipOk = fTip.trim() === '192.168.1.7';
+
+  /* the hint ladder sits under whichever step the coach is pointing at, and
+     after a rejected send it also says why that step's value was wrong */
+  const fieldValues = [fEth, fOp, fTip, fDst];
+  const hintsFor = (i: number) => guide === i + 1 && (
+    <StepHints
+      hint={STEP_HINTS[i]}
+      level={hintLevel[i]}
+      onReveal={() => revealHint(i)}
+      feedback={tried && wrong[i] ? whyWrong(i, fieldValues[i]) : null}
+      tour={`f${i + 1}`}
+    />
+  );
+  const hintsUsed = hintLevel.reduce((sum, level) => sum + level, 0);
+  const answersShown = hintLevel.filter((level, i) => level > STEP_HINTS[i].nudges.length).length;
+  const wrongCount = wrong.filter(Boolean).length;
   const cached = beat >= 7;
   const poisoned = beat >= 4;
 
@@ -432,7 +510,7 @@ export default function ArpLab() {
                 <span>src IP   192.168.1.10 <i>(PC-A)</i></span>
               </div>
 
-              {guide === 1 && <Coach tone={tried && wrong[0] ? 'rst' : 'a'} tour="f1" text="step 1 of 4 · which payload? pick ARP" />}
+              {guide === 1 && <Coach tone={tried && wrong[0] ? 'rst' : 'a'} tour="f1" text="step 1 of 4 · what kind of payload is this?" />}
               <div className={styles.field} data-tour="f1">
                 <div className={styles.fieldLabel}>EtherType</div>
                 <div className={styles.options} data-bad={tried && fEth !== '0x0806'}>
@@ -442,6 +520,7 @@ export default function ArpLab() {
                       onClick={() => { setFEth(value); setTried(false); setRedo(null); }}>{value}</button>
                   ))}
                 </div>
+                {hintsFor(0)}
               </div>
 
               {guide === 2 && <Coach tone={tried && wrong[1] ? 'rst' : 'a'} tour="f2" text="step 2 of 4 · asking, or answering?" />}
@@ -454,6 +533,7 @@ export default function ArpLab() {
                       onClick={() => { setFOp(option.v); setTried(false); setRedo(null); }}>{option.label}</button>
                   ))}
                 </div>
+                {hintsFor(1)}
               </div>
 
               {guide === 3 && <Coach tone={tried && wrong[2] ? 'rst' : 'a'} tour="f3" text="step 3 of 4 · type the IP to resolve" />}
@@ -473,9 +553,10 @@ export default function ArpLab() {
                   data-state={tried && !tipOk ? 'bad' : tipOk ? 'ok' : undefined}
                   onChange={(event) => { setFTip(event.target.value); setTried(false); setRedo(null); }}
                 />
+                {hintsFor(2)}
               </div>
 
-              {guide === 4 && <Coach tone={tried && wrong[3] ? 'rst' : 'a'} tour="f4" text="step 4 of 4 · so who should hear this?" />}
+              {guide === 4 && <Coach tone={tried && wrong[3] ? 'rst' : 'a'} tour="f4" text="step 4 of 4 · who should hear this?" />}
               <div className={styles.field} data-tour="f4">
                 <div className={styles.fieldLabel}>Destination MAC — who do we send it to?</div>
                 <div className={styles.optionsStack} data-bad={tried && fDst !== 'bc'}>
@@ -488,6 +569,7 @@ export default function ArpLab() {
                     </button>
                   ))}
                 </div>
+                {hintsFor(3)}
               </div>
 
               <div className={styles.fieldLast}>
@@ -511,10 +593,11 @@ export default function ArpLab() {
               >
                 <PaperPlaneRight weight="fill" size={16} /> Send onto the wire
               </button>
+              {/* no answers here: the step marked ! says what is wrong with it */}
               {tried && !valid && (
                 <p className={styles.hint}>
-                  Not quite — an ARP request uses EtherType 0x0806, opcode 1, is addressed to the broadcast MAC,
-                  and asks about 192.168.1.7.
+                  Not sent yet. {wrongCount === 1 ? 'One step needs' : `${wrongCount} steps need`} another look.
+                  The builder has moved to the first one and says why.
                 </p>
               )}
             </div>
@@ -523,6 +606,13 @@ export default function ArpLab() {
           {!attack && sent && (
             <div className={styles.sentBody}>
               <div className={styles.sentLabel}><CheckCircle weight="fill" size={15} /> Frame sent</div>
+              <p className={styles.hintScore} data-clean={hintsUsed === 0}>
+                {hintsUsed === 0
+                  ? '★ Built with no hints'
+                  : answersShown > 0
+                    ? `Built with ${hintsUsed} hint${hintsUsed === 1 ? '' : 's'}, ${answersShown} answer${answersShown === 1 ? '' : 's'} shown. Reset and try it without them.`
+                    : `Built with ${hintsUsed} hint${hintsUsed === 1 ? '' : 's'} and no answers shown.`}
+              </p>
               <div className={styles.frame}>
                 <div><b>eth.dst </b>ff:ff:ff:ff:ff:ff</div>
                 <div><b>eth.src </b>00:1a:2b:00:0a:01</div>

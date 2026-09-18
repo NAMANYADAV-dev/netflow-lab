@@ -1,0 +1,86 @@
+/* The hint ladder under a builder step. Colours come from the lab's own
+   tokens (--a, --rst, --ok…), since it is rendered inside the lab. */
+
+.hints { margin: 10px 0 0; display: flex; flex-direction: column; gap: 8px; }
+
+.feedback {
+  margin: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 8px 10px;
+  border: 1px solid color-mix(in srgb, var(--rst) 35%, transparent);
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--rst) 7%, var(--surface));
+  color: var(--rst);
+  font-size: 12px;
+  line-height: 1.5;
+  animation: hintIn 200ms ease both;
+}
+
+.feedback svg { flex: none; margin-top: 2px; }
+.feedback span { color: var(--text2); }
+
+.ladder { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+
+.ladder li {
+  padding: 8px 10px;
+  border-left: 3px solid var(--a);
+  border-radius: 0 7px 7px 0;
+  background: color-mix(in srgb, var(--a) 8%, var(--surface));
+  color: var(--text2);
+  font-size: 12.5px;
+  line-height: 1.5;
+  animation: hintIn 220ms ease both;
+}
+
+.ladder li b {
+  display: block;
+  margin-bottom: 2px;
+  color: var(--a);
+  font-size: 9.5px;
+  font-weight: 750;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.ladder li[data-kind='answer'] {
+  border-left-color: var(--ok);
+  background: color-mix(in srgb, var(--ok) 9%, var(--surface));
+  color: var(--text);
+  font-weight: 600;
+}
+
+.ladder li[data-kind='answer'] b { color: var(--ok); }
+
+.reveal {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 1px dashed color-mix(in srgb, var(--a) 60%, var(--line));
+  border-radius: 999px;
+  background: transparent;
+  color: var(--a) !important;
+  cursor: pointer;
+  font-size: 11.5px;
+  font-weight: 650;
+}
+
+.reveal:hover { border-style: solid; background: color-mix(in srgb, var(--a) 8%, transparent); }
+
+.reveal i {
+  font-style: normal;
+  font-family: var(--mono, monospace);
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+.reveal[data-kind='answer'] { border-color: color-mix(in srgb, var(--text3) 60%, var(--line)); color: var(--text3) !important; }
+
+@keyframes hintIn { from { opacity: 0; transform: translateY(-4px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .feedback, .ladder li { animation: none; }
+}
