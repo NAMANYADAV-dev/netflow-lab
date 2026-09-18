@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ArrowCounterClockwise,
   CaretLeft,
@@ -19,6 +19,7 @@ import {
 } from '@phosphor-icons/react';
 import HintLayer from '../HintLayer';
 import LabTour, { type TourStep } from '../LabTour';
+import MissionBriefing from '../MissionBriefing';
 import { AttackDiagram, NormalDiagram } from './ArpDiagram';
 import styles from './arp-lab.module.css';
 
@@ -220,6 +221,9 @@ export default function ArpLab() {
      the browser remembers about having seen it */
   const [tourRun, setTourRun] = useState(0);
   const [answer, setAnswer] = useState<number | null>(null);
+  /* the mission popup opens with the lab, and again for each story, so the
+     question is read before the work starts; the walkthrough waits for it */
+  const [briefing, setBriefing] = useState(true);
 
   const attack = scenario === 'attack';
   const beats = attack ? attackBeats : normalBeats;
@@ -283,6 +287,7 @@ export default function ArpLab() {
     if (next === scenario) return;
     window.clearTimeout(startTimer.current);
     setScenario(next);
+    setBriefing(true);
     setBeat(0);
     setPlaying(false);
     setSent(false);
@@ -295,6 +300,7 @@ export default function ArpLab() {
   };
 
   const openInspect = () => setShowInspect(true);
+  const closeBriefing = useCallback(() => setBriefing(false), []);
 
   const pick = (index: number) => {
     setAnswer(index);
@@ -308,6 +314,18 @@ export default function ArpLab() {
     : 'The question was a broadcast, but the reply came back as a unicast. Why?';
 
   const tipTyped = addressTypedOut(fTip);
+
+  // shown in the mission bar and again in the briefing popup
+  const missionLine = attack ? (
+    <>
+      A rogue host forges ARP replies to poison PC-A&apos;s cache and slip into the{' '}
+      <b data-tone="rst">middle of every conversation</b>.
+    </>
+  ) : (
+    <>
+      PC-A needs to reach <code>192.168.1.7</code> — but it only knows the IP. Resolve its <b>MAC address</b>.
+    </>
+  );
 
   /* Which answers are actually wrong. Only shown once they have tried to send:
      marking a field red the moment it is picked would give the answer away,
@@ -353,22 +371,13 @@ export default function ArpLab() {
             {attack && <Skull weight="fill" size={13} />}
             {attack ? 'Threat' : 'Mission'}
           </span>
-          {attack ? (
-            <h1 className={styles.missionLine}>
-              A rogue host forges ARP replies to poison PC-A&apos;s cache and slip into the{' '}
-              <b data-tone="rst">middle of every conversation</b>.
-            </h1>
-          ) : (
-            <h1 className={styles.missionLine}>
-              PC-A needs to reach <code>192.168.1.7</code> — but it only knows the IP. Resolve its <b>MAC address</b>.
-            </h1>
-          )}
+          <h1 className={styles.missionLine}>{missionLine}</h1>
         </span>
 
         <div className={styles.scenarioTabs}>
           <button type="button" className={styles.tourButton}
             data-hint="Click to walk through this lab step by step."
-            onClick={() => setTourRun((run) => run + 1)}>
+            onClick={() => { setBriefing(true); setTourRun((run) => run + 1); }}>
             <Question weight="duotone" size={15} /> How to use
           </button>
           <button type="button" data-active={!attack} aria-pressed={!attack} data-tone="b"
@@ -723,9 +732,18 @@ export default function ArpLab() {
       <LabTour
         key={`${scenario}-${tourRun}`}
         steps={tourSteps}
-        active={!sent}
+        active={!sent && !briefing}
         at={attack ? null : guide - 1}
         question={{ label: 'Question to answer at the end', text: challengeQuestion }}
+      />
+
+      <MissionBriefing
+        open={briefing}
+        onStart={closeBriefing}
+        tone={attack ? 'rst' : 'a'}
+        tag={attack ? 'Threat' : 'Mission'}
+        mission={missionLine}
+        questions={[challengeQuestion]}
       />
     </main>
   );

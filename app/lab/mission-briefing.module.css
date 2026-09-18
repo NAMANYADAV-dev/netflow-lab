@@ -1,0 +1,109 @@
+/* The mission popup that opens with a lab. Colours come from the lab's own
+   tokens (--a, --rst, --surface…), since it is rendered inside the lab. */
+
+.backdrop {
+  --tone: var(--a, #9a5f02);
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgb(14 20 26 / 55%);
+  backdrop-filter: blur(3px);
+  animation: fadeIn 180ms ease both;
+}
+
+.backdrop[data-tone='rst'] { --tone: var(--rst, #b8322a); }
+
+.card {
+  width: 520px;
+  max-width: 100%;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  padding: 24px 26px 22px;
+  border: 1px solid var(--line, #c9d3db);
+  border-top: 3px solid var(--tone);
+  border-radius: 12px;
+  background: var(--surface, #fff);
+  color: var(--text, #182027);
+  box-shadow: 0 24px 60px -20px rgb(0 0 0 / 55%);
+  animation: rise 240ms 60ms ease both;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border: 1px solid var(--tone);
+  border-radius: 3px;
+  color: var(--tone);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.mission {
+  margin: 12px 0 18px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.mission code { color: var(--b, #0b6b80); font-family: var(--mono, monospace); font-size: 0.94em; }
+.mission b { color: var(--tone); font-weight: inherit; }
+
+.questions {
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: #1e1a14;
+  color: #f4efe6;
+}
+
+.questionsHead {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  color: #f0b429;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.questions ol { margin: 0; padding-left: 20px; }
+.questions li { font-size: 14.5px; font-weight: 600; line-height: 1.5; }
+.questions li + li { margin-top: 6px; }
+.questions ol:has(> li:only-child) { padding-left: 0; list-style: none; }
+
+.note { margin: 10px 0 0; color: #b6ab98; font-size: 12px; }
+
+.start {
+  margin-top: 18px;
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 16px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--tone);
+  color: #fff !important;
+  font-size: 14px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.start:hover { filter: brightness(1.08); }
+.start:focus-visible { outline: 2px solid var(--b, #0b6b80); outline-offset: 3px; }
+
+@keyframes fadeIn { from { opacity: 0; } }
+@keyframes rise { from { opacity: 0; transform: translateY(10px) scale(0.98); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .backdrop, .card { animation: none; }
+}
