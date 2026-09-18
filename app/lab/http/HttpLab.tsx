@@ -15,6 +15,7 @@ import {
 import { firstWire, revisitWire, stepsFor, wireCounts, type Visit } from './http-data';
 import HttpSequence from './HttpSequence';
 import styles from './http-lab.module.css';
+import hints from '../lab-hints.module.css';
 import MissionBriefing from '../MissionBriefing';
 import MissionPanel, { BriefingButton, useLabMission } from '../LabMission';
 import { MISSIONS } from './http-mission';
@@ -226,7 +227,13 @@ export default function HttpLab() {
                 ))}
               </div>
 
-              <button type="button" className={styles.advance} disabled={done} onClick={advance}>
+              <button type="button" className={`${styles.advance} ${hints.cueHost}`} disabled={done} onClick={advance}>
+                {/* until the first press, say plainly that this button is what runs the lab */}
+                {step === 0 && !briefingOpen && (
+                  <span className={hints.startCue} aria-hidden="true">
+                    <CursorClick weight="fill" size={14} /> Press here to start the animation
+                  </span>
+                )}
                 {advanceLabels[visit][Math.min(step, maxStep)]}
               </button>
               <button type="button" className={styles.reset} onClick={reset}>Reset exchange</button>

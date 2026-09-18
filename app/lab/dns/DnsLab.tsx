@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import {
   CheckCircle,
+  CursorClick,
   Lightbulb,
   Lightning,
   Package,
@@ -14,6 +15,7 @@ import {
 import { coldTrace, stepsFor, warmTrace, type Cache } from './dns-data';
 import DnsDiagram from './DnsDiagram';
 import styles from './dns-lab.module.css';
+import hints from '../lab-hints.module.css';
 import MissionBriefing from '../MissionBriefing';
 import MissionPanel, { BriefingButton, useLabMission } from '../LabMission';
 import { MISSIONS } from './dns-mission';
@@ -267,7 +269,13 @@ export default function DnsLab() {
                 ))}
               </div>
 
-              <button type="button" className={styles.advance} disabled={answered} onClick={advance}>
+              <button type="button" className={`${styles.advance} ${hints.cueHost}`} disabled={answered} onClick={advance}>
+                {/* until the first press, say plainly that this button is what runs the lab */}
+                {step === 0 && !briefingOpen && (
+                  <span className={hints.startCue} aria-hidden="true">
+                    <CursorClick weight="fill" size={14} /> Press here to start the animation
+                  </span>
+                )}
                 {advanceLabels[cache][Math.min(step, maxStep)]}
               </button>
               <button type="button" className={styles.reset} onClick={reset}>Reset lookup</button>

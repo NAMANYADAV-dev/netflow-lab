@@ -4,6 +4,7 @@ import { useState } from 'react';
 import {
   Broadcast,
   CheckCircle,
+  CursorClick,
   GitFork,
   Lightbulb,
   Package,
@@ -13,6 +14,7 @@ import {
 import { stepsFor, type IcmpTool } from './icmp-data';
 import { PingTopology, TraceLadder } from './IcmpDiagrams';
 import styles from './icmp-lab.module.css';
+import hints from '../lab-hints.module.css';
 import MissionBriefing from '../MissionBriefing';
 import MissionPanel, { BriefingButton, useLabMission } from '../LabMission';
 import { MISSIONS } from './icmp-mission';
@@ -252,7 +254,13 @@ export default function IcmpLab() {
                 ))}
               </div>
 
-              <button type="button" className={styles.advance} disabled={done} onClick={advance}>
+              <button type="button" className={`${styles.advance} ${hints.cueHost}`} disabled={done} onClick={advance}>
+                {/* until the first press, say plainly that this button is what runs the lab */}
+                {step === 0 && !briefingOpen && (
+                  <span className={hints.startCue} aria-hidden="true">
+                    <CursorClick weight="fill" size={14} /> Press here to start the animation
+                  </span>
+                )}
                 {advanceLabels[tool][Math.min(step, maxStep)]}
               </button>
               <button type="button" className={styles.reset} onClick={reset}>Reset</button>

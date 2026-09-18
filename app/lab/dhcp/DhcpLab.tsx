@@ -15,6 +15,7 @@ import {
 import { CLIENT_MAC, XID, freshWire, renewWire, stepsFor, wireCounts, type Scenario } from './dhcp-data';
 import DhcpDiagram from './DhcpDiagram';
 import styles from './dhcp-lab.module.css';
+import hints from '../lab-hints.module.css';
 import MissionBriefing from '../MissionBriefing';
 import MissionPanel, { BriefingButton, useLabMission } from '../LabMission';
 import { MISSIONS } from './dhcp-mission';
@@ -245,8 +246,14 @@ export default function DhcpLab() {
                 ))}
               </div>
 
-              <button type="button" className={styles.advance} data-tone={renew ? 'ok' : 'b'}
+              <button type="button" className={`${styles.advance} ${hints.cueHost}`} data-tone={renew ? 'ok' : 'b'}
                 disabled={done} onClick={advance}>
+                {/* until the first press, say plainly that this button is what runs the lab */}
+                {step === 0 && !briefingOpen && (
+                  <span className={hints.startCue} aria-hidden="true">
+                    <CursorClick weight="fill" size={14} /> Press here to start the animation
+                  </span>
+                )}
                 {advanceLabels[sc][Math.min(step, maxStep)]}
               </button>
               <button type="button" className={styles.reset} onClick={reset}>Release lease</button>

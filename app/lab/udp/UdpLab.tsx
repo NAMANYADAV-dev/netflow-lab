@@ -6,6 +6,7 @@ import {
   ArrowsLeftRight,
   Broadcast,
   CheckCircle,
+  CursorClick,
   FlowArrow,
   Lightbulb,
   Package,
@@ -16,6 +17,7 @@ import {
 import { LOST_DG, stepsFor, tcpTraits, udpTraits, type Wire } from './udp-data';
 import UdpStream from './UdpStream';
 import styles from './udp-lab.module.css';
+import hints from '../lab-hints.module.css';
 import MissionBriefing from '../MissionBriefing';
 import MissionPanel, { BriefingButton, useLabMission } from '../LabMission';
 import { MISSIONS } from './udp-mission';
@@ -218,7 +220,13 @@ export default function UdpLab() {
                 })}
               </div>
 
-              <button type="button" className={styles.advance} disabled={finished} onClick={advance}>
+              <button type="button" className={`${styles.advance} ${hints.cueHost}`} disabled={finished} onClick={advance}>
+                {/* until the first press, say plainly that this button is what runs the lab */}
+                {step === 0 && !briefingOpen && (
+                  <span className={hints.startCue} aria-hidden="true">
+                    <CursorClick weight="fill" size={14} /> Press here to start the animation
+                  </span>
+                )}
                 {advanceLabels[Math.min(step, MAX_STEP)]}
               </button>
               <button type="button" className={styles.reset} onClick={reset}>Reset stream</button>

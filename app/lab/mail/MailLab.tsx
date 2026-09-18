@@ -14,6 +14,7 @@ import {
 import { sayAt, stepsFor, toneVar, type Pickup } from './mail-data';
 import MailMap, { type Box, type Msg, type Rail } from './MailMap';
 import styles from './mail-lab.module.css';
+import hints from '../lab-hints.module.css';
 import MissionBriefing from '../MissionBriefing';
 import MissionPanel, { BriefingButton, useLabMission } from '../LabMission';
 import { MISSIONS } from './mail-mission';
@@ -256,7 +257,13 @@ export default function MailLab() {
                 ))}
               </div>
 
-              <button type="button" className={styles.advance} disabled={done} onClick={advance}>
+              <button type="button" className={`${styles.advance} ${hints.cueHost}`} disabled={done} onClick={advance}>
+                {/* until the first press, say plainly that this button is what runs the lab */}
+                {step === 0 && !briefingOpen && (
+                  <span className={hints.startCue} aria-hidden="true">
+                    <CursorClick weight="fill" size={14} /> Press here to start the animation
+                  </span>
+                )}
                 {s === 0 ? 'Press Send' : done ? 'Journey complete' : `Next — ${steps[s].tag}`}
               </button>
               <button type="button" className={styles.reset} onClick={reset}>Start over</button>

@@ -16,6 +16,7 @@ import {
 import { activeWire, passiveWire, stepsFor, wireCounts, type DataMode } from './ftp-data';
 import FtpSequence from './FtpSequence';
 import styles from './ftp-lab.module.css';
+import hints from '../lab-hints.module.css';
 import MissionBriefing from '../MissionBriefing';
 import MissionPanel, { BriefingButton, useLabMission } from '../LabMission';
 import { MISSIONS } from './ftp-mission';
@@ -231,8 +232,14 @@ export default function FtpLab() {
                 ))}
               </div>
 
-              <button type="button" className={styles.advance} data-tone={active ? 'rst' : 'b'}
+              <button type="button" className={`${styles.advance} ${hints.cueHost}`} data-tone={active ? 'rst' : 'b'}
                 disabled={done} onClick={advance}>
+                {/* until the first press, say plainly that this button is what runs the lab */}
+                {step === 0 && !briefingOpen && (
+                  <span className={hints.startCue} aria-hidden="true">
+                    <CursorClick weight="fill" size={14} /> Press here to start the animation
+                  </span>
+                )}
                 {advanceLabels[dm][Math.min(step, maxStep)]}
               </button>
               <button type="button" className={styles.reset} onClick={reset}>Reset session</button>

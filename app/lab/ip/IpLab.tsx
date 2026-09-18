@@ -4,6 +4,7 @@ import { useState } from 'react';
 import {
   Broadcast,
   CheckCircle,
+  CursorClick,
   GitFork,
   Lightbulb,
   Package,
@@ -12,6 +13,7 @@ import {
 import { stepsFor, type IpDest } from './ip-data';
 import IpTopology from './IpTopology';
 import styles from './ip-lab.module.css';
+import hints from '../lab-hints.module.css';
 import MissionBriefing from '../MissionBriefing';
 import MissionPanel, { BriefingButton, useLabMission } from '../LabMission';
 import { MISSIONS } from './ip-mission';
@@ -240,7 +242,13 @@ export default function IpLab() {
                 ))}
               </div>
 
-              <button type="button" className={styles.advance} disabled={done} onClick={advance}>
+              <button type="button" className={`${styles.advance} ${hints.cueHost}`} disabled={done} onClick={advance}>
+                {/* until the first press, say plainly that this button is what runs the lab */}
+                {step === 0 && !briefingOpen && (
+                  <span className={hints.startCue} aria-hidden="true">
+                    <CursorClick weight="fill" size={14} /> Press here to start the animation
+                  </span>
+                )}
                 {advanceLabels[dest][Math.min(step, maxStep)]}
               </button>
               <button type="button" className={styles.reset} onClick={reset}>Reset datagram</button>

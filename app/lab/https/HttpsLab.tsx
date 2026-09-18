@@ -14,6 +14,7 @@ import {
 import { plainWire, stepsFor, tapNote, tlsWire, wireCounts, type Wire } from './https-data';
 import TlsSequence from './TlsSequence';
 import styles from './https-lab.module.css';
+import hints from '../lab-hints.module.css';
 import MissionBriefing from '../MissionBriefing';
 import MissionPanel, { BriefingButton, useLabMission } from '../LabMission';
 import { MISSIONS } from './https-mission';
@@ -227,8 +228,14 @@ export default function HttpsLab() {
                 ))}
               </div>
 
-              <button type="button" className={styles.advance} data-tone={plain ? 'rst' : 'b'}
+              <button type="button" className={`${styles.advance} ${hints.cueHost}`} data-tone={plain ? 'rst' : 'b'}
                 disabled={done} onClick={advance}>
+                {/* until the first press, say plainly that this button is what runs the lab */}
+                {step === 0 && !briefingOpen && (
+                  <span className={hints.startCue} aria-hidden="true">
+                    <CursorClick weight="fill" size={14} /> Press here to start the animation
+                  </span>
+                )}
                 {advanceLabels[wire][Math.min(step, maxStep)]}
               </button>
               <button type="button" className={styles.reset} onClick={reset}>Reset session</button>

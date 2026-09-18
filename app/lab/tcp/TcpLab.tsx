@@ -1,9 +1,14 @@
 'use client';
 
 import { useMemo, useState, useSyncExternalStore } from 'react';
-import { Broadcast, CheckCircle } from '@phosphor-icons/react';
+import {
+  Broadcast,
+  CheckCircle,
+  CursorClick,
+} from '@phosphor-icons/react';
 import TcpSequence, { flagColor, type Segment } from './TcpSequence';
 import styles from './tcp-lab.module.css';
+import hints from '../lab-hints.module.css';
 import MissionBriefing from '../MissionBriefing';
 import MissionPanel, { BriefingButton, useLabMission } from '../LabMission';
 import { MISSION } from './tcp-mission';
@@ -154,7 +159,13 @@ export default function TcpLab() {
               ))}
             </div>
 
-            <button type="button" className={styles.advance} disabled={done} onClick={advance}>
+            <button type="button" className={`${styles.advance} ${hints.cueHost}`} disabled={done} onClick={advance}>
+              {/* until the first press, say plainly that this button is what runs the lab */}
+              {phase === 0 && !briefingOpen && (
+                <span className={hints.startCue} aria-hidden="true">
+                  <CursorClick weight="fill" size={14} /> Press here to start the animation
+                </span>
+              )}
               {controlLabels[Math.min(phase, LAST_PHASE)]}
             </button>
             <button type="button" className={styles.reset} onClick={reset}>Reset connection</button>

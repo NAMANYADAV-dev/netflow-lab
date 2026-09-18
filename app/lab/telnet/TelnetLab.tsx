@@ -15,6 +15,7 @@ import {
 import { secretStep, segmentsSent, stepsFor, tapColor, type TerminalMode } from './telnet-data';
 import TelnetSequence from './TelnetSequence';
 import styles from './telnet-lab.module.css';
+import hints from '../lab-hints.module.css';
 import MissionBriefing from '../MissionBriefing';
 import MissionPanel, { BriefingButton, useLabMission } from '../LabMission';
 import { MISSIONS } from './telnet-mission';
@@ -201,7 +202,13 @@ export default function TelnetLab() {
                 ))}
               </div>
 
-              <button type="button" className={styles.advance} disabled={done} onClick={advance}>
+              <button type="button" className={`${styles.advance} ${hints.cueHost}`} disabled={done} onClick={advance}>
+                {/* until the first press, say plainly that this button is what runs the lab */}
+                {step === 0 && !briefingOpen && (
+                  <span className={hints.startCue} aria-hidden="true">
+                    <CursorClick weight="fill" size={14} /> Press here to start the animation
+                  </span>
+                )}
                 {advanceLabel}
               </button>
               <button type="button" className={styles.reset} onClick={reset}>Close session</button>
