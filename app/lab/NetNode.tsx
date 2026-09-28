@@ -100,6 +100,11 @@ export const GLYPHS: Record<NetKind, Glyph> = {
   terminal: phosphor(TerminalWindow),
 };
 
+/* how far the icon sits in from the tile's edge, as a share of the tile.
+   Phosphor icons already carry their own padding, so a small inset is enough
+   to fill the tile without the glyph touching its border. */
+const INSET = 0.11;
+
 /** one network icon, top-left at (x, y) */
 export function NetGlyph({ kind, x, y, size, color }: { kind: NetKind; x: number; y: number; size: number; color: string }) {
   const Draw = GLYPHS[kind];
@@ -114,7 +119,7 @@ export function NetTile({ kind, x, y, size, tone }: { kind: NetKind; x: number; 
       <rect x={x} y={y} width={size} height={size} rx={size * 0.22}
         fill={`color-mix(in srgb, ${tone} 14%, var(--surface))`}
         stroke={`color-mix(in srgb, ${tone} 45%, transparent)`} />
-      <NetGlyph kind={kind} x={x + size * 0.19} y={y + size * 0.19} size={size * 0.62} color={tone} />
+      <NetGlyph kind={kind} x={x + size * INSET} y={y + size * INSET} size={size * (1 - 2 * INSET)} color={tone} />
     </g>
   );
 }
@@ -146,10 +151,10 @@ export default function NetNode({
 }) {
   const x = cx - w / 2;
   const y = cy - h / 2;
-  const tile = Math.min(44, h - 20);
-  const tileX = x + 11;
+  const tile = Math.min(48, h - 14);
+  const tileX = x + 9;
   const tileY = cy - tile / 2;
-  const textX = tileX + tile + 11;
+  const textX = tileX + tile + 10;
   const lines = sub2 ? 3 : sub ? 2 : 1;
   const titleY = lines === 3 ? cy - 9 : lines === 2 ? cy - 3 : cy + 4.5;
   const nameColor = dim ? 'var(--text3)' : faint ? 'var(--text)' : tone;
@@ -164,7 +169,7 @@ export default function NetNode({
       <rect x={tileX} y={tileY} width={tile} height={tile} rx={9}
         fill={dim ? 'var(--surface)' : `color-mix(in srgb, ${tone} 14%, var(--surface))`}
         stroke={dim ? 'var(--line)' : `color-mix(in srgb, ${tone} 45%, transparent)`} />
-      <NetGlyph kind={kind} x={tileX + tile * 0.19} y={tileY + tile * 0.19} size={tile * 0.62}
+      <NetGlyph kind={kind} x={tileX + tile * INSET} y={tileY + tile * INSET} size={tile * (1 - 2 * INSET)}
         color={dim ? 'var(--text3)' : tone} />
       <text x={textX} y={titleY} fill={nameColor} className={styles.title}>{title}</text>
       {sub && (
