@@ -2,7 +2,6 @@ import { pageMeta } from '@/lib/seo';
 import Link from 'next/link';
 import SiteFooter from '@/components/SiteFooter';
 import SiteHeader from '@/components/SiteHeader';
-import { PlateNumber } from '@/components/PlateText';
 import { cableHref, cables } from '@/lib/cable-data';
 import { connectorHref, connectors } from '@/lib/connector-data';
 import { requirePhoto } from '@/lib/photos';
@@ -35,7 +34,7 @@ export default function CablesPage() {
 
         <div className={styles.count}>
           <div className={styles.countRow}>
-            <PlateNumber value={String(cables.length + connectors.length)} className={styles.countNum} />
+            <span className={styles.countNum}>{cables.length + connectors.length}</span>
           </div>
           <div className={styles.countLabel}>field guides · cables &amp; connectors</div>
         </div>

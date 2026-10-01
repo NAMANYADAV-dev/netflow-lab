@@ -61,9 +61,14 @@
   justify-content: flex-end;
 }
 
+/* set solid in pure black rather than as the three-plate print numeral: the
+   coloured fringes read as a mismatch next to everything else on the page */
 .countNum {
   font-size: 150px;
   font-weight: 600;
+  line-height: 0.9;
+  font-feature-settings: 'pnum' 1;
+  color: #000;
 }
 
 .countLabel {

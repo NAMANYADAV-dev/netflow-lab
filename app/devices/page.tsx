@@ -2,7 +2,6 @@ import { pageMeta } from '@/lib/seo';
 import DeviceBench from '@/components/DeviceBench';
 import SiteFooter from '@/components/SiteFooter';
 import SiteHeader from '@/components/SiteHeader';
-import { PlateNumber } from '@/components/PlateText';
 import { devices } from '@/lib/device-data';
 import shell from '../shell.module.css';
 import styles from './devices.module.css';
@@ -33,7 +32,7 @@ export default function DevicesPage() {
 
         <div className={styles.count}>
           <div className={styles.countRow}>
-            <PlateNumber value={String(devices.length)} className={styles.countNum} />
+            <span className={styles.countNum}>{devices.length}</span>
           </div>
           <div className={styles.countLabel}>devices · 4 layers of the stack</div>
         </div>

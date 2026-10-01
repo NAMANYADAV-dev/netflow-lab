@@ -4,7 +4,7 @@ import ProtocolBench from '@/components/ProtocolBench';
 import { protocolPageSlugs } from '@/lib/protocol-pages';
 import SiteFooter from '@/components/SiteFooter';
 import SiteHeader from '@/components/SiteHeader';
-import { PlateLine, PlateNumber } from '@/components/PlateText';
+import { PlateLine } from '@/components/PlateText';
 import { protocolCount } from '@/lib/protocol-data';
 import shell from '../shell.module.css';
 import styles from './bench.module.css';
@@ -51,7 +51,7 @@ export default function BenchPage() {
 
         <div className={styles.count}>
           <div className={styles.countRow}>
-            <PlateNumber value={String(protocolCount)} className={styles.countNum} />
+            <span className={styles.countNum}>{protocolCount}</span>
           </div>
           <div className={styles.countLabel}>protocols · 11 protocol categories</div>
         </div>
