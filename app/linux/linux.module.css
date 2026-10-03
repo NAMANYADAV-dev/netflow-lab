@@ -67,21 +67,36 @@
 
 .catalogue {
   padding-top: 20px;
+  padding-bottom: 40px;
+}
+
+.catalogue:last-of-type {
   padding-bottom: 72px;
+}
+
+/* the part's own rule carries the weight; the groups under it are divided by
+   hairlines so the two levels do not read as the same thing */
+.partHead {
+  margin-bottom: 26px;
 }
 
 .group {
   display: grid;
   grid-template-columns: 250px 1fr;
   gap: 48px;
-  border-top: 2px solid var(--color-text);
-  padding-top: 20px;
-  padding-bottom: 44px;
+  border-top: 1px solid var(--color-divider);
+  padding-top: 26px;
+  padding-bottom: 36px;
+}
+
+.group:first-child {
+  border-top: none;
+  padding-top: 0;
 }
 
 .groupName {
   margin: 0;
-  font-size: 26px;
+  font-size: 24px;
   line-height: 1.15;
 }
 

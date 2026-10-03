@@ -2,14 +2,14 @@ import { pageMeta } from '@/lib/seo';
 import Link from 'next/link';
 import SiteFooter from '@/components/SiteFooter';
 import SiteHeader from '@/components/SiteHeader';
-import { linuxByGroup, linuxCommands, linuxGroups, linuxHref } from '@/lib/linux-data';
+import { linuxByPart, linuxCommands, linuxGroups, linuxHref } from '@/lib/linux-data';
 import shell from '../shell.module.css';
 import styles from './linux.module.css';
 
 export const metadata = pageMeta({
-  title: 'Linux Networking Commands · NetFlow Lab',
+  title: 'Linux Commands · NetFlow Lab',
   description:
-    'The Linux commands that show a network at work — ip, ss, dig, ping, traceroute, tcpdump and nft — each with a real session read line by line.',
+    'Linux commands for navigation, file, process and permission management, and for networking — ls, cp, ps, chmod, ip, ss, dig, tcpdump — each with a session read line by line.',
   path: '/linux',
 });
 
@@ -21,12 +21,13 @@ export default function LinuxPage() {
       <main>
       <section className={`${shell.wrap} ${styles.hero}`}>
         <div>
-          <div className={styles.kicker}>The network, from a shell</div>
+          <div className={styles.kicker}>The system, from a shell</div>
           <h1 className={styles.title}>Linux commands, read one line at a time.</h1>
           <p className={styles.lede}>
-            <em>Every protocol on this site leaves a trace on a real host.</em> These are the
-            commands that show it — each one with a captured session, the lines worth reading
-            numbered, and a note on what every one of them means.
+            <em>The shell first, then the network.</em> Moving around, managing files, processes
+            and permissions — and then the commands that show each protocol at work on a real
+            host. Every one comes with a session, the lines worth reading numbered, and a note
+            on what each of them means.
           </p>
         </div>
 
@@ -38,11 +39,20 @@ export default function LinuxPage() {
         </div>
       </section>
 
-      <section className={`${shell.wrap} ${styles.catalogue}`}>
-        {linuxByGroup.map((group) => (
+      {linuxByPart.map((part) => (
+      <section className={`${shell.wrap} ${styles.catalogue}`} id={`part-${part.id}`} key={part.id}>
+        <div className={`${shell.sectionHead} ${styles.partHead}`}>
+          <div className={shell.sectionHeadRow}>
+            <h2 className={shell.sectionTitle}>{part.name}</h2>
+            <span className={shell.sectionNote}>{part.note}</span>
+          </div>
+        </div>
+
+        <div>
+        {part.groups.map((group) => (
           <div className={styles.group} id={`group-${group.id}`} key={group.id}>
             <div>
-              <h2 className={styles.groupName}>{group.name}</h2>
+              <h3 className={styles.groupName}>{group.name}</h3>
               <p className={styles.groupBlurb}>{group.blurb}</p>
             </div>
 
@@ -55,7 +65,7 @@ export default function LinuxPage() {
                   </div>
                   <div className={styles.cardBody}>
                     <div className={styles.cardSpec}>{command.pkg}</div>
-                    <h3 className={styles.cardSub}>{command.sub}</h3>
+                    <h4 className={styles.cardSub}>{command.sub}</h4>
                     <p className={styles.cardText}>{command.fn}</p>
                     <span className={styles.cardLink}>Read the session &rarr;</span>
                   </div>
@@ -64,7 +74,9 @@ export default function LinuxPage() {
             </div>
           </div>
         ))}
+        </div>
       </section>
+      ))}
       </main>
 
       <SiteFooter note="Sessions are illustrative. Output differs between distributions and versions — read the fields, not the exact spacing." />

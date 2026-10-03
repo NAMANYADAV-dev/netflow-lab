@@ -132,10 +132,10 @@ const sectionEntries: SearchEntry[] = [
   },
   {
     title: 'Linux commands',
-    detail: `${linuxCommands.length} networking commands, each with a session read line by line`,
+    detail: `${linuxCommands.length} shell and networking commands, each with a session read line by line`,
     href: LINUX_HREF,
     kind: 'section',
-    alt: ['linux', 'terminal', 'shell', 'cli', 'command line', 'bash'],
+    alt: ['linux', 'terminal', 'shell', 'cli', 'command line', 'bash', 'navigation', 'file management', 'permissions'],
   },
   {
     title: 'Protocol labs',

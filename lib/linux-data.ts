@@ -1,7 +1,9 @@
 import type { Rich } from '@/components/RichText';
 import { LINUX_HREF } from './atlas-data';
 
-/* The Linux section: the commands that show a protocol at work on a real host.
+/* The Linux section, in two parts: the shell — moving around, managing files,
+   processes and permissions — and then the network, the commands that show a
+   protocol at work on a real host.
 
    Each entry is one command and one captured session. The session is the
    point of the page — the reader is shown the output they will actually get,
@@ -11,21 +13,34 @@ import { LINUX_HREF } from './atlas-data';
    private use (192.0.2.0/24, 198.51.100.0/24, 192.168.0.0/16), so nothing here
    points at a host that exists. */
 
-export type LinuxGroup = { id: string; name: string; blurb: string };
+export type LinuxPartId = 'shell' | 'network';
+
+export const linuxParts: { id: LinuxPartId; name: string; note: string }[] = [
+  { id: 'shell', name: 'The shell', note: 'Moving around, and managing files, processes and permissions.' },
+  { id: 'network', name: 'The network', note: 'The commands that show a protocol at work.' },
+];
+
+export type LinuxGroup = { id: string; part: LinuxPartId; name: string; blurb: string };
 
 export const linuxGroups: LinuxGroup[] = [
-  { id: 'iface', name: 'Interfaces & addressing', blurb: 'What the host has plugged in, and what it calls itself.' },
-  { id: 'route', name: 'Routing & neighbours', blurb: 'Where a packet goes next, and whose MAC that is.' },
-  { id: 'names', name: 'Names', blurb: 'Asking the DNS, and finding out who the host asks.' },
-  { id: 'sockets', name: 'Sockets & transfer', blurb: 'What is listening, and what a request really sends.' },
-  { id: 'reach', name: 'Reachability', blurb: 'Whether the other end answers, and by which path.' },
-  { id: 'capture', name: 'Capture & filtering', blurb: 'Reading packets off the wire, and deciding which may pass.' },
+  { id: 'nav', part: 'shell', name: 'Navigation', blurb: 'Where you are, what is here, and how to get somewhere else.' },
+  { id: 'files', part: 'shell', name: 'File management', blurb: 'Making, copying, moving and removing files and directories.' },
+  { id: 'proc', part: 'shell', name: 'Process & service management', blurb: 'What is running, how to stop it, and what starts at boot.' },
+  { id: 'perm', part: 'shell', name: 'Users & permissions', blurb: 'Who owns a file, who may touch it, and how to act as root.' },
+  { id: 'iface', part: 'network', name: 'Interfaces & addressing', blurb: 'What the host has plugged in, and what it calls itself.' },
+  { id: 'route', part: 'network', name: 'Routing & neighbours', blurb: 'Where a packet goes next, and whose MAC that is.' },
+  { id: 'names', part: 'network', name: 'Names', blurb: 'Asking the DNS, and finding out who the host asks.' },
+  { id: 'sockets', part: 'network', name: 'Sockets & transfer', blurb: 'What is listening, and what a request really sends.' },
+  { id: 'reach', part: 'network', name: 'Reachability', blurb: 'Whether the other end answers, and by which path.' },
+  { id: 'capture', part: 'network', name: 'Capture & filtering', blurb: 'Reading packets off the wire, and deciding which may pass.' },
 ];
 
 export type TermLine = {
   text: string;
   /** the 1-based note this line is answered by */
   n?: number;
+  /** a further command typed at the prompt, rather than output */
+  run?: boolean;
 };
 
 export type LinuxCommand = {
@@ -51,7 +66,8 @@ export type LinuxCommand = {
   };
   recipes: { run: string; d: string }[];
   security: { lede: Rich; points: { t: string; d: string }[] };
-  /** protocol ids from protocol-data — the protocols this command shows */
+  /** protocol ids from protocol-data — the protocols this command shows;
+      empty for the shell commands, which show none */
   protocols: string[];
   /** slugs of the commands worth reading next */
   related: string[];
@@ -59,6 +75,976 @@ export type LinuxCommand = {
 };
 
 export const linuxCommands: LinuxCommand[] = [
+  // ── navigation ────────────────────────────────────────────────────────
+  {
+    slug: 'pwd',
+    cmd: 'pwd',
+    group: 'nav',
+    pkg: 'shell builtin',
+    fn: 'Prints the absolute path of the directory the shell is working in right now.',
+    kicker: 'Linux · navigation',
+    sub: 'where am I',
+    lede: [
+      { m: 'pwd' },
+      ' prints the working directory: ',
+      { a: 'the one place every relative path is measured from' },
+      '. It is the smallest command in the shell and the first one to run when a script or a copy ',
+      { b: 'lands somewhere you did not expect' },
+      '.',
+    ],
+    takeaway: [
+      'Every relative path is ',
+      { a: 'relative to this directory' },
+      ' — so know it before you type one.',
+    ],
+    points: [
+      { k: 'Prints', v: 'Working directory', note: 'always an absolute path' },
+      { k: 'Stands for', v: 'Print working directory', note: 'no arguments needed' },
+      { k: 'Also held in', v: '$PWD', note: 'the shell keeps it updated' },
+      { k: 'Needs root', v: 'Never', note: 'it only reads' },
+    ],
+    session: {
+      run: 'pwd',
+      prompt: '$',
+      lines: [
+        { text: '/home/user/projects/netflow', n: 1 },
+        { text: 'cd /var/www/current', run: true },
+        { text: 'pwd', run: true },
+        { text: '/var/www/current', n: 2 },
+        { text: 'pwd -P', run: true },
+        { text: '/var/www/releases/2026-09-30', n: 3 },
+      ],
+      notes: [
+        { t: 'The path starts at the root', d: 'The leading slash is the top of the filesystem. Read left to right, each name is a directory inside the one before it.' },
+        { t: 'This is the logical path', d: 'The shell reports the names you travelled through. "current" is a symbolic link, and pwd shows it as you typed it.' },
+        { t: '-P shows where you physically are', d: 'With the link resolved, the real directory is a dated release folder. The two answers differ only when a symlink is in the path.' },
+      ],
+    },
+    recipes: [
+      { run: 'echo $PWD', d: 'The same answer from the shell variable — the form to use inside scripts.' },
+      { run: 'pwd -P', d: 'Resolves every symbolic link and prints the physical directory.' },
+      { run: 'cd "$(dirname "$0")" && pwd', d: 'Inside a script: move to the script\'s own folder and confirm it, so relative paths behave.' },
+      { run: 'echo $OLDPWD', d: 'The directory you were in before the last cd.' },
+    ],
+    security: {
+      lede: [
+        'A command does what it does ',
+        { b: 'wherever the shell happens to be' },
+        '. Most accidents with destructive commands are a correct command run in the wrong directory.',
+      ],
+      points: [
+        { t: 'Check before deleting', d: 'Run pwd before any rm or mv that uses a relative path or a wildcard. It costs one second.' },
+        { t: 'Symlinked directories', d: 'A logical path can hide that you are really inside another filesystem or another user\'s tree. -P shows the truth.' },
+        { t: 'Scripts and cron', d: 'A scheduled job does not start where you tested it. Set the directory explicitly rather than assuming it.' },
+      ],
+    },
+    protocols: [],
+    related: ['cd', 'ls'],
+    footnote: 'pwd is built into the shell; /usr/bin/pwd also exists and behaves the same for everyday use.',
+  },
+  {
+    slug: 'ls',
+    cmd: 'ls',
+    group: 'nav',
+    pkg: 'coreutils',
+    fn: 'Lists the contents of a directory — names, and with -l the type, permissions, owner, size and date of each entry.',
+    kicker: 'Linux · navigation',
+    sub: 'what is in here',
+    lede: [
+      { m: 'ls' },
+      ' lists a directory. On its own it prints names; with ',
+      { m: '-l' },
+      ' it prints ',
+      { a: 'one line of facts per entry' },
+      ' — what kind of thing it is, who may do what to it, who owns it, how big it is and when it last changed. That long line is ',
+      { b: 'the most-read output on any Linux system' },
+      '.',
+    ],
+    takeaway: [
+      'The first ten characters of an ls -l line say ',
+      { a: 'what the entry is and who may touch it' },
+      '.',
+    ],
+    points: [
+      { k: 'Lists', v: 'Directory entries', note: 'the current one by default' },
+      { k: 'Everyday flags', v: '-la', note: 'long format, hidden files too' },
+      { k: 'Hidden means', v: 'Starts with a dot', note: 'a naming habit, not a lock' },
+      { k: 'Readable sizes', v: '-h', note: 'K, M and G instead of bytes' },
+    ],
+    session: {
+      run: 'ls -la',
+      prompt: '$',
+      lines: [
+        { text: 'total 24' },
+        { text: 'drwxr-xr-x  4 user user 4096 Sep 30 10:12 .', n: 1 },
+        { text: 'drwxr-xr-x 18 user user 4096 Sep 28 09:40 ..' },
+        { text: '-rwxr-xr-x  1 user user 1830 Sep 29 17:03 deploy.sh', n: 2 },
+        { text: '-rw-------  1 user user  412 Sep 30 10:12 .env', n: 3 },
+        { text: 'drwxr-xr-x  8 user user 4096 Sep 30 09:58 .git' },
+        { text: 'lrwxrwxrwx  1 user user   12 Sep 29 17:05 logs -> /var/log/app', n: 4 },
+        { text: '-rw-r--r--  1 user user 2264 Sep 30 10:02 README.md', n: 5 },
+      ],
+      notes: [
+        { t: 'The first character is the type', d: '"d" is a directory, "-" a regular file, "l" a symbolic link. The dot is this directory itself, and the two dots below it are its parent.' },
+        { t: 'Then three groups of three', d: 'rwx for the owner, r-x for the group, r-x for everyone else. The x on a file means it may be run as a program.' },
+        { t: 'Dotfiles only appear with -a', d: '.env is hidden from a plain ls. Its rw------- mode means only the owner can read or write it — right for a file of secrets.' },
+        { t: 'The arrow marks a symbolic link', d: 'logs is a pointer to /var/log/app. Its own permissions are always shown as rwxrwxrwx; the target\'s are what count.' },
+        { t: 'The rest of the line, left to right', d: 'Link count, owner, group, size in bytes, the time the content last changed, and the name.' },
+      ],
+    },
+    recipes: [
+      { run: 'ls -lh /var/log', d: 'Long listing of another directory with sizes in K, M and G.' },
+      { run: 'ls -lt | head', d: 'Newest first — the quickest way to see what just changed.' },
+      { run: 'ls -ld /etc/ssh', d: 'Describes the directory itself rather than listing what is inside it.' },
+      { run: 'ls -R src', d: 'Lists every subdirectory beneath src as well.' },
+    ],
+    security: {
+      lede: [
+        'An ls -l line is ',
+        { b: 'a permission audit of one file' },
+        '. Reading it properly finds most local misconfigurations before an attacker does.',
+      ],
+      points: [
+        { t: 'World-writable entries', d: 'A "w" in the last group of three lets any user on the system change the file. On a script that root runs, that is a way to become root.' },
+        { t: 'Secrets left readable', d: 'Keys, .env files and backups should show rw------- or stricter. An r in the last group publishes them to every local user.' },
+        { t: 'Hidden is not protected', d: 'A leading dot only hides a name from a casual listing. Always look with -a, especially in web roots and home directories.' },
+      ],
+    },
+    protocols: [],
+    related: ['cd', 'chmod'],
+    footnote: 'Sort order follows the system locale, which usually ignores leading dots and letter case.',
+  },
+  {
+    slug: 'cd',
+    cmd: 'cd',
+    group: 'nav',
+    pkg: 'shell builtin',
+    fn: 'Changes the shell\'s working directory, by absolute path, by relative path, or by one of its shortcuts.',
+    kicker: 'Linux · navigation',
+    sub: 'going somewhere else',
+    lede: [
+      { m: 'cd' },
+      ' moves the shell to another directory. It takes ',
+      { a: 'an absolute path, which starts at the root' },
+      ', or a relative one, which starts from where you are. It prints nothing when it works — ',
+      { b: 'silence is success' },
+      ', as with most Unix commands.',
+    ],
+    takeaway: [
+      'A path that begins with a slash means the same thing everywhere. One that does not ',
+      { a: 'depends on where you are standing' },
+      '.',
+    ],
+    points: [
+      { k: 'Changes', v: 'Working directory', note: 'for this shell only' },
+      { k: 'No argument', v: 'Goes home', note: 'the same as cd ~' },
+      { k: 'Up one level', v: 'cd ..', note: 'two dots are the parent' },
+      { k: 'Back again', v: 'cd -', note: 'the previous directory' },
+    ],
+    session: {
+      run: 'cd /var/log',
+      prompt: '$',
+      lines: [
+        { text: 'pwd', run: true },
+        { text: '/var/log', n: 1 },
+        { text: 'cd nginx', run: true, n: 2 },
+        { text: 'cd ..', run: true, n: 3 },
+        { text: 'cd -', run: true },
+        { text: '/var/log/nginx', n: 4 },
+        { text: 'cd', run: true, n: 5 },
+        { text: 'pwd', run: true },
+        { text: '/home/user' },
+      ],
+      notes: [
+        { t: 'An absolute path works from anywhere', d: '/var/log begins at the root, so it names the same directory no matter where the shell was.' },
+        { t: 'A relative path starts from here', d: 'No leading slash: "nginx" is looked for inside the current directory, giving /var/log/nginx.' },
+        { t: 'Two dots are the parent', d: 'Every directory contains an entry called ".." that points one level up. This returns to /var/log.' },
+        { t: 'A dash is "where I just was"', d: 'cd - swaps back to the previous directory and prints it, so you can flip between two places.' },
+        { t: 'Nothing at all means home', d: 'cd with no argument goes to your home directory. The tilde, ~, is shorthand for the same place.' },
+      ],
+    },
+    recipes: [
+      { run: 'cd ~/projects', d: 'The tilde expands to your home directory, so this works from anywhere.' },
+      { run: 'cd ../..', d: 'Up two levels in one step.' },
+      { run: 'cd "My Documents"', d: 'Quote a name that contains spaces, or the shell reads it as two arguments.' },
+      { run: 'pushd /etc && popd', d: 'Remembers where you were on a stack and returns to it — handy when hopping between several places.' },
+    ],
+    security: {
+      lede: [
+        'To enter a directory you need ',
+        { b: 'the execute bit on it' },
+        ', not the read bit — a detail that explains most "Permission denied" answers from cd.',
+      ],
+      points: [
+        { t: 'x on a directory means "may enter"', d: 'Without it nobody can cd in or reach anything beneath, whatever the files\' own permissions say.' },
+        { t: 'Check that cd worked', d: 'In a script, "cd build; rm -rf *" deletes the wrong directory if cd failed. Write "cd build && …" or stop on error.' },
+        { t: 'Path traversal', d: 'The same ".." that takes you up a level is how a careless web application is talked into reading files outside its folder.' },
+      ],
+    },
+    protocols: [],
+    related: ['pwd', 'ls'],
+    footnote: 'cd is a shell builtin: it has to be, because a separate program could not change the shell\'s own directory.',
+  },
+  {
+    slug: 'find',
+    cmd: 'find',
+    group: 'nav',
+    pkg: 'findutils',
+    fn: 'Walks a directory tree and prints every entry that passes the tests you give it — by name, age, size, owner or permissions.',
+    kicker: 'Linux · navigation',
+    sub: 'where is that file',
+    lede: [
+      { m: 'find' },
+      ' starts at a directory and visits everything beneath it, printing ',
+      { a: 'each entry that passes every test' },
+      ' you list. Tests are joined by "and" unless you say otherwise, and a match can be ',
+      { b: 'handed straight to another command' },
+      ' with ',
+      { m: '-exec' },
+      '.',
+    ],
+    takeaway: [
+      'find answers by ',
+      { a: 'what a file is like' },
+      ', not only by what it is called.',
+    ],
+    points: [
+      { k: 'Shape', v: 'find WHERE TESTS', note: 'start point first, then tests' },
+      { k: 'Searches', v: 'The live tree', note: 'no index, always current' },
+      { k: 'Quote patterns', v: "'*.log'", note: 'or the shell expands them first' },
+      { k: 'Act on matches', v: '-exec', note: 'or -delete, with care' },
+    ],
+    session: {
+      run: "find /var/log -name '*.log' -mtime -1 -size +1M",
+      prompt: '$',
+      lines: [
+        { text: '/var/log/nginx/access.log', n: 1 },
+        { text: '/var/log/app/worker.log', n: 2 },
+        { text: "find: '/var/log/private': Permission denied", n: 3 },
+      ],
+      notes: [
+        { t: 'Every match is printed as a path', d: 'The path begins with the starting point you gave, so results can be pasted straight into another command.' },
+        { t: 'All three tests had to pass', d: 'The name ends in .log, the content changed within the last day, and the file is larger than one mebibyte. Tests are "and" by default.' },
+        { t: 'Errors arrive mixed in', d: 'find could not enter a directory it has no rights to. Add 2>/dev/null to hide these, or run it with sudo to search there too.' },
+      ],
+    },
+    recipes: [
+      { run: 'find . -type d -name node_modules', d: 'Only directories with that exact name, starting from here.' },
+      { run: "find . -name '*.tmp' -delete", d: 'Deletes every match. Run it once without -delete first and read the list.' },
+      { run: "find . -name '*.sh' -exec chmod +x {} +", d: 'Runs a command on the matches; {} is replaced by the file names.' },
+      { run: 'find /home -user asha -newer /tmp/mark', d: 'Files owned by one user that changed after a reference file did.' },
+    ],
+    security: {
+      lede: [
+        'find is the standard audit tool for a filesystem: it can list ',
+        { b: 'every file with a dangerous permission' },
+        ' in a single line.',
+      ],
+      points: [
+        { t: 'Set-uid programs', d: '"find / -perm -4000 -type f" lists every program that runs as its owner. Each one outside the usual set deserves an explanation.' },
+        { t: 'World-writable files', d: '"find / -xdev -perm -0002 -type f" finds files any user may modify — a common route to privilege escalation.' },
+        { t: '-delete and -exec are final', d: 'A wrong test deletes the wrong thousand files. Always print first, then add the action.' },
+      ],
+    },
+    protocols: [],
+    related: ['ls', 'rm'],
+    footnote: 'find reads the directory tree every time. For a quick name-only search of an indexed system, locate is faster.',
+  },
+
+  // ── file management ───────────────────────────────────────────────────
+  {
+    slug: 'mkdir',
+    cmd: 'mkdir',
+    group: 'files',
+    pkg: 'coreutils',
+    fn: 'Creates directories — one at a time, or a whole nested path in a single step with -p.',
+    kicker: 'Linux · file management',
+    sub: 'making room',
+    lede: [
+      { m: 'mkdir' },
+      ' creates a directory. By default the parent has to exist already and the name must be free; ',
+      { m: '-p' },
+      ' removes both conditions, ',
+      { a: 'creating every missing level' },
+      ' and staying quiet if the directory is already there — which is why ',
+      { b: 'scripts almost always use it' },
+      '.',
+    ],
+    takeaway: [
+      'mkdir -p means ',
+      { a: '"make sure this path exists"' },
+      ' — safe to run once or a hundred times.',
+    ],
+    points: [
+      { k: 'Creates', v: 'Directories', note: 'empty ones' },
+      { k: 'Nested paths', v: '-p', note: 'parents made as needed' },
+      { k: 'Default mode', v: '755', note: '777 minus the umask of 022' },
+      { k: 'Opposite', v: 'rmdir', note: 'removes an empty directory' },
+    ],
+    session: {
+      run: 'mkdir -p site/assets/img',
+      prompt: '$',
+      lines: [
+        { text: 'mkdir site', run: true },
+        { text: "mkdir: cannot create directory 'site': File exists", n: 1 },
+        { text: 'ls -ld site', run: true },
+        { text: 'drwxr-xr-x 3 user user 4096 Sep 30 10:20 site', n: 2 },
+        { text: 'mkdir -m 700 site/private', run: true, n: 3 },
+        { text: 'ls -ld site/private', run: true },
+        { text: 'drwx------ 2 user user 4096 Sep 30 10:21 site/private', n: 4 },
+      ],
+      notes: [
+        { t: 'Without -p, an existing name is an error', d: 'The first command already created site, assets and img in one go and printed nothing. Asking again without -p fails.' },
+        { t: 'The mode comes from the umask', d: 'A new directory asks for rwxrwxrwx and the umask of 022 removes write for group and others, leaving rwxr-xr-x.' },
+        { t: '-m sets the permissions at creation', d: 'The directory never exists with looser permissions, even for a moment — better than mkdir followed by chmod.' },
+        { t: 'Only the owner may enter', d: 'drwx------ shuts out the group and everyone else entirely.' },
+      ],
+    },
+    recipes: [
+      { run: 'mkdir -p logs/{app,nginx,db}', d: 'Brace expansion: three subdirectories in one command.' },
+      { run: 'mkdir -pv a/b/c', d: 'Prints a line for each directory it actually had to create.' },
+      { run: 'mkdir -m 700 ~/.ssh', d: 'The mode SSH insists on for its configuration directory.' },
+      { run: 'rmdir empty-dir', d: 'Removes a directory only if nothing is inside it — a safe way to tidy up.' },
+    ],
+    security: {
+      lede: [
+        'A directory\'s permissions decide ',
+        { b: 'who can create, rename and delete the files in it' },
+        ' — regardless of what the files themselves allow.',
+      ],
+      points: [
+        { t: 'Write on a directory is powerful', d: 'Anyone with write permission on a directory can delete or replace files in it, even files they cannot read.' },
+        { t: 'Create it private', d: 'For anything sensitive use -m 700 at creation. Tightening afterwards leaves a window where it was open.' },
+        { t: 'Shared temp directories', d: 'A predictable directory name under /tmp can be created first by another user. Use mktemp -d instead.' },
+      ],
+    },
+    protocols: [],
+    related: ['cp', 'chmod'],
+    footnote: 'The default mode depends on the umask, which is 022 on most systems and 077 on hardened ones.',
+  },
+  {
+    slug: 'cp',
+    cmd: 'cp',
+    group: 'files',
+    pkg: 'coreutils',
+    fn: 'Copies files and directories, optionally preserving their permissions, ownership and timestamps.',
+    kicker: 'Linux · file management',
+    sub: 'a second copy',
+    lede: [
+      { m: 'cp' },
+      ' copies a source to a destination. For a directory it needs to be told to recurse, and the flag worth learning is ',
+      { m: '-a' },
+      ': it recurses and ',
+      { a: 'keeps permissions, ownership, timestamps and links exactly as they were' },
+      '. By default cp will ',
+      { b: 'overwrite an existing file without asking' },
+      '.',
+    ],
+    takeaway: [
+      'A copy is only a backup if it keeps ',
+      { a: 'the metadata as well as the bytes' },
+      ' — that is what -a is for.',
+    ],
+    points: [
+      { k: 'Shape', v: 'cp SOURCE DEST', note: 'last argument is the target' },
+      { k: 'Directories', v: '-r or -a', note: '-a also preserves metadata' },
+      { k: 'Overwrites', v: 'Silently', note: 'use -i to be asked' },
+      { k: 'See progress', v: '-v', note: 'one line per file copied' },
+    ],
+    session: {
+      run: 'cp -av config/ config.bak/',
+      prompt: '$',
+      lines: [
+        { text: "'config/' -> 'config.bak/'", n: 1 },
+        { text: "'config/app.yaml' -> 'config.bak/app.yaml'", n: 2 },
+        { text: "'config/tls' -> 'config.bak/tls'" },
+        { text: "'config/tls/server.key' -> 'config.bak/tls/server.key'", n: 3 },
+        { text: 'ls -l config.bak/tls/server.key', run: true },
+        { text: '-rw------- 1 user user 1704 Sep 12 08:15 config.bak/tls/server.key', n: 4 },
+      ],
+      notes: [
+        { t: 'The directory itself is created first', d: 'config.bak did not exist, so it became the copy. Had it existed, the copy would have landed inside it as config.bak/config.' },
+        { t: '-v narrates every file', d: 'Source on the left, destination on the right. Without -v a successful cp prints nothing at all.' },
+        { t: '-a went down into the subdirectory', d: 'Archive mode implies recursion, so the tls folder and the key inside it came along.' },
+        { t: 'The copy kept its date and mode', d: 'Still rw------- and still dated the twelfth. A plain cp -r would have stamped it with today\'s time.' },
+      ],
+    },
+    recipes: [
+      { run: 'cp -i notes.txt backup/', d: 'Asks before overwriting a file of the same name.' },
+      { run: 'cp -u *.conf /etc/app/', d: 'Copies only files that are newer than the copy already there.' },
+      { run: 'cp file{,.bak}', d: 'Brace expansion for "cp file file.bak" — the quickest backup before an edit.' },
+      { run: 'cp -a /src/. /dest/', d: 'Copies the contents of a directory, hidden files included, into an existing one.' },
+    ],
+    security: {
+      lede: [
+        'Copying a file can quietly ',
+        { b: 'change who owns it and who may read it' },
+        ', which matters most for exactly the files worth copying.',
+      ],
+      points: [
+        { t: 'Ownership changes hands', d: 'Without -a, the copy belongs to whoever ran cp. A root-made copy of a user\'s file is now root\'s; a user\'s copy of a readable secret is now theirs.' },
+        { t: 'Backups of secrets', d: 'A .bak of a key or config file is as sensitive as the original. Check its mode and where it sits — especially inside a web root.' },
+        { t: 'Silent overwrite', d: 'cp replaces the destination without warning. Use -i interactively and -n in scripts that must not clobber.' },
+      ],
+    },
+    protocols: [],
+    related: ['mv', 'rm'],
+    footnote: 'For large or remote copies, rsync does the same job and can resume, verify and show progress.',
+  },
+  {
+    slug: 'mv',
+    cmd: 'mv',
+    group: 'files',
+    pkg: 'coreutils',
+    fn: 'Moves a file or directory to another place, or gives it a new name — in Linux the two are the same operation.',
+    kicker: 'Linux · file management',
+    sub: 'move, which is also rename',
+    lede: [
+      { m: 'mv' },
+      ' moves things, and there is no separate rename command because ',
+      { a: 'renaming is moving to a new name in the same place' },
+      '. Within one filesystem it is instant whatever the size; across two, it ',
+      { b: 'copies the data and then deletes the original' },
+      '.',
+    ],
+    takeaway: [
+      'Inside one filesystem, mv changes ',
+      { a: 'only the name the data is filed under' },
+      ' — the data itself never moves.',
+    ],
+    points: [
+      { k: 'Shape', v: 'mv SOURCE DEST', note: 'a new name or a directory' },
+      { k: 'Renames', v: 'Yes', note: 'the same command' },
+      { k: 'Overwrites', v: 'Silently', note: '-i asks, -n refuses' },
+      { k: 'Directories', v: 'No flag needed', note: 'unlike cp and rm' },
+    ],
+    session: {
+      run: 'mv -v report.txt archive/',
+      prompt: '$',
+      lines: [
+        { text: "renamed 'report.txt' -> 'archive/report.txt'", n: 1 },
+        { text: 'mv -v draft.md final.md', run: true },
+        { text: "renamed 'draft.md' -> 'final.md'", n: 2 },
+        { text: 'mv -n notes.txt archive/', run: true, n: 3 },
+        { text: 'mv -v big.iso /mnt/usb/', run: true },
+        { text: "copied 'big.iso' -> '/mnt/usb/big.iso'", n: 4 },
+        { text: "removed 'big.iso'" },
+      ],
+      notes: [
+        { t: 'The destination is a directory, so the file goes into it', d: 'The name is kept. mv calls it "renamed" because that is literally what happened to the path.' },
+        { t: 'The destination is a new name, so it is a rename', d: 'Same directory, different name. Nothing was copied.' },
+        { t: '-n refuses to overwrite', d: 'archive/notes.txt already existed, so mv did nothing and said nothing. Without -n it would have replaced it.' },
+        { t: 'Across filesystems it is a copy and a delete', d: 'The USB stick is a different filesystem, so the data really had to travel. This is the slow case, and the one that can fail halfway.' },
+      ],
+    },
+    recipes: [
+      { run: 'mv -i *.log old/', d: 'Moves several files into a directory, asking before any overwrite.' },
+      { run: 'mv old-name/ new-name/', d: 'Renames a directory — no recursive flag is needed.' },
+      { run: 'mv -b config.yaml /etc/app/', d: 'Keeps a backup of any file it would have overwritten, with a ~ on the end.' },
+      { run: 'mv -- -odd-name.txt fixed.txt', d: 'The double dash ends the options, so a name starting with a dash is treated as a file.' },
+    ],
+    security: {
+      lede: [
+        'mv has ',
+        { b: 'no undo and no warning' },
+        ' when the destination exists, and it carries a file\'s old permissions to its new home.',
+      ],
+      points: [
+        { t: 'Overwriting is silent', d: 'Moving onto an existing name destroys what was there. -n in scripts and -i at the prompt are cheap insurance.' },
+        { t: 'Permissions travel with the file', d: 'A file moved into a web root keeps the owner and mode it had before. Check them after the move, not before.' },
+        { t: 'Replacing a file atomically', d: 'Writing a new version beside the old one and then mv-ing it over is the safe way to update a config: readers see the old file or the new, never half of each.' },
+      ],
+    },
+    protocols: [],
+    related: ['cp', 'rm'],
+    footnote: 'A rename within one filesystem is atomic; a move between filesystems is not.',
+  },
+  {
+    slug: 'rm',
+    cmd: 'rm',
+    group: 'files',
+    pkg: 'coreutils',
+    fn: 'Removes files, and with -r whole directory trees. There is no recycle bin: what it removes is gone.',
+    kicker: 'Linux · file management',
+    sub: 'gone means gone',
+    lede: [
+      { m: 'rm' },
+      ' removes the names you give it. With ',
+      { m: '-r' },
+      ' it works down through a directory and removes everything inside. Nothing is moved to a trash folder — ',
+      { a: 'the space is simply marked free' },
+      ' — so the only real protection is ',
+      { b: 'reading the command before pressing Enter' },
+      '.',
+    ],
+    takeaway: [
+      'rm does not ask, does not explain and does not keep a copy — ',
+      { a: 'you are the confirmation step' },
+      '.',
+    ],
+    points: [
+      { k: 'Removes', v: 'Files', note: 'directories need -r' },
+      { k: 'Undo', v: 'None', note: 'no trash, no history' },
+      { k: 'Ask first', v: '-i', note: 'or -I for one question' },
+      { k: 'Never prompt', v: '-f', note: 'also hides errors' },
+    ],
+    session: {
+      run: 'rm -ri build/',
+      prompt: '$',
+      lines: [
+        { text: "rm: descend into directory 'build/'? y", n: 1 },
+        { text: "rm: remove regular file 'build/app.js'? y", n: 2 },
+        { text: "rm: remove regular file 'build/app.css'? y" },
+        { text: "rm: remove directory 'build/'? y", n: 3 },
+        { text: 'ls build', run: true },
+        { text: "ls: cannot access 'build': No such file or directory", n: 4 },
+      ],
+      notes: [
+        { t: '-r lets rm go into a directory', d: 'Without it rm refuses directories altogether. The question appears because of -i.' },
+        { t: '-i asks about every single file', d: 'Slow, but you see exactly what is about to go. -I asks once for the whole operation instead.' },
+        { t: 'The directory goes last', d: 'It can only be removed once it is empty, so rm works from the inside out.' },
+        { t: 'There is nothing to restore', d: 'The names are gone and no copy was kept. Recovery now means a backup or a snapshot.' },
+      ],
+    },
+    recipes: [
+      { run: 'rm -I *.log', d: 'One confirmation before removing more than three files — a sensible default to alias.' },
+      { run: 'rm -rf node_modules', d: 'Removes a tree without asking and without complaining. The command to read twice.' },
+      { run: 'rm -- -file.txt', d: 'Removes a file whose name starts with a dash.' },
+      { run: 'ls *.tmp && rm *.tmp', d: 'List what the pattern matches first; remove only if the list is right.' },
+    ],
+    security: {
+      lede: [
+        'rm is where a small typing mistake becomes ',
+        { b: 'a large and permanent one' },
+        ' — and deleting a file is still not the same as destroying its contents.',
+      ],
+      points: [
+        { t: 'A stray space', d: '"rm -rf /var/www /tmp" and "rm -rf /var/www/ tmp" differ by one space. An empty variable in "rm -rf $DIR/" is worse: it becomes "rm -rf /".' },
+        { t: 'Deleted is not erased', d: 'rm frees the space but the data stays on the disk until overwritten. Sensitive files need shred or full-disk encryption.' },
+        { t: 'Never as root by habit', d: 'A normal user can only delete their own files. The same command under sudo can delete the system.' },
+      ],
+    },
+    protocols: [],
+    related: ['mv', 'find'],
+    footnote: 'GNU rm refuses to act on "/" itself by default, but not on "/*" — the safeguard is narrower than it sounds.',
+  },
+
+  // ── process & service management ──────────────────────────────────────
+  {
+    slug: 'ps',
+    cmd: 'ps',
+    group: 'proc',
+    pkg: 'procps',
+    fn: 'Takes a snapshot of the running processes — who owns each, its process ID, and how much CPU and memory it is using.',
+    kicker: 'Linux · process & service management',
+    sub: 'what is running',
+    lede: [
+      { m: 'ps' },
+      ' prints a snapshot of the process table. ',
+      { m: 'ps aux' },
+      ' is the form to remember: ',
+      { a: 'every process, from every user, with its owner and resource use' },
+      '. The number in the PID column is ',
+      { b: 'the handle every other management command needs' },
+      '.',
+    ],
+    takeaway: [
+      'Everything running on the machine is ',
+      { a: 'a process with a number and an owner' },
+      ' — and ps is the list.',
+    ],
+    points: [
+      { k: 'Shows', v: 'A snapshot', note: 'not a live view — that is top' },
+      { k: 'Everyday form', v: 'ps aux', note: 'all users, with details' },
+      { k: 'Key column', v: 'PID', note: 'the process ID' },
+      { k: 'Tree view', v: 'ps -ef --forest', note: 'who started what' },
+    ],
+    session: {
+      run: 'ps aux --sort=-%mem | head -5',
+      prompt: '$',
+      lines: [
+        { text: 'USER         PID %CPU %MEM     VSZ    RSS TTY      STAT START   TIME COMMAND', n: 1 },
+        { text: 'mysql        934  1.2 11.4 1789432 462180 ?        Ssl  Sep28  41:07 /usr/sbin/mysqld', n: 2 },
+        { text: 'user        4120  3.8  4.1 1104332 166924 pts/0    Sl+  09:58   0:42 node server.js', n: 3 },
+        { text: 'root           1  0.0  0.3  168940  11560 ?        Ss   Sep28   0:14 /sbin/init', n: 4 },
+        { text: 'root         801  0.0  0.2   15432   9120 ?        Ss   Sep28   0:00 sshd: /usr/sbin/sshd -D' },
+      ],
+      notes: [
+        { t: 'RSS is the memory that matters', d: 'RSS is the physical memory in use, in kibibytes. VSZ is everything the process has reserved, most of which it may never touch.' },
+        { t: 'A question mark means no terminal', d: 'mysqld is a daemon: nobody typed it into a shell. In STAT, S is sleeping, s a session leader and l multi-threaded.' },
+        { t: 'pts/0 is somebody\'s terminal', d: 'This one was started by hand in a shell. The + in STAT says it is in the foreground of that terminal.' },
+        { t: 'PID 1 is the first process', d: 'init — systemd on most systems — is started by the kernel and is the ancestor of everything else.' },
+      ],
+    },
+    recipes: [
+      { run: 'ps -ef --forest', d: 'Draws the parent-child tree, so you can see which process started which.' },
+      { run: 'ps -u www-data', d: 'Only the processes owned by one user.' },
+      { run: 'pgrep -a nginx', d: 'Finds processes by name and prints their PIDs — tidier than piping ps into grep.' },
+      { run: 'top', d: 'The same table, refreshed live and sorted by CPU. Press q to leave.' },
+    ],
+    security: {
+      lede: [
+        'The process list is ',
+        { b: 'the inventory of what the machine is actually doing' },
+        ', and it is visible to every local user by default.',
+      ],
+      points: [
+        { t: 'Secrets on the command line', d: 'Arguments appear in the COMMAND column for everyone to read. A password passed as a flag is a password published.' },
+        { t: 'Processes that do not belong', d: 'An unfamiliar name, a binary running from /tmp, or a web-server user running a shell are all classic signs of a compromise.' },
+        { t: 'Who it runs as', d: 'The USER column is the blast radius. A service that does not need root should not appear here as root.' },
+      ],
+    },
+    protocols: [],
+    related: ['kill', 'systemctl'],
+    footnote: 'ps accepts both BSD-style options (aux) and Unix-style ones (-ef); the two families print different columns.',
+  },
+  {
+    slug: 'kill',
+    cmd: 'kill',
+    group: 'proc',
+    pkg: 'shell builtin',
+    fn: 'Sends a signal to a process — by default a polite request to finish, and with -9 an order the process cannot refuse.',
+    kicker: 'Linux · process & service management',
+    sub: 'asking a process to stop',
+    lede: [
+      'Despite the name, ',
+      { m: 'kill' },
+      ' only ',
+      { a: 'delivers a signal to a process ID' },
+      '. The default, SIGTERM, asks the program to clean up and exit, and a well-written program does. SIGKILL is different: ',
+      { b: 'the kernel removes the process without telling it' },
+      ', so nothing gets saved or closed.',
+    ],
+    takeaway: [
+      'Ask with ',
+      { a: 'TERM first' },
+      ', and reach for KILL only when asking has failed.',
+    ],
+    points: [
+      { k: 'Sends', v: 'A signal', note: 'to one or more PIDs' },
+      { k: 'Default', v: 'SIGTERM (15)', note: 'a request to exit cleanly' },
+      { k: 'Last resort', v: 'SIGKILL (9)', note: 'cannot be caught or ignored' },
+      { k: 'Allowed on', v: 'Your own processes', note: 'root may signal any' },
+    ],
+    session: {
+      run: 'kill 4120',
+      prompt: '$',
+      lines: [
+        { text: 'ps -p 4120', run: true },
+        { text: '    PID TTY          TIME CMD', n: 1 },
+        { text: 'kill 4188', run: true },
+        { text: 'ps -p 4188', run: true },
+        { text: '    PID TTY          TIME CMD' },
+        { text: '   4188 pts/0    00:00:07 worker', n: 2 },
+        { text: 'kill -9 4188', run: true, n: 3 },
+        { text: 'kill -l | head -2', run: true },
+        { text: ' 1) SIGHUP       2) SIGINT       3) SIGQUIT      4) SIGILL       5) SIGTRAP', n: 4 },
+        { text: ' 6) SIGABRT      7) SIGBUS       8) SIGFPE       9) SIGKILL     10) SIGUSR1' },
+      ],
+      notes: [
+        { t: 'A header and nothing else means it worked', d: 'kill printed nothing; ps finds no process 4120. The program received SIGTERM, shut down cleanly and exited.' },
+        { t: 'This one ignored the request', d: 'Process 4188 is still listed after a plain kill. It is stuck, or it handles SIGTERM and chose to carry on.' },
+        { t: '-9 is not a request', d: 'SIGKILL is acted on by the kernel, not the program. It always works, and the process gets no chance to flush files or release locks.' },
+        { t: 'Signals have numbers and names', d: 'kill -l lists them. SIGHUP (1) traditionally means "reload your configuration"; SIGINT (2) is what Ctrl+C sends.' },
+      ],
+    },
+    recipes: [
+      { run: 'kill -HUP 1042', d: 'Asks a daemon to re-read its configuration without stopping.' },
+      { run: 'pkill -f "node server.js"', d: 'Signals every process whose command line matches, without looking up PIDs.' },
+      { run: 'kill -STOP 4120 && kill -CONT 4120', d: 'Freezes a process and later lets it continue.' },
+      { run: 'kill -0 4120 && echo alive', d: 'Signal 0 sends nothing: it only tests whether the process exists and you may signal it.' },
+    ],
+    security: {
+      lede: [
+        'A signal is ',
+        { b: 'the bluntest control there is over a running program' },
+        ', which is why who may send one is tightly restricted.',
+      ],
+      points: [
+        { t: '-9 can corrupt data', d: 'A database killed mid-write has no chance to finish. Use the service manager or SIGTERM and wait before escalating.' },
+        { t: 'Killing security tooling', d: 'Stopping the logging or monitoring agent is an early step in many intrusions. Alert when those processes disappear.' },
+        { t: 'PIDs are reused', d: 'A PID noted a minute ago may now belong to another process. Check with ps immediately before sending a signal as root.' },
+      ],
+    },
+    protocols: [],
+    related: ['ps', 'systemctl'],
+    footnote: 'kill is a shell builtin with an identical /usr/bin/kill; killall and pkill select processes by name instead.',
+  },
+  {
+    slug: 'systemctl',
+    cmd: 'systemctl',
+    group: 'proc',
+    pkg: 'systemd',
+    fn: 'Controls systemd services — start, stop, restart, enable at boot — and reports the state of each one.',
+    kicker: 'Linux · process & service management',
+    sub: 'running the services',
+    lede: [
+      { m: 'systemctl' },
+      ' is how services are managed on a systemd machine. It keeps two things apart that are easy to confuse: ',
+      { a: 'whether a service is running now' },
+      ', and ',
+      { b: 'whether it will be started at boot' },
+      '. start and stop change the first; enable and disable change the second.',
+    ],
+    takeaway: [
+      '"Active" is about ',
+      { a: 'this moment' },
+      '; "enabled" is about the next boot. A service can be either without the other.',
+    ],
+    points: [
+      { k: 'Controls', v: 'systemd units', note: 'services, timers, mounts' },
+      { k: 'Needs root', v: 'To change', note: 'status is unprivileged' },
+      { k: 'Now', v: 'start / stop', note: 'restart, reload' },
+      { k: 'At boot', v: 'enable / disable', note: '--now does both' },
+    ],
+    session: {
+      run: 'systemctl status nginx',
+      prompt: '$',
+      lines: [
+        { text: '● nginx.service - A high performance web server and a reverse proxy server' },
+        { text: '     Loaded: loaded (/lib/systemd/system/nginx.service; enabled; preset: enabled)', n: 1 },
+        { text: '     Active: active (running) since Mon 2026-09-28 09:40:12 IST; 2 days ago', n: 2 },
+        { text: '   Main PID: 1042 (nginx)', n: 3 },
+        { text: '      Tasks: 2 (limit: 4601)' },
+        { text: '     Memory: 6.8M' },
+        { text: '     CGroup: /system.slice/nginx.service', n: 4 },
+        { text: '             ├─1042 "nginx: master process /usr/sbin/nginx -g daemon on; master_process on;"' },
+        { text: '             └─1043 "nginx: worker process"' },
+      ],
+      notes: [
+        { t: 'Loaded: where the unit is and whether it starts at boot', d: 'The path is the unit file systemd read. "enabled" means it will be started automatically on the next boot.' },
+        { t: 'Active: what is true right now', d: 'Running, and for how long. A service that crashed reads "failed" here, with the exit code beside it.' },
+        { t: 'Main PID is the process systemd watches', d: 'If this process exits, systemd considers the service stopped and applies its restart policy.' },
+        { t: 'The control group is the whole service', d: 'Every process the service started is listed, so nothing is left behind when it is stopped.' },
+      ],
+    },
+    recipes: [
+      { run: 'sudo systemctl restart nginx', d: 'Stops and starts the service. "reload" re-reads the configuration without dropping connections, where the service supports it.' },
+      { run: 'sudo systemctl enable --now nginx', d: 'Starts it now and sets it to start at every boot, in one step.' },
+      { run: 'systemctl --failed', d: 'Lists every unit that is in a failed state — the first thing to check after a reboot.' },
+      { run: 'journalctl -u nginx -n 50', d: 'The last fifty log lines the service wrote — where the reason for a failure usually is.' },
+    ],
+    security: {
+      lede: [
+        'Every enabled service is ',
+        { b: 'code that starts by itself and keeps running' },
+        '. The list of them is the machine\'s standing attack surface.',
+      ],
+      points: [
+        { t: 'Disable what you do not use', d: 'A stopped service comes back at reboot unless it is also disabled. "systemctl list-unit-files --state=enabled" is the list to prune.' },
+        { t: 'Persistence', d: 'A new unit file is a favourite way for an intruder to survive a reboot. Unfamiliar entries under /etc/systemd/system deserve a close look.' },
+        { t: 'Run as less than root', d: 'A unit can set User=, and sandboxing options such as ProtectSystem= and NoNewPrivileges= limit what a compromised service can reach.' },
+      ],
+    },
+    protocols: [],
+    related: ['ps', 'sudo'],
+    footnote: 'Applies to systemd distributions, which is nearly all of them; older systems use "service" and init scripts.',
+  },
+
+  // ── users & permissions ───────────────────────────────────────────────
+  {
+    slug: 'chmod',
+    cmd: 'chmod',
+    group: 'perm',
+    pkg: 'coreutils',
+    fn: 'Changes the permission bits on a file or directory — who may read it, write to it, and execute it.',
+    kicker: 'Linux · users & permissions',
+    sub: 'who may do what',
+    lede: [
+      { m: 'chmod' },
+      ' sets the mode of a file: read, write and execute, ',
+      { a: 'once each for the owner, the group and everyone else' },
+      '. It takes the mode as three octal digits, or as letters that ',
+      { b: 'change only the bits you name' },
+      ' and leave the rest alone.',
+    ],
+    takeaway: [
+      'Each digit is a sum — ',
+      { a: 'read 4, write 2, execute 1' },
+      ' — so 640 is "owner reads and writes, group reads, others nothing".',
+    ],
+    points: [
+      { k: 'Changes', v: 'The mode bits', note: 'rwx for user, group, other' },
+      { k: 'Octal form', v: '644, 755, 600', note: 'sets all nine bits at once' },
+      { k: 'Symbolic form', v: 'u+x, go-w', note: 'adjusts only what is named' },
+      { k: 'Allowed for', v: 'The owner', note: 'and root' },
+    ],
+    session: {
+      run: 'chmod 640 secrets.env',
+      prompt: '$',
+      lines: [
+        { text: 'ls -l secrets.env', run: true },
+        { text: '-rw-r----- 1 user www-data 412 Sep 30 10:12 secrets.env', n: 1 },
+        { text: 'chmod u+x,go-rwx deploy.sh', run: true, n: 2 },
+        { text: 'ls -l deploy.sh', run: true },
+        { text: '-rwx------ 1 user user 1830 Sep 29 17:03 deploy.sh', n: 3 },
+        { text: 'chmod -R g+w shared/', run: true, n: 4 },
+      ],
+      notes: [
+        { t: '640, digit by digit', d: '6 is 4+2, read and write, for the owner. 4 is read for the group www-data. 0 is nothing for everyone else.' },
+        { t: 'The symbolic form names who, then what', d: 'u is the owner, g the group, o others. u+x adds execute for the owner; go-rwx removes everything from group and others.' },
+        { t: 'Only the named bits changed', d: 'The owner kept read and write and gained execute. Group and others lost every permission they had.' },
+        { t: '-R applies it to a whole tree', d: 'Every file and directory under shared/ gains group write. Powerful, and rarely what you want for both files and directories alike.' },
+      ],
+    },
+    recipes: [
+      { run: 'chmod +x script.sh', d: 'Makes a script executable for everyone who can read it.' },
+      { run: 'chmod 600 ~/.ssh/id_ed25519', d: 'The mode SSH requires on a private key — it refuses to use one that others can read.' },
+      { run: 'chmod -R u=rwX,go=rX public/', d: 'Capital X adds execute only to directories and to files that already had it — the right way to open up a tree.' },
+      { run: 'stat -c "%a %n" file', d: 'Prints the current mode in octal, for when the letters are hard to read.' },
+    ],
+    security: {
+      lede: [
+        'Permission bits are ',
+        { b: 'the first and most-used access control on the system' },
+        ', and the common mistakes are all in the direction of too much.',
+      ],
+      points: [
+        { t: 'Never 777', d: 'It lets every user and every compromised service modify the file. It "fixes" a permission error by removing the protection.' },
+        { t: 'Set-uid and set-gid', d: 'A leading 4 or 2 makes a program run as its owner or group. On a root-owned binary that is a direct path to root; grant it almost never.' },
+        { t: 'Recursive changes', d: '"chmod -R 755" marks every file executable; "chmod -R 644" makes every directory unenterable. Use X, or find with -type.' },
+      ],
+    },
+    protocols: [],
+    related: ['chown', 'ls'],
+    footnote: 'The nine mode bits are the classic model. ACLs and SELinux or AppArmor can add further rules on top of them.',
+  },
+  {
+    slug: 'chown',
+    cmd: 'chown',
+    group: 'perm',
+    pkg: 'coreutils',
+    fn: 'Changes which user and which group own a file or directory.',
+    kicker: 'Linux · users & permissions',
+    sub: 'whose file is it',
+    lede: [
+      { m: 'chown' },
+      ' changes the owner and group recorded on a file. The permission bits say what the owner, the group and others may do; ',
+      { a: 'chown decides who those words refer to' },
+      '. Because giving a file away could be used to dodge quotas and blame, ',
+      { b: 'only root may change an owner' },
+      '.',
+    ],
+    takeaway: [
+      'chmod sets the rules for owner, group and others — ',
+      { a: 'chown says who the owner and group are' },
+      '.',
+    ],
+    points: [
+      { k: 'Changes', v: 'Owner and group', note: 'written as user:group' },
+      { k: 'Needs root', v: 'For the owner', note: 'always' },
+      { k: 'Whole tree', v: '-R', note: 'recursive' },
+      { k: 'Group only', v: 'chgrp', note: 'or chown :group' },
+    ],
+    session: {
+      run: 'chown -v www-data:www-data /var/www/site/index.html',
+      prompt: '#',
+      lines: [
+        { text: "changed ownership of '/var/www/site/index.html' from root:root to www-data:www-data", n: 1 },
+        { text: 'chown -R deploy: /var/www/site', run: true, n: 2 },
+        { text: 'ls -ld /var/www/site', run: true },
+        { text: 'drwxr-xr-x 4 deploy deploy 4096 Sep 30 10:31 /var/www/site', n: 3 },
+        { text: 'chown :www-data /var/www/site/uploads', run: true, n: 4 },
+      ],
+      notes: [
+        { t: 'user:group sets both at once', d: 'The file was created by root, so the web server could not write to it. -v reports the change that was made.' },
+        { t: 'A trailing colon means "and their own group"', d: '"deploy:" sets the owner to deploy and the group to deploy\'s login group. -R applies it to everything beneath.' },
+        { t: 'Third and fourth columns are owner and group', d: 'ls -l confirms it. The permission bits did not change — only whom they apply to.' },
+        { t: 'A leading colon changes only the group', d: 'The owner stays as it is; the group becomes www-data, so the web server can be given write access to just this directory.' },
+      ],
+    },
+    recipes: [
+      { run: 'sudo chown $USER: file', d: 'Takes ownership of a file for yourself and your own group.' },
+      { run: 'sudo chown -R --from=root:root deploy: /srv/app', d: 'Changes only the entries currently owned by root, leaving everything else untouched.' },
+      { run: 'sudo chown --reference=a.txt b.txt', d: 'Gives one file the same owner and group as another.' },
+      { run: 'id deploy', d: 'Shows a user\'s numeric ID and every group they belong to — worth checking first.' },
+    ],
+    security: {
+      lede: [
+        'Ownership decides ',
+        { b: 'who is allowed to change the permissions' },
+        ', so a wrong owner undermines every mode bit set afterwards.',
+      ],
+      points: [
+        { t: 'Do not let the server own its code', d: 'If the web-server user owns the application files, a flaw in the application can rewrite the application. Give it only its upload and cache directories.' },
+        { t: 'Recursive chown as root', d: 'A typo in the path of "chown -R" can re-own system directories and break the machine. Check the path, then run it.' },
+        { t: 'Symbolic links', d: 'With -R, a link pointing outside the tree can redirect the change to a file elsewhere. chown does not follow them by default — do not add -L without a reason.' },
+      ],
+    },
+    protocols: [],
+    related: ['chmod', 'sudo'],
+    footnote: 'Ownership is stored as numeric IDs; the names shown come from /etc/passwd and /etc/group on the machine doing the listing.',
+  },
+  {
+    slug: 'sudo',
+    cmd: 'sudo',
+    group: 'perm',
+    pkg: 'sudo',
+    fn: 'Runs a single command as root, or as another user, after checking the caller is permitted to — and logs that it happened.',
+    kicker: 'Linux · users & permissions',
+    sub: 'one command as root',
+    lede: [
+      { m: 'sudo' },
+      ' runs ',
+      { a: 'one command with another user\'s privileges' },
+      ', root by default. It asks for your own password, checks a rule file to see whether you are allowed, and ',
+      { b: 'records the command in the log' },
+      '. That is the whole point: administration by named people, one visible command at a time.',
+    ],
+    takeaway: [
+      'sudo exists so that nobody has to ',
+      { a: 'log in as root' },
+      ' — and so that every root action has a name on it.',
+    ],
+    points: [
+      { k: 'Runs as', v: 'root', note: 'or -u another user' },
+      { k: 'Asks for', v: 'Your password', note: 'not root\'s' },
+      { k: 'Rules live in', v: '/etc/sudoers', note: 'edit only with visudo' },
+      { k: 'Remembers for', v: '~15 minutes', note: 'then asks again' },
+    ],
+    session: {
+      run: 'sudo systemctl restart nginx',
+      prompt: '$',
+      lines: [
+        { text: '[sudo] password for user:', n: 1 },
+        { text: 'sudo -l', run: true },
+        { text: 'User user may run the following commands on netflow:', n: 2 },
+        { text: '    (ALL : ALL) ALL' },
+        { text: 'sudo -u postgres whoami', run: true },
+        { text: 'postgres', n: 3 },
+        { text: 'sudo tail -1 /var/log/auth.log', run: true },
+        { text: 'Sep 30 10:41:07 netflow sudo:     user : TTY=pts/0 ; PWD=/home/user ; USER=root ; COMMAND=/usr/bin/tail -1 /var/log/auth.log', n: 4 },
+      ],
+      notes: [
+        { t: 'It wants your password, not root\'s', d: 'You prove who you are; the rules decide what you may do. Nothing is echoed as you type.' },
+        { t: '-l lists what you are allowed', d: '(ALL : ALL) ALL means any command, as any user or group. A locked-down account would show a short list of specific commands instead.' },
+        { t: '-u runs as someone other than root', d: 'Here the command ran as the postgres service account — the right way to do database administration without a root shell.' },
+        { t: 'Every use is written down', d: 'Who, from which terminal, in which directory, as whom, and the exact command. This log line is what an audit reads.' },
+      ],
+    },
+    recipes: [
+      { run: 'sudo !!', d: 'Re-runs the previous command with sudo — for the moment after "Permission denied".' },
+      { run: 'sudo -k', d: 'Forgets the cached password immediately, so the next sudo asks again.' },
+      { run: 'sudo visudo', d: 'Edits the rule file with a syntax check, so a mistake cannot lock everyone out.' },
+      { run: 'sudo -i', d: 'Opens a root shell. Convenient, and it trades away the one-command-at-a-time record.' },
+    ],
+    security: {
+      lede: [
+        'sudo is ',
+        { b: 'the gate between an ordinary account and the whole machine' },
+        ', so its rule file is among the most security-relevant files on the system.',
+      ],
+      points: [
+        { t: 'NOPASSWD', d: 'A rule that skips the password turns any compromise of that account into root at once. Keep it for narrow, specific commands if at all.' },
+        { t: 'Commands that can run commands', d: 'Allowing sudo on an editor, a pager, find or tar hands over a root shell, because each can launch one. Review rules with that in mind.' },
+        { t: 'Least privilege', d: 'Grant the commands a role needs, not ALL. And prefer "sudo command" to a root shell, so the log stays meaningful.' },
+      ],
+    },
+    protocols: [],
+    related: ['chown', 'systemctl'],
+    footnote: 'The log is /var/log/auth.log on Debian-family systems and /var/log/secure on Red Hat ones; journalctl shows it on both.',
+  },
+
   // ── interfaces & addressing ───────────────────────────────────────────
   {
     slug: 'ip-addr',
@@ -966,10 +1952,17 @@ export const linuxByGroup = linuxGroups.map((group) => ({
   commands: linuxCommands.filter((command) => command.group === group.id),
 }));
 
-/* the nav menu shows one command per group — the first filed under each */
-export const linuxMenu = linuxByGroup
-  .map((group) => group.commands[0])
-  .filter((command): command is LinuxCommand => Boolean(command));
+export const linuxByPart = linuxParts.map((part) => ({
+  ...part,
+  groups: linuxByGroup.filter((group) => group.part === part.id),
+}));
+
+/* the nav menu shows nine to start with — the shell first, then the network */
+const MENU_SLUGS = ['ls', 'cd', 'cp', 'ps', 'chmod', 'ip-addr', 'dig', 'ss', 'tcpdump'];
+
+export const linuxMenu = MENU_SLUGS.map((slug) => linuxBySlug[slug]).filter(
+  (command): command is LinuxCommand => Boolean(command),
+);
 
 export function linuxHref(command: Pick<LinuxCommand, 'slug'>) {
   return `${LINUX_HREF}/${command.slug}`;

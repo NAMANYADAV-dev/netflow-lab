@@ -274,7 +274,7 @@ export default function SiteNav({
         </Link>
 
         <div className={`${styles.menu} ${styles.menuRight}`} hidden={open !== 'linux'}>
-          <div className={styles.menuHint}>One command from each group — open its session</div>
+          <div className={styles.menuHint}>Nine to start with — open one to read its session</div>
           <div className={styles.menuGrid3}>
             {linuxMenu.map((c) => (
               <Link

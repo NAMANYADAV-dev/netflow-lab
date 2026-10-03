@@ -159,10 +159,19 @@ export default async function LinuxCommandPage({ params }: { params: Promise<{ s
       <section className={`${shell.wrap} ${entry.metaSection}`}>
         <div className={entry.metaCols}>
           <div>
+            {/* the shell commands show no protocol, so they say where they are
+                filed instead of leaving the column empty */}
             <div className={entry.metaHead}>
-              <h2 className={entry.metaTitle}>Protocols it shows</h2>
+              <h2 className={entry.metaTitle}>
+                {protocols.length > 0 ? 'Protocols it shows' : 'Filed under'}
+              </h2>
             </div>
             <div className={entry.chipRow}>
+              {protocols.length === 0 && group && (
+                <Link href={`${LINUX_HREF}#group-${group.id}`} className={entry.protoChip}>
+                  {group.name}
+                </Link>
+              )}
               {protocols.map((p) => (
                 <Link
                   /* a protocol without a written page falls back to the Bench,

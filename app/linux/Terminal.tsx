@@ -3,8 +3,8 @@ import styles from './terminal.module.css';
 
 /* The one dark thing on a paper site: a captured session, set as a terminal.
 
-   It is a specimen, not an emulator — nothing here runs. The prompt line is
-   what was typed, the rows under it are what came back, and a row worth
+   It is a specimen, not an emulator — nothing here runs. The prompt lines are
+   what was typed, the rows under them are what came back, and a row worth
    reading carries a number in the gutter that the notes below the panel
    answer. The gutter stays put while a long line scrolls sideways, so the
    number never leaves the row it belongs to. */
@@ -15,6 +15,15 @@ export default function Terminal({
   session: LinuxCommand['session'];
   pkg: string;
 }) {
+  const promptClass = session.prompt === '#' ? styles.promptRoot : styles.prompt;
+
+  const typed = (text: string) => (
+    <span className={styles.line}>
+      <span className={promptClass}>{session.prompt}</span>{' '}
+      <span className={styles.typed}>{text}</span>
+    </span>
+  );
+
   return (
     <figure className={styles.wrap}>
       <div className={styles.term}>
@@ -35,12 +44,7 @@ export default function Terminal({
           <div className={styles.rows}>
             <div className={styles.row}>
               <span className={styles.gutter} />
-              <span className={styles.line}>
-                <span className={session.prompt === '#' ? styles.promptRoot : styles.prompt}>
-                  {session.prompt}
-                </span>{' '}
-                <span className={styles.typed}>{session.run}</span>
-              </span>
+              {typed(session.run)}
             </div>
 
             {session.lines.map((line, i) => (
@@ -52,14 +56,19 @@ export default function Terminal({
                     </span>
                   )}
                 </span>
-                <span className={styles.line}>{line.text || ' '}</span>
+                {line.run ? (
+                  typed(line.text)
+                ) : (
+                  <span className={styles.line}>{line.text || ' '}</span>
+                )}
               </div>
             ))}
           </div>
         </div>
       </div>
       <figcaption className={styles.caption}>
-        Illustrative session · every address is from a documentation or private range
+        Illustrative session · names, sizes and dates are examples, and every address is from a
+        documentation or private range
       </figcaption>
     </figure>
   );
