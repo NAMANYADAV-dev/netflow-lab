@@ -10,7 +10,7 @@ import styles from './linux.module.css';
 export const metadata = pageMeta({
   title: 'Linux Commands · NetFlow Lab',
   description:
-    'Linux commands for navigation, file, process and permission management, and for networking — ls, cp, ps, chmod, ip, ss, dig, tcpdump — each with a session read line by line.',
+    'Linux commands for navigation, files, reading logs, disk space, processes and permissions, and for networking — ls, cp, grep, df, ps, chmod, ip, ss, dig, tcpdump — each with its switches and a session read line by line.',
   path: '/linux',
 });
 
@@ -25,10 +25,10 @@ export default function LinuxPage() {
           <div className={styles.kicker}>The system, from a shell</div>
           <h1 className={styles.title}>Linux commands, read one line at a time.</h1>
           <p className={styles.lede}>
-            <em>The shell first, then the network.</em> Moving around, managing files, processes
-            and permissions — and then the commands that show each protocol at work on a real
-            host. Every one comes with a session, the lines worth reading numbered, and a note
-            on what each of them means.
+            <em>The shell first, then the network.</em> Moving around, managing and reading files,
+            disks, processes and permissions — and then the commands that show each protocol at
+            work on a real host. Every one comes with a session, the lines worth reading
+            numbered, a note on what each of them means, and the switches worth knowing.
           </p>
           <Link href={LINUX_INTRO_HREF} className={styles.introLink}>
             New to Linux? What it is, and how its tree is laid out &rarr;

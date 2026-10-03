@@ -24,6 +24,7 @@ import { connectorHref, connectors } from './connector-data';
 import { deviceHref, devices } from './device-data';
 import { labs } from './lab-data';
 import { linuxCommands, linuxGroupById, linuxHref } from './linux-data';
+import { linuxSwitches } from './linux-switches';
 import { linuxDirHref, linuxDirs, treeGroupById } from './linux-tree';
 import { protocolBySlug, protocolCategoryById, protocolCount } from './protocol-data';
 import { protocolPages } from './protocol-pages';
@@ -91,7 +92,15 @@ const commandEntries: SearchEntry[] = linuxCommands.map((c) => ({
   detail: `${c.sub} · ${linuxGroupById[c.group]?.name ?? 'Linux'}`,
   href: linuxHref(c),
   kind: 'command',
-  alt: [c.slug, 'linux', c.pkg, c.fn, c.session.run],
+  /* the switches go in as typed, so "ls -a" finds ls */
+  alt: [
+    c.slug,
+    'linux',
+    c.pkg,
+    c.fn,
+    c.session.run,
+    ...(linuxSwitches[c.slug] ?? []).map((s) => `${c.cmd} ${s.flag}`),
+  ],
 }));
 
 const directoryEntries: SearchEntry[] = linuxDirs.map((d) => ({

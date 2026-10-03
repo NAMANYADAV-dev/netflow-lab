@@ -234,6 +234,56 @@
   color: color-mix(in srgb, var(--color-text) 89%, transparent);
 }
 
+/* the switches: a ruled two-column table, the flag set as it is typed */
+.switches {
+  --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--color-divider);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.switchRow {
+  display: grid;
+  grid-template-columns: minmax(96px, auto) 1fr;
+  gap: 16px;
+  align-items: baseline;
+  padding: 13px 18px;
+  background: var(--color-bg);
+}
+
+/* an odd one out spans the row, so no empty cell shows the grid's ground */
+.switchRow:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+.switchRow dt {
+  margin: 0;
+}
+
+.switchFlag {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: var(--radius-md);
+  background: #1c1b1d;
+  color: var(--color-accent-400);
+  white-space: nowrap;
+}
+
+.switchText {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--color-text) 89%, transparent);
+}
+
 .relatedCards {
   display: grid;
   gap: 12px;
@@ -323,8 +373,14 @@
 
 @media (max-width: 700px) {
   .cards,
-  .recipes {
+  .recipes,
+  .switches {
     grid-template-columns: 1fr;
+  }
+  /* a long flag takes its own line above what it does */
+  .switchRow {
+    grid-template-columns: 1fr;
+    gap: 6px;
   }
 }
 

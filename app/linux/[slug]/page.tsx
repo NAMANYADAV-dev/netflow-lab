@@ -11,6 +11,7 @@ import {
   linuxHref,
   linuxNeighbours,
 } from '@/lib/linux-data';
+import { linuxSwitches } from '@/lib/linux-switches';
 import { protocolById, protocolHref, protocolSlug } from '@/lib/protocol-data';
 import { protocolPages } from '@/lib/protocol-pages';
 import { pageMeta } from '@/lib/seo';
@@ -45,6 +46,7 @@ export default async function LinuxCommandPage({ params }: { params: Promise<{ s
   const { prev, next } = linuxNeighbours(command.slug);
   const protocols = command.protocols.map((id) => protocolById[id]).filter(Boolean);
   const related = command.related.map((s) => linuxBySlug[s]).filter(Boolean);
+  const switches = linuxSwitches[command.slug] ?? [];
 
   return (
     <div className={shell.page}>
@@ -120,6 +122,31 @@ export default async function LinuxCommandPage({ params }: { params: Promise<{ s
           </div>
         </div>
       </section>
+
+      {switches.length > 0 && (
+        <section className={`${shell.wrap} ${entry.section}`} id="switches">
+          <div className={entry.head}>
+            <h2 className={entry.headTitle}>Switches</h2>
+            <p className={entry.headLede}>
+              A switch changes how the command behaves. These are the ones used day to day;{' '}
+              <span className="rich-m">man {command.cmd.split(' ')[0]}</span> lists the rest.
+              Single-letter switches can usually be joined, so{' '}
+              <span className="rich-m">-l -a</span> may be written{' '}
+              <span className="rich-m">-la</span>.
+            </p>
+          </div>
+          <dl className={linuxStyles.switches}>
+            {switches.map((item) => (
+              <div className={linuxStyles.switchRow} key={item.flag}>
+                <dt>
+                  <code className={linuxStyles.switchFlag}>{item.flag}</code>
+                </dt>
+                <dd className={linuxStyles.switchText}>{item.d}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )}
 
       <section className={`${shell.wrap} ${entry.section}`}>
         <div className={entry.head}>
