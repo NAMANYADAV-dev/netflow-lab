@@ -8,6 +8,7 @@ export const BENCH_HREF = '/bench';
 export const STACK_HREF = '/stack';
 export const DEVICES_HREF = '/devices';
 export const CABLES_HREF = '/cables';
+export const LINUX_HREF = '/linux';
 export const LABS_HREF = '/lab';
 
 export type Stat = { num: string; label: string };

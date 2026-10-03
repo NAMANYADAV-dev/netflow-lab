@@ -7,6 +7,7 @@ import {
   CABLES_HREF,
   DEVICES_HREF,
   LABS_HREF,
+  LINUX_HREF,
   STACK_HREF,
   menuProtos,
 } from '@/lib/atlas-data';
@@ -18,7 +19,12 @@ import SiteSearch from '@/components/SiteSearch';
 import type { SearchEntry } from '@/lib/search-index';
 import styles from '@/app/shell.module.css';
 
-type MenuName = 'protocols' | 'devices' | 'cables';
+type MenuName = 'protocols' | 'devices' | 'cables' | 'linux';
+
+/* One row of the Linux menu. The command records carry whole pages of prose,
+   so the server header hands down just these four strings rather than this
+   client component importing the catalogue. */
+export type LinuxMenuItem = { href: string; cmd: string; group: string; fn: string };
 
 /** the nav entries a page can claim as its own */
 export type NavSection = MenuName | 'home' | 'stack' | 'bench' | 'labs';
@@ -43,12 +49,15 @@ const startDrag = (id: string) => (e: React.DragEvent) => {
 export default function SiteNav({
   current,
   pageSlugs,
+  linuxMenu,
   searchEntries,
   searchDefaults,
 }: {
   current?: NavSection;
   /** the protocol slugs that have a page, handed down by the server header */
   pageSlugs: string[];
+  /** one command per Linux group, handed down by the server header */
+  linuxMenu: LinuxMenuItem[];
   /** everything the palette can reach, built on the server */
   searchEntries: SearchEntry[];
   /** what the palette offers before anything is typed */
@@ -240,6 +249,47 @@ export default function SiteNav({
           </div>
           <Link href={CABLES_HREF} className={styles.menuMore}>
             See all cables &rarr;
+          </Link>
+        </div>
+      </div>
+
+      <div
+        className={styles.menuHost}
+        onMouseEnter={() => show('linux')}
+        onMouseLeave={scheduleHide}
+      >
+        <Link
+          href={LINUX_HREF}
+          className={styles.menuTrigger}
+          aria-haspopup="true"
+          aria-expanded={open === 'linux'}
+          aria-current={mark('linux')}
+          onClick={(e) => {
+            e.preventDefault();
+            show('linux');
+          }}
+          onFocus={() => show('linux')}
+        >
+          Linux <span className={styles.caret}>&#9662;</span>
+        </Link>
+
+        <div className={`${styles.menu} ${styles.menuRight}`} hidden={open !== 'linux'}>
+          <div className={styles.menuHint}>One command from each group — open its session</div>
+          <div className={styles.menuGrid3}>
+            {linuxMenu.map((c) => (
+              <Link
+                key={c.href}
+                href={c.href}
+                title={c.fn}
+                className={styles.chip}
+              >
+                <span className={styles.chipDevice}>{c.cmd}</span>
+                <span className={styles.chipLayer}>{c.group}</span>
+              </Link>
+            ))}
+          </div>
+          <Link href={LINUX_HREF} className={styles.menuMore}>
+            See all commands &rarr;
           </Link>
         </div>
       </div>

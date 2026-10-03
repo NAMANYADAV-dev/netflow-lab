@@ -7,6 +7,7 @@ import SiteFooter from '@/components/SiteFooter';
 import SiteHeader from '@/components/SiteHeader';
 import { BENCH_HREF } from '@/lib/atlas-data';
 import { labForProtocol } from '@/lib/lab-data';
+import { linuxForProtocol, linuxHref } from '@/lib/linux-data';
 import { protocolById, protocolBySlug, protocolHref, protocolSlug, protocols } from '@/lib/protocol-data';
 import { protocolPages } from '@/lib/protocol-pages';
 import { pageMeta } from '@/lib/seo';
@@ -44,6 +45,9 @@ export default async function ProtocolPage({ params }: { params: Promise<{ slug:
   if (!protocol || !page) notFound();
 
   const related = protocol.rel.map((id) => protocolById[id]).filter(Boolean);
+
+  /* the Linux commands that show this protocol on a real host, if any do */
+  const commands = linuxForProtocol(protocol.id);
 
   /* ten of the forty-eight also have a lab; the rest render without this */
   const lab = labForProtocol(slug);
@@ -226,6 +230,21 @@ export default async function ProtocolPage({ params }: { params: Promise<{ slug:
                 </Link>
               ))}
             </div>
+
+            {commands.length > 0 && (
+              <>
+                <div className={`${styles.metaHead} ${styles.metaHeadSecond}`}>
+                  <h2 className={styles.metaTitle}>See it on Linux</h2>
+                </div>
+                <div className={styles.chipRow}>
+                  {commands.map((c) => (
+                    <Link key={c.slug} href={linuxHref(c)} className={styles.protoChip} title={c.fn}>
+                      {c.cmd}
+                    </Link>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
 
           <div>

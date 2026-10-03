@@ -6,19 +6,28 @@
    row per destination.
 
    Everything the site publishes is in here: the protocols that have a page, the
-   devices, the cables and connectors, the labs, and the section fronts
+   devices, the cables and connectors, the Linux commands, the labs, and the
+   section fronts
    themselves, so that typing "stack" reaches the page as readily as typing a
    protocol name does. */
 
-import { BENCH_HREF, CABLES_HREF, DEVICES_HREF, LABS_HREF, STACK_HREF } from './atlas-data';
+import {
+  BENCH_HREF,
+  CABLES_HREF,
+  DEVICES_HREF,
+  LABS_HREF,
+  LINUX_HREF,
+  STACK_HREF,
+} from './atlas-data';
 import { cableHref, cables } from './cable-data';
 import { connectorHref, connectors } from './connector-data';
 import { deviceHref, devices } from './device-data';
 import { labs } from './lab-data';
+import { linuxCommands, linuxGroupById, linuxHref } from './linux-data';
 import { protocolBySlug, protocolCategoryById, protocolCount } from './protocol-data';
 import { protocolPages } from './protocol-pages';
 
-export type SearchKind = 'protocol' | 'device' | 'cable' | 'connector' | 'lab' | 'section';
+export type SearchKind = 'protocol' | 'device' | 'cable' | 'connector' | 'command' | 'lab' | 'section';
 
 export type SearchEntry = {
   /** what the result is called */
@@ -76,6 +85,14 @@ const connectorEntries: SearchEntry[] = connectors.map((c) => ({
   alt: [c.slug, c.fn, ...c.tags],
 }));
 
+const commandEntries: SearchEntry[] = linuxCommands.map((c) => ({
+  title: c.cmd,
+  detail: `${c.sub} · ${linuxGroupById[c.group]?.name ?? 'Linux'}`,
+  href: linuxHref(c),
+  kind: 'command',
+  alt: [c.slug, 'linux', c.pkg, c.fn, c.session.run],
+}));
+
 const labEntries: SearchEntry[] = labs.map((l) => ({
   title: `${l.abbr} lab`,
   detail: `${l.layer} · ${l.difficulty}`,
@@ -114,6 +131,13 @@ const sectionEntries: SearchEntry[] = [
     alt: ['wire', 'fibre', 'fiber', 'copper', 'plug'],
   },
   {
+    title: 'Linux commands',
+    detail: `${linuxCommands.length} networking commands, each with a session read line by line`,
+    href: LINUX_HREF,
+    kind: 'section',
+    alt: ['linux', 'terminal', 'shell', 'cli', 'command line', 'bash'],
+  },
+  {
     title: 'Protocol labs',
     detail: `${labs.length} interactive labs with step-by-step packet flows`,
     href: LABS_HREF,
@@ -128,6 +152,7 @@ export const searchIndex: SearchEntry[] = [
   ...deviceEntries,
   ...cableEntries,
   ...connectorEntries,
+  ...commandEntries,
   ...sectionEntries,
 ];
 

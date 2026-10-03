@@ -1,8 +1,16 @@
 import MastheadDate from '@/components/MastheadDate';
-import SiteNav, { type NavSection } from '@/components/SiteNav';
+import SiteNav, { type LinuxMenuItem, type NavSection } from '@/components/SiteNav';
+import { linuxGroupById, linuxHref, linuxMenu } from '@/lib/linux-data';
 import { protocolPageSlugs } from '@/lib/protocol-pages';
 import { searchDefaults, searchIndex } from '@/lib/search-index';
 import styles from '@/app/shell.module.css';
+
+const linuxMenuItems: LinuxMenuItem[] = linuxMenu.map((c) => ({
+  href: linuxHref(c),
+  cmd: c.cmd,
+  group: linuxGroupById[c.group]?.name ?? '',
+  fn: c.fn,
+}));
 
 /* Every page shares the slim editorial masthead and the application navbar. */
 export default function SiteHeader({
@@ -35,6 +43,7 @@ export default function SiteHeader({
           <SiteNav
             current={current}
             pageSlugs={protocolPageSlugs}
+            linuxMenu={linuxMenuItems}
             searchEntries={searchIndex}
             searchDefaults={searchDefaults}
           />

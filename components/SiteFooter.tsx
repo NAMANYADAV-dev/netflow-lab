@@ -22,6 +22,7 @@ export default function SiteFooter({ note }: { note: string }) {
             <Link href="/bench">Protocol atlas</Link>
             <Link href="/devices">Devices</Link>
             <Link href="/cables">Cables</Link>
+            <Link href="/linux">Linux</Link>
           </nav>
 
           <nav className={styles.nav} aria-label="Protocol lab shortcuts">

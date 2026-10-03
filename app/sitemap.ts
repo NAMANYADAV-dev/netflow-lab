@@ -3,6 +3,7 @@ import { cables } from '@/lib/cable-data';
 import { connectors } from '@/lib/connector-data';
 import { devices } from '@/lib/device-data';
 import { labs } from '@/lib/lab-data';
+import { linuxCommands, linuxHref } from '@/lib/linux-data';
 import { protocolPages } from '@/lib/protocol-pages';
 import { site } from '@/lib/site';
 
@@ -28,6 +29,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     entry('/stack', 0.8),
     entry('/devices', 0.7),
     entry('/cables', 0.7),
+    entry('/linux', 0.7),
 
     /* the labs are the thing this site does that others do not */
     ...labs.map((lab) => entry(lab.href, 0.8)),
@@ -36,5 +38,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...devices.map((device) => entry(`/devices/${device.slug}`, 0.5)),
     ...cables.map((cable) => entry(`/cables/${cable.slug}`, 0.5)),
     ...connectors.map((connector) => entry(`/cables/connectors/${connector.slug}`, 0.5)),
+    ...linuxCommands.map((command) => entry(linuxHref(command), 0.5)),
   ];
 }

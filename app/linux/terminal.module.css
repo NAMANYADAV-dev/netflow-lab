@@ -1,0 +1,153 @@
+/* The terminal specimen. Its colours are its own: the panel is ink whatever the
+   page is, so it takes the nav mark's tile ground and the light steps of the
+   two accent ramps rather than the page tokens. */
+
+.wrap {
+  --term-bg: #1c1b1d;
+  --term-bar: #29272a;
+  --term-text: #d9d6d4;
+  --term-dim: #9b9797;
+  --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  margin: 0;
+}
+
+.term {
+  background: var(--term-bg);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 16px;
+  background: var(--term-bar);
+  font-family: var(--font-furniture);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--term-dim);
+}
+
+.dots {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.dots i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #4a474b;
+}
+
+.barTitle {
+  flex: 1;
+}
+
+.barPkg {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-accent-400);
+}
+
+.body {
+  overflow-x: auto;
+  padding: 18px 0 20px;
+}
+
+.body:focus-visible {
+  outline: 2px solid var(--color-accent-400);
+  outline-offset: -2px;
+}
+
+/* as wide as the longest row, so every row's highlight runs the full width
+   once the panel scrolls */
+.rows {
+  width: max-content;
+  min-width: 100%;
+  font-family: var(--mono);
+  font-size: 13.5px;
+  line-height: 1.75;
+  color: var(--term-text);
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+}
+
+.rowNoted {
+  background: color-mix(in srgb, var(--color-accent-400) 9%, transparent);
+}
+
+.gutter {
+  position: sticky;
+  left: 0;
+  flex: none;
+  width: 46px;
+  display: flex;
+  justify-content: center;
+  align-self: stretch;
+  align-items: center;
+  background: var(--term-bg);
+}
+
+.rowNoted .gutter {
+  background: color-mix(in srgb, var(--color-accent-400) 9%, var(--term-bg));
+}
+
+.mark {
+  display: inline-grid;
+  place-items: center;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: var(--color-accent-400);
+  color: var(--term-bg);
+  font-family: var(--font-furniture);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.line {
+  white-space: pre;
+  padding-right: 24px;
+}
+
+.prompt {
+  color: var(--color-accent-400);
+  font-weight: 700;
+}
+
+.promptRoot {
+  color: var(--color-accent-2-400);
+  font-weight: 700;
+}
+
+.typed {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.caption {
+  margin-top: 10px;
+  font-family: var(--font-furniture);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: color-mix(in srgb, var(--color-text) 64%, transparent);
+}
+
+@media (max-width: 560px) {
+  .rows {
+    font-size: 12px;
+  }
+  .gutter {
+    width: 36px;
+  }
+  .barPkg {
+    display: none;
+  }
+}
