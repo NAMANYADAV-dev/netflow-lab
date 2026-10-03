@@ -164,7 +164,7 @@
 
 /* ── the shelves ───────────────────────────────────────────────────────── */
 
-/* One row of the six kinds, each carrying its count for the query as typed.
+/* One row of the kinds, each carrying its count for the query as typed.
    It doubles as the browse affordance: with the field empty, a chip opens that
    whole shelf rather than filtering nothing. */
 .filters {

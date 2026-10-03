@@ -274,7 +274,7 @@
   grid-template-columns: repeat(3, 1fr);
 }
 
-/* ── the introduction: the tree as a reference table ────────────────────── */
+/* ── the introduction ───────────────────────────────────────────────────── */
 
 /* the link from the section front to the page that explains the tree */
 .introLink {
@@ -289,66 +289,6 @@
 
 .introLink:hover {
   text-decoration: underline;
-}
-
-.dirGroups {
-  --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
-  display: grid;
-  gap: 30px;
-}
-
-.dirGroupName {
-  margin: 0 0 12px;
-  font-size: 20px;
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-}
-
-/* the same number the group carries in the terminal's gutter */
-.dirGroupNum {
-  font-family: var(--font-heading);
-  font-weight: 600;
-  color: var(--color-accent-700);
-}
-
-.dirTable {
-  border: 1px solid var(--color-divider);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-}
-
-.dirRow {
-  display: grid;
-  grid-template-columns: 110px 1fr 190px;
-  gap: 20px;
-  align-items: baseline;
-  padding: 11px 18px;
-  background: var(--color-bg);
-}
-
-.dirRow + .dirRow {
-  border-top: 1px solid var(--color-divider);
-}
-
-.dirPath {
-  font-family: var(--mono);
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--color-accent-700);
-}
-
-.dirWhat {
-  font-size: 15px;
-  line-height: 1.55;
-}
-
-.dirEg {
-  font-family: var(--mono);
-  font-size: 13px;
-  text-align: right;
-  overflow-wrap: anywhere;
-  color: color-mix(in srgb, var(--color-text) 67%, transparent);
 }
 
 @media (max-width: 900px) {
@@ -385,15 +325,6 @@
   .cards,
   .recipes {
     grid-template-columns: 1fr;
-  }
-  /* the example drops under the description rather than squeezing it */
-  .dirRow {
-    grid-template-columns: 84px 1fr;
-    gap: 4px 14px;
-  }
-  .dirEg {
-    grid-column: 2;
-    text-align: left;
   }
 }
 

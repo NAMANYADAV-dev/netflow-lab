@@ -4,6 +4,7 @@ import { connectors } from '@/lib/connector-data';
 import { devices } from '@/lib/device-data';
 import { labs } from '@/lib/lab-data';
 import { linuxCommands, linuxHref } from '@/lib/linux-data';
+import { linuxDirHref, linuxDirs } from '@/lib/linux-tree';
 import { protocolPages } from '@/lib/protocol-pages';
 import { site } from '@/lib/site';
 
@@ -40,5 +41,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...cables.map((cable) => entry(`/cables/${cable.slug}`, 0.5)),
     ...connectors.map((connector) => entry(`/cables/connectors/${connector.slug}`, 0.5)),
     ...linuxCommands.map((command) => entry(linuxHref(command), 0.5)),
+    ...linuxDirs.map((dir) => entry(linuxDirHref(dir), 0.5)),
   ];
 }

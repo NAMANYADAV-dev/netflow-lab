@@ -6,9 +6,8 @@
    row per destination.
 
    Everything the site publishes is in here: the protocols that have a page, the
-   devices, the cables and connectors, the Linux commands, the labs, and the
-   section fronts
-   themselves, so that typing "stack" reaches the page as readily as typing a
+   devices, the cables and connectors, the Linux commands and directories, the
+   labs, and the section fronts themselves, so that typing "stack" reaches the page as readily as typing a
    protocol name does. */
 
 import {
@@ -25,10 +24,11 @@ import { connectorHref, connectors } from './connector-data';
 import { deviceHref, devices } from './device-data';
 import { labs } from './lab-data';
 import { linuxCommands, linuxGroupById, linuxHref } from './linux-data';
+import { linuxDirHref, linuxDirs, treeGroupById } from './linux-tree';
 import { protocolBySlug, protocolCategoryById, protocolCount } from './protocol-data';
 import { protocolPages } from './protocol-pages';
 
-export type SearchKind = 'protocol' | 'device' | 'cable' | 'connector' | 'command' | 'lab' | 'section';
+export type SearchKind = 'protocol' | 'device' | 'cable' | 'connector' | 'command' | 'directory' | 'lab' | 'section';
 
 export type SearchEntry = {
   /** what the result is called */
@@ -92,6 +92,14 @@ const commandEntries: SearchEntry[] = linuxCommands.map((c) => ({
   href: linuxHref(c),
   kind: 'command',
   alt: [c.slug, 'linux', c.pkg, c.fn, c.session.run],
+}));
+
+const directoryEntries: SearchEntry[] = linuxDirs.map((d) => ({
+  title: d.path,
+  detail: `${d.sub} · ${treeGroupById[d.group]?.name ?? 'Linux'}`,
+  href: linuxDirHref(d),
+  kind: 'directory',
+  alt: [d.slug, 'linux', 'directory', 'folder', d.fn, ...d.inside.map((item) => `${d.path === '/' ? '' : d.path}/${item.name}`)],
 }));
 
 const labEntries: SearchEntry[] = labs.map((l) => ({
@@ -161,6 +169,7 @@ export const searchIndex: SearchEntry[] = [
   ...cableEntries,
   ...connectorEntries,
   ...commandEntries,
+  ...directoryEntries,
   ...sectionEntries,
 ];
 

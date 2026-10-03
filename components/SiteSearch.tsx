@@ -17,6 +17,7 @@ const KIND_LABEL: Record<SearchKind, string> = {
   cable: 'Cable',
   connector: 'Connector',
   command: 'Command',
+  directory: 'Directory',
   lab: 'Lab',
   section: 'Section',
 };
@@ -24,7 +25,7 @@ const KIND_LABEL: Record<SearchKind, string> = {
 /* The order groups come in when a query matches several kinds at once.
    Protocols first because they are what most queries are reaching for; the
    section fronts last because they are the broadest answer to any question. */
-const KIND_ORDER: SearchKind[] = ['protocol', 'lab', 'device', 'cable', 'connector', 'command', 'section'];
+const KIND_ORDER: SearchKind[] = ['protocol', 'lab', 'device', 'cable', 'connector', 'command', 'directory', 'section'];
 
 const KIND_PLURAL: Record<SearchKind, string> = {
   protocol: 'Protocols',
@@ -32,6 +33,7 @@ const KIND_PLURAL: Record<SearchKind, string> = {
   cable: 'Cables',
   connector: 'Connectors',
   command: 'Commands',
+  directory: 'Directories',
   lab: 'Labs',
   section: 'Sections',
 };

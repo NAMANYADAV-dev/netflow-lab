@@ -2,17 +2,18 @@ import Link from 'next/link';
 import SiteFooter from '@/components/SiteFooter';
 import SiteHeader from '@/components/SiteHeader';
 import { LINUX_HREF, LINUX_INTRO_HREF } from '@/lib/atlas-data';
-import { linuxBySlug, linuxCommands, linuxHref, type LinuxCommand } from '@/lib/linux-data';
+import { linuxBySlug, linuxCommands, linuxHref } from '@/lib/linux-data';
+import { linuxDirs } from '@/lib/linux-tree';
 import { pageMeta } from '@/lib/seo';
 import entry from '@/components/entry-page.module.css';
-import Terminal from '../Terminal';
+import DirTree from '../DirTree';
 import linuxStyles from '../linux.module.css';
 import shell from '../../shell.module.css';
 
 export const metadata = pageMeta({
   title: 'What Linux is, and how its tree is laid out · NetFlow Lab',
   description:
-    'What Linux is, why servers, phones and network gear run it, and how its directory tree is laid out — /etc, /home, /var, /usr, /proc and the rest, each with what lives there.',
+    'What Linux is, why servers, phones and network gear run it, and how its directory tree is laid out — /etc, /home, /var, /usr, /proc and the rest, each with a page on what lives there.',
   path: LINUX_INTRO_HREF,
 });
 
@@ -79,104 +80,6 @@ const reasons = [
   {
     t: 'Security work lives here',
     d: 'Kali, and most tools for scanning, capturing and analysing, are built for Linux first. Permissions, users and logs are all in the open to inspect.',
-  },
-];
-
-/* `tree -L 1 /` on a current Debian-family host. The numbers are not one per
-   line: each directory carries the number of the group it belongs to, and the
-   five notes below explain the groups. */
-const session: LinuxCommand['session'] = {
-  run: 'tree -L 1 /',
-  prompt: '$',
-  lines: [
-    { text: '/' },
-    { text: '├── bin -> usr/bin', n: 1 },
-    { text: '├── boot', n: 1 },
-    { text: '├── dev', n: 4 },
-    { text: '├── etc', n: 2 },
-    { text: '├── home', n: 3 },
-    { text: '├── lib -> usr/lib', n: 1 },
-    { text: '├── media', n: 5 },
-    { text: '├── mnt', n: 5 },
-    { text: '├── opt', n: 2 },
-    { text: '├── proc', n: 4 },
-    { text: '├── root', n: 3 },
-    { text: '├── run', n: 4 },
-    { text: '├── sbin -> usr/sbin', n: 1 },
-    { text: '├── srv', n: 2 },
-    { text: '├── sys', n: 4 },
-    { text: '├── tmp', n: 5 },
-    { text: '├── usr', n: 1 },
-    { text: '└── var', n: 2 },
-  ],
-  notes: [
-    {
-      t: 'The system itself',
-      d: 'Programs, libraries and the kernel: /usr, /boot, and the /bin, /sbin and /lib names that now point into /usr. Installed by the package manager — not somewhere to keep your own files.',
-    },
-    {
-      t: 'Configuration and changing data',
-      d: '/etc holds the settings, /var holds what grows while the system runs — logs, caches, mail, databases. /opt and /srv hold add-on software and the data a server hands out.',
-    },
-    {
-      t: 'The people',
-      d: 'Every user gets a directory under /home, and that is where their own files go. The administrator is kept apart, in /root, so it is there even when /home is not mounted.',
-    },
-    {
-      t: 'Windows into the kernel',
-      d: '/proc, /sys, /dev and /run are not on any disk. The kernel makes them up as they are read: processes, hardware, devices and the state of the running system, all presented as files.',
-    },
-    {
-      t: 'Scratch space and mount points',
-      d: '/tmp is for files that need not survive a reboot. /mnt and /media are empty directories where another disk, a USB stick or a network share is attached to the tree.',
-    },
-  ],
-};
-
-const dirGroups = [
-  {
-    name: 'The system itself',
-    dirs: [
-      { path: '/', what: 'The root. Every other path starts here.', eg: 'the top of the tree' },
-      { path: '/usr', what: 'Installed programs, libraries and their documentation.', eg: '/usr/bin/ls' },
-      { path: '/bin', what: 'Everyday commands. On current systems, a link to /usr/bin.', eg: '/bin/bash' },
-      { path: '/sbin', what: 'Commands for administering the system. A link to /usr/sbin.', eg: '/sbin/ip' },
-      { path: '/lib', what: 'Shared libraries and kernel modules. A link to /usr/lib.', eg: '/lib/modules' },
-      { path: '/boot', what: 'The kernel and what the boot loader needs to start it.', eg: '/boot/vmlinuz' },
-    ],
-  },
-  {
-    name: 'Configuration and changing data',
-    dirs: [
-      { path: '/etc', what: 'System-wide configuration, as plain text files.', eg: '/etc/hosts' },
-      { path: '/var', what: 'Data that changes as the system runs: logs, caches, queues.', eg: '/var/log' },
-      { path: '/opt', what: 'Add-on software that ships as one self-contained bundle.', eg: '/opt/google' },
-      { path: '/srv', what: 'Data this host serves to others, such as a web site.', eg: '/srv/www' },
-    ],
-  },
-  {
-    name: 'The people',
-    dirs: [
-      { path: '/home', what: 'One directory per user, for their own files and settings.', eg: '/home/user' },
-      { path: '/root', what: 'The home directory of root, the administrator.', eg: '/root/.bashrc' },
-    ],
-  },
-  {
-    name: 'Windows into the kernel',
-    dirs: [
-      { path: '/proc', what: 'Running processes and kernel state, as files.', eg: '/proc/cpuinfo' },
-      { path: '/sys', what: 'Hardware and drivers as the kernel sees them.', eg: '/sys/class/net' },
-      { path: '/dev', what: 'Devices as files: disks, terminals, and the null device.', eg: '/dev/sda' },
-      { path: '/run', what: 'State since the last boot: process ids and sockets.', eg: '/run/sshd.pid' },
-    ],
-  },
-  {
-    name: 'Scratch space and mount points',
-    dirs: [
-      { path: '/tmp', what: 'Temporary files. Anyone may write; do not expect them to last.', eg: '/tmp/build.log' },
-      { path: '/mnt', what: 'Where an administrator attaches a filesystem by hand.', eg: '/mnt/backup' },
-      { path: '/media', what: 'Where removable media is attached automatically.', eg: '/media/user/USB' },
-    ],
   },
 ];
 
@@ -295,58 +198,13 @@ export default function WhatIsLinuxPage() {
           <h2 className={entry.headTitle}>The directory tree</h2>
           <p className={entry.headLede}>
             Everything hangs off one root, written /. The layout is the same on nearly every
-            distribution, so learning it once is enough. Each directory below carries the number
-            of the group it belongs to.
+            distribution, so learning it once is enough. The {linuxDirs.length - 1} directories
+            under it do five jobs, and each job has its own colour — open any directory to see
+            what it is for and what is inside.
           </p>
         </div>
 
-        <Terminal session={session} pkg="tree" />
-
-        <div className={entry.steps}>
-          <div className={entry.stepsKicker}>Reading the tree</div>
-          <h3 className={entry.stepsTitle}>Five groups, and what each is for</h3>
-          <div className={entry.stepGrid}>
-            {session.notes.map((note, index) => (
-              <div className={entry.step} key={note.t}>
-                <div className={entry.stepNum}>{index + 1}</div>
-                <div>
-                  <div className={entry.stepTitle}>{note.t}</div>
-                  <p className={entry.stepText}>{note.d}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className={`${shell.wrap} ${entry.section}`} id="directories">
-        <div className={entry.head}>
-          <h2 className={entry.headTitle}>Directory by directory</h2>
-          <p className={entry.headLede}>
-            The same tree as a reference: what each directory holds, and one path inside it you
-            are likely to meet.
-          </p>
-        </div>
-
-        <div className={linuxStyles.dirGroups}>
-          {dirGroups.map((group, index) => (
-            <div className={linuxStyles.dirGroup} key={group.name}>
-              <h3 className={linuxStyles.dirGroupName}>
-                <span className={linuxStyles.dirGroupNum}>{index + 1}</span>
-                {group.name}
-              </h3>
-              <div className={linuxStyles.dirTable}>
-                {group.dirs.map((dir) => (
-                  <div className={linuxStyles.dirRow} key={dir.path}>
-                    <code className={linuxStyles.dirPath}>{dir.path}</code>
-                    <span className={linuxStyles.dirWhat}>{dir.what}</span>
-                    <code className={linuxStyles.dirEg}>{dir.eg}</code>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
+        <DirTree />
       </section>
 
       <section className={`${shell.wrap} ${entry.section}`} id="paths">

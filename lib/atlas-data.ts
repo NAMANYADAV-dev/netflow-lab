@@ -10,6 +10,7 @@ export const DEVICES_HREF = '/devices';
 export const CABLES_HREF = '/cables';
 export const LINUX_HREF = '/linux';
 export const LINUX_INTRO_HREF = '/linux/what-is-linux';
+export const LINUX_TREE_HREF = `${LINUX_INTRO_HREF}#tree`;
 export const LABS_HREF = '/lab';
 
 export type Stat = { num: string; label: string };
