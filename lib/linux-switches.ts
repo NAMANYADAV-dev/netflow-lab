@@ -9,9 +9,11 @@
    A switch is written as it is typed. Where one takes a value, the value is
    shown in capitals: `-n NUM`. */
 
+import { moreSwitches } from './linux-more';
+
 export type LinuxSwitch = { flag: string; d: string };
 
-export const linuxSwitches: Record<string, LinuxSwitch[]> = {
+const coreSwitches: Record<string, LinuxSwitch[]> = {
   // ── navigation ────────────────────────────────────────────────────────
   pwd: [
     { flag: '-L', d: 'Logical: print the path as you walked it, symbolic links included. This is the default.' },
@@ -320,3 +322,5 @@ export const linuxSwitches: Record<string, LinuxSwitch[]> = {
     { flag: '-j', d: 'Print JSON, for scripts.' },
   ],
 };
+
+export const linuxSwitches: Record<string, LinuxSwitch[]> = { ...coreSwitches, ...moreSwitches };

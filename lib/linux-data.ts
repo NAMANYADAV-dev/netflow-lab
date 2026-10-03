@@ -1,5 +1,6 @@
 import type { Rich } from '@/components/RichText';
 import { LINUX_HREF } from './atlas-data';
+import { moreCommands } from './linux-more';
 
 /* The Linux section, in two parts: the shell — moving around, managing and reading
    files, disks, processes and permissions — and then the network, the commands that show a
@@ -16,7 +17,7 @@ import { LINUX_HREF } from './atlas-data';
 export type LinuxPartId = 'shell' | 'network';
 
 export const linuxParts: { id: LinuxPartId; name: string; note: string }[] = [
-  { id: 'shell', name: 'The shell', note: 'Moving around, and managing files, disks, processes and permissions.' },
+  { id: 'shell', name: 'The shell', note: 'Moving around, and managing files, text, disks, processes, users and software.' },
   { id: 'network', name: 'The network', note: 'The commands that show a protocol at work.' },
 ];
 
@@ -25,10 +26,13 @@ export type LinuxGroup = { id: string; part: LinuxPartId; name: string; blurb: s
 export const linuxGroups: LinuxGroup[] = [
   { id: 'nav', part: 'shell', name: 'Navigation', blurb: 'Where you are, what is here, and how to get somewhere else.' },
   { id: 'files', part: 'shell', name: 'File management', blurb: 'Making, copying, moving and removing files and directories.' },
-  { id: 'read', part: 'shell', name: 'Reading files', blurb: 'Printing a file, searching inside it, and watching it grow.' },
-  { id: 'disk', part: 'shell', name: 'Disks & space', blurb: 'How full the disks are, and what is filling them.' },
+  { id: 'read', part: 'shell', name: 'Reading files', blurb: 'Printing a file, paging through it, searching it, and editing it.' },
+  { id: 'text', part: 'shell', name: 'Text processing', blurb: 'Counting, sorting, cutting and rewriting text as it passes through a pipe.' },
+  { id: 'disk', part: 'shell', name: 'Disks & space', blurb: 'How full the disks are, what is filling them, and how they are attached.' },
+  { id: 'system', part: 'shell', name: 'System information', blurb: 'The kernel, the clock, the memory — and where to look things up.' },
   { id: 'proc', part: 'shell', name: 'Process & service management', blurb: 'What is running, how to stop it, and what starts at boot.' },
   { id: 'perm', part: 'shell', name: 'Users & permissions', blurb: 'Who owns a file, who may touch it, and how to act as root.' },
+  { id: 'pkg', part: 'shell', name: 'Packages & software', blurb: 'Installing, updating and removing programs.' },
   { id: 'iface', part: 'network', name: 'Interfaces & addressing', blurb: 'What the host has plugged in, and what it calls itself.' },
   { id: 'route', part: 'network', name: 'Routing & neighbours', blurb: 'Where a packet goes next, and whose MAC that is.' },
   { id: 'names', part: 'network', name: 'Names', blurb: 'Asking the DNS, and finding out who the host asks.' },
@@ -76,7 +80,8 @@ export type LinuxCommand = {
   footnote: string;
 };
 
-export const linuxCommands: LinuxCommand[] = [
+/* The first batch, written here. The rest live in linux-more, by subject. */
+const coreCommands: LinuxCommand[] = [
   // ── navigation ────────────────────────────────────────────────────────
   {
     slug: 'pwd',
@@ -2568,6 +2573,13 @@ export const linuxCommands: LinuxCommand[] = [
     footnote: 'A minimal host ruleset. Production rulesets usually add logging, rate limits and a forward chain.',
   },
 ];
+
+/* The whole catalogue, in the order the groups are listed above — so the
+   section front, the pager and the sitemap all walk it the same way. Within a
+   group the first batch comes first, then the additions. */
+export const linuxCommands: LinuxCommand[] = linuxGroups.flatMap((group) =>
+  [...coreCommands, ...moreCommands].filter((command) => command.group === group.id),
+);
 
 export const linuxBySlug: Record<string, LinuxCommand> = Object.fromEntries(
   linuxCommands.map((command) => [command.slug, command]),
