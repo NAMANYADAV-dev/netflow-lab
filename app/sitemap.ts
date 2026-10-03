@@ -30,6 +30,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     entry('/devices', 0.7),
     entry('/cables', 0.7),
     entry('/linux', 0.7),
+    entry('/linux/what-is-linux', 0.6),
 
     /* the labs are the thing this site does that others do not */
     ...labs.map((lab) => entry(lab.href, 0.8)),

@@ -238,6 +238,13 @@
   text-decoration: none;
 }
 
+/* two ways out of a menu, side by side */
+.menuMoreRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 22px;
+}
+
 /* ── section furniture ──────────────────────────────────────────────────── */
 
 .section {

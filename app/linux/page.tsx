@@ -2,6 +2,7 @@ import { pageMeta } from '@/lib/seo';
 import Link from 'next/link';
 import SiteFooter from '@/components/SiteFooter';
 import SiteHeader from '@/components/SiteHeader';
+import { LINUX_INTRO_HREF } from '@/lib/atlas-data';
 import { linuxByPart, linuxCommands, linuxGroups, linuxHref } from '@/lib/linux-data';
 import shell from '../shell.module.css';
 import styles from './linux.module.css';
@@ -29,6 +30,9 @@ export default function LinuxPage() {
             host. Every one comes with a session, the lines worth reading numbered, and a note
             on what each of them means.
           </p>
+          <Link href={LINUX_INTRO_HREF} className={styles.introLink}>
+            New to Linux? What it is, and how its tree is laid out &rarr;
+          </Link>
         </div>
 
         <div className={styles.count}>

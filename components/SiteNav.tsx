@@ -8,6 +8,7 @@ import {
   DEVICES_HREF,
   LABS_HREF,
   LINUX_HREF,
+  LINUX_INTRO_HREF,
   STACK_HREF,
   menuProtos,
 } from '@/lib/atlas-data';
@@ -288,9 +289,14 @@ export default function SiteNav({
               </Link>
             ))}
           </div>
-          <Link href={LINUX_HREF} className={styles.menuMore}>
-            See all commands &rarr;
-          </Link>
+          <div className={styles.menuMoreRow}>
+            <Link href={LINUX_INTRO_HREF} className={styles.menuMore}>
+              What is Linux? &rarr;
+            </Link>
+            <Link href={LINUX_HREF} className={styles.menuMore}>
+              See all commands &rarr;
+            </Link>
+          </div>
         </div>
       </div>
 

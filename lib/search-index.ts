@@ -17,6 +17,7 @@ import {
   DEVICES_HREF,
   LABS_HREF,
   LINUX_HREF,
+  LINUX_INTRO_HREF,
   STACK_HREF,
 } from './atlas-data';
 import { cableHref, cables } from './cable-data';
@@ -136,6 +137,13 @@ const sectionEntries: SearchEntry[] = [
     href: LINUX_HREF,
     kind: 'section',
     alt: ['linux', 'terminal', 'shell', 'cli', 'command line', 'bash', 'navigation', 'file management', 'permissions'],
+  },
+  {
+    title: 'What is Linux',
+    detail: 'What it is, why it is used, and the directory tree from / down',
+    href: LINUX_INTRO_HREF,
+    kind: 'section',
+    alt: ['linux', 'kernel', 'distribution', 'distro', 'filesystem', 'directory tree', 'file structure', 'fhs', '/etc', '/home', '/var', '/usr', 'root'],
   },
   {
     title: 'Protocol labs',
