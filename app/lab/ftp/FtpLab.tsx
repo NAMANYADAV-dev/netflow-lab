@@ -232,7 +232,7 @@ export default function FtpLab() {
                 ))}
               </div>
 
-              <button type="button" className={`${styles.advance} ${hints.cueHost}`} data-tone={active ? 'rst' : 'b'}
+              <button type="button" className={`${styles.advance} ${hints.cueHost}`}
                 disabled={done} onClick={advance}>
                 {/* until the first press, say plainly that this button is what runs the lab */}
                 {step === 0 && !briefingOpen && (

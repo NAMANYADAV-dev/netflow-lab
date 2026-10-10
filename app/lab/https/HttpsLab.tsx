@@ -228,7 +228,7 @@ export default function HttpsLab() {
                 ))}
               </div>
 
-              <button type="button" className={`${styles.advance} ${hints.cueHost}`} data-tone={plain ? 'rst' : 'b'}
+              <button type="button" className={`${styles.advance} ${hints.cueHost}`}
                 disabled={done} onClick={advance}>
                 {/* until the first press, say plainly that this button is what runs the lab */}
                 {step === 0 && !briefingOpen && (

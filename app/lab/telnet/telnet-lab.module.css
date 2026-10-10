@@ -87,8 +87,8 @@
 
 .modeTabs button[data-active='true'] {
   border-color: var(--b);
-  background: color-mix(in srgb, var(--b) 16%, transparent);
-  color: var(--b);
+  background: var(--b);
+  color: var(--bg);
 }
 
 /* ---------- workspace ---------- */
@@ -292,23 +292,25 @@
 
 .walk span { flex: 1; min-width: 0; }
 
-.advance {
+/* .lab button resets every button to the inherited ink and outranks a lone
+   class, so the filled button names the lab to keep its light label */
+.lab .advance {
   width: 100%;
   height: 40px;
   border: 1px solid var(--b);
   border-radius: 5px;
-  background: color-mix(in srgb, var(--b) 18%, transparent);
-  color: var(--b);
+  background: var(--b);
+  color: var(--bg);
   cursor: pointer;
   font-size: 13.5px;
   font-weight: 650;
 }
 
-.advance:hover:not(:disabled) { background: color-mix(in srgb, var(--b) 28%, transparent); }
+.advance:hover:not(:disabled) { filter: brightness(1.08); }
 
 .advance:disabled {
-  border-color: var(--line);
-  background: transparent;
+  border-color: var(--surface2);
+  background: var(--surface2);
   color: var(--text3);
   cursor: default;
 }
