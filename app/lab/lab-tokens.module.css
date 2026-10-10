@@ -3,19 +3,23 @@
    Every lab's root composes this class, so the token names below are in the
    cascade for the whole lab — its own stylesheet, the shared mission and hint
    layers, and the diagrams that set their colours from JavaScript all read the
-   same values. Change a colour here and all thirteen labs follow. */
+   same values. Change a colour here and all thirteen labs follow.
+
+   The ground, the ink and the accent are the publication's own, read from
+   broadsheet.css, so a lab is the same paper as the page that linked to it.
+   Only the cards stay white, to give the diagrams a clean field. */
 .tokens {
-  --bg: #edf1f4;
+  --bg: var(--color-bg);
   --surface: #ffffff;
-  --surface2: #f4f7f9;
-  --line: #c9d3db;
-  --text: #182027;
-  --text2: #3e4c57;
-  --text3: #5f7080;
+  --surface2: var(--color-neutral-100);
+  --line: var(--color-neutral-300);
+  --text: var(--color-text);
+  --text2: var(--color-neutral-800);
+  --text3: var(--color-neutral-700);
   /* what a colour means in a diagram: the two ends of an exchange, a refusal
      or an attack, something simulated, and something that worked */
   --a: #9a5f02;
-  --b: #0b6b80;
+  --b: var(--color-accent);
   --rst: #b8322a;
   --sim: #5b3fd6;
   --ok: #22874e;
