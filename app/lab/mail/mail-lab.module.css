@@ -120,11 +120,13 @@
 .map {
   padding: 22px 22px 26px;
   display: grid;
-  grid-template-columns: 1fr 108px 1fr 108px 1fr;
-  grid-template-rows: auto 62px auto 62px auto;
+  /* the fourth track is the wider one: it is the hop that crosses the
+     internet, and has to hold the cloud that says so */
+  grid-template-columns: 1fr 108px 1fr 172px 1fr;
+  grid-template-rows: auto 74px auto 62px auto;
   grid-template-areas:
     'app   r1  msa   r2  mx'
-    '.     .   .     .   d1'
+    '.     .   dns   .   d1'
     'box   box box   box box'
     '.     .   d2    .   d3'
     'reply l1  phone .   laptop';
@@ -233,6 +235,34 @@
 .railLine[data-lit='false'] { opacity: 0.5; }
 .railSub { font-size: 10px; color: var(--text3); text-align: center; line-height: 1.35; }
 
+.railTrack { position: relative; width: 100%; }
+
+/* room above and below the line for the cloud that sits on it */
+.railX[data-internet] { gap: 20px; }
+
+/* sits on the track, not inside the line, so an unlit rail dimming itself
+   does not dim the one word that names what the hop crosses */
+.railCloud {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 5px 11px 5px 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1.4px solid var(--c);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text3);
+  font-size: 11.5px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.railCloud[data-lit='true'] { color: var(--c); }
+
 .railHead {
   position: absolute;
   right: -1px;
@@ -287,6 +317,55 @@
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
 }
+
+.railHeadY[data-up] {
+  bottom: auto;
+  top: -1px;
+  border-top: 0;
+  border-bottom: 9px solid var(--c);
+}
+
+/* ---------- the DNS lookup, hung off the outgoing server ---------- */
+.dns {
+  grid-area: dns;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* a short two-way link: the server asks, the answer comes back */
+.dnsLink {
+  position: relative;
+  width: 2px;
+  height: 20px;
+  background: var(--bd);
+}
+.dnsLink::before,
+.dnsLink::after {
+  content: '';
+  position: absolute;
+  left: -4px;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+}
+.dnsLink::before { top: -1px; border-bottom: 7px solid var(--bd); }
+.dnsLink::after { bottom: -1px; border-top: 7px solid var(--bd); }
+
+.dnsChip {
+  padding: 6px 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1.4px solid var(--bd);
+  border-radius: 8px;
+  background: var(--surface2);
+  color: var(--text3);
+  font-size: 11px;
+  white-space: nowrap;
+}
+.dnsChip strong { font-weight: 650; letter-spacing: 0.06em; }
+.dnsChip span { font-family: var(--mono); font-size: 10.5px; }
+.dns[data-lit='true'] .dnsChip { background: color-mix(in srgb, var(--bd) 9%, var(--surface2)); color: var(--bd); }
 
 .railRunnerY {
   position: absolute;

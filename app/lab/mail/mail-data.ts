@@ -58,7 +58,7 @@ const shared: MailStep[] = [
     technical: 'MX lookup with preference values, then A/AAAA resolution of the chosen host. MX is what makes email addresses portable — the domain need not be the mail host.',
     packet: 'dig MX corp.net → 10 mx.corp.net. → dig A mx.corp.net → 203.0.113.20' },
 
-  { tag: 'HAND OFF 2', at: 'Her server → Bob’s mail server', proto: 'SMTP 25',
+  { tag: 'HAND OFF 2', at: 'Her server → internet → Bob’s incoming server', proto: 'SMTP 25',
     wire: [
       { t: 'S: 220 mx.corp.net ESMTP', c: 'a' },
       { t: 'C: EHLO smtp.example.com', c: 'b' },

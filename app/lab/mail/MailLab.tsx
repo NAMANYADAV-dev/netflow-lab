@@ -63,6 +63,7 @@ export default function MailLab() {
   const msa = node(s >= 2,
     s >= 4 ? 'relayed to mx.corp.net' : s >= 3 ? 'MX found: mx.corp.net' : s >= 2 ? 'authenticated · message queued' : 'waiting',
     'var(--ok)');
+  const dns = node(s >= 3, s >= 3 ? 'corp.net mail → mx.corp.net' : 'who takes mail for corp.net?', 'var(--sim)');
   const mx = node(s >= 4, s >= 5 ? 'delivered · connection closed' : s >= 4 ? 'accepting for corp.net' : 'waiting', 'var(--ok)');
   const box = node(delivered,
     drained ? '0 messages · deleted after DELE' : delivered ? '1 message · 2,104 B' : 'empty',
@@ -75,7 +76,7 @@ export default function MailLab() {
   const laptop = node(s >= 7,
     s >= 7 ? (pop ? '0 messages · login fine, box empty' : '1 message · already marked read') : 'not checked yet',
     s >= 7 && pop ? 'var(--rst)' : 'var(--ok)');
-  const reply = node(s >= 8, s >= 8 ? 'new SMTP conversation · 587' : '—', 'var(--a)');
+  const reply = node(s >= 8, s >= 8 ? 'reply accepted · next: internet → Alice’s server' : 'waiting', 'var(--a)');
 
   /* one box speaks per step, in plain words, so the diagram narrates itself */
   const boxes: Record<string, Box> = { app, msa, mx, box, phone, laptop, reply };
@@ -97,7 +98,7 @@ export default function MailLab() {
         : 'Folders, read marks and UIDs all live in this box. Devices keep a copy; this is the original.';
 
   const r1 = rail(s >= 2, s === 2, s >= 2 ? 'submission · she logs in first' : 'her app must hand it to a server', 'SMTP · 587');
-  const r2 = rail(s >= 4, s === 4, s >= 4 ? 'relay · server to server, no password' : 'the hop across the internet', 'SMTP · 25');
+  const r2 = rail(s >= 4, s === 4, s >= 4 ? 'relay · server to server, no password' : 'out of her provider, across the internet', 'SMTP · 25');
   const d1 = rail(s >= 5, s === 5, s >= 5 ? 'written to disk — SMTP’s job ends here' : 'delivery target');
   const d2 = rail(s >= 6, s === 6,
     s >= 6 ? (pop ? 'downloads it, then explicitly sends DELE' : 'reads it and leaves the original') : 'Bob has to come and ask',
@@ -105,7 +106,7 @@ export default function MailLab() {
   const d3 = rail(s >= 7, s === 7,
     s >= 7 ? (pop ? 'same login, empty box' : 'same box, same read mark') : 'second device, same account',
     pop ? 'POP3 · 995' : 'IMAP · 993', s >= 7 && pop ? 'var(--rst)' : 'var(--sim)');
-  const l1 = rail(s >= 8, s === 8, s >= 8 ? 'sending is never IMAP or POP3' : '', 'SMTP · 587', 'var(--a)');
+  const l1 = rail(s >= 8, s === 8, s >= 8 ? 'sending is never IMAP or POP3' : 'a reply needs SMTP again', 'SMTP · 587', 'var(--a)');
 
   const msgs: Msg[] = delivered
     ? [{
@@ -201,7 +202,7 @@ export default function MailLab() {
               </span>
             </div>
             <MailMap
-              app={app} msa={msa} mx={mx} box={box} phone={phone} laptop={laptop} reply={reply}
+              app={app} msa={msa} dns={dns} mx={mx} box={box} phone={phone} laptop={laptop} reply={reply}
               r1={r1} r2={r2} d1={d1} d2={d2} d3={d3} l1={l1}
               msgs={msgs} boxNote={boxNote}
               phoneSub={pop ? 'POP3 110 plain / 995 TLS · downloads; this demo sends DELE' : 'IMAP 143 plain / 993 TLS · reads in place'}

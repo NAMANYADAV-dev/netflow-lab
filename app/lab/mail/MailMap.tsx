@@ -2,8 +2,9 @@
 
 import type { CSSProperties, ReactNode } from 'react';
 import {
-  ArrowUUpLeft,
+  AddressBook,
   Buildings,
+  Cloud,
   DeviceMobile,
   EnvelopeSimple,
   EnvelopeSimpleOpen,
@@ -64,25 +65,35 @@ function Node({ box, icon, title, addr, area, dashed }: {
   );
 }
 
-/** a left-to-right hop; `back` points the arrow the other way */
-function RailX({ rail, area, back }: { rail: Rail; area: string; back?: boolean }) {
+/** a left-to-right hop; `back` points the arrow the other way. `internet` marks
+    the one hop that leaves a provider's own network and crosses the public one. */
+function RailX({ rail, area, back, internet }: { rail: Rail; area: string; back?: boolean; internet?: boolean }) {
   return (
-    <div className={styles.railX} style={{ '--c': rail.tone, gridArea: area } as Vars}>
+    <div className={styles.railX} style={{ '--c': rail.tone, gridArea: area } as Vars} data-internet={internet || undefined}>
       {rail.label && <div className={styles.railLabel}>{rail.label}</div>}
-      <div className={styles.railLine} data-lit={rail.lit} data-back={back || undefined}>
-        <span className={styles.railHead} data-back={back || undefined} />
-        {rail.live && <span className={styles.railRunner} data-back={back || undefined} />}
+      <div className={styles.railTrack}>
+        <div className={styles.railLine} data-lit={rail.lit} data-back={back || undefined}>
+          <span className={styles.railHead} data-back={back || undefined} />
+          {rail.live && <span className={styles.railRunner} data-back={back || undefined} />}
+        </div>
+        {internet && (
+          <span className={styles.railCloud} data-lit={rail.lit}>
+            <Cloud weight="duotone" size={19} /> Internet
+          </span>
+        )}
       </div>
       <div className={styles.railSub}>{rail.sub}</div>
     </div>
   );
 }
 
-/** a downward hop, with its caption beside it rather than under it */
-function RailY({ rail, area }: { rail: Rail; area: string }) {
+/** a downward hop, with its caption beside it rather than under it. `both`
+    adds the head at the top: a device asks upward before anything comes down. */
+function RailY({ rail, area, both }: { rail: Rail; area: string; both?: boolean }) {
   return (
     <div className={styles.railY} style={{ '--c': rail.tone, gridArea: area } as Vars}>
       <div className={styles.railLineY} data-lit={rail.lit}>
+        {both && <span className={styles.railHeadY} data-up />}
         <span className={styles.railHeadY} />
         {rail.live && <span className={styles.railRunnerY} />}
       </div>
@@ -94,8 +105,8 @@ function RailY({ rail, area }: { rail: Rail; area: string }) {
   );
 }
 
-export default function MailMap({ app, msa, mx, box, phone, laptop, reply, r1, r2, d1, d2, d3, l1, msgs, boxNote, phoneSub }: {
-  app: Box; msa: Box; mx: Box; box: Box; phone: Box; laptop: Box; reply: Box;
+export default function MailMap({ app, msa, dns, mx, box, phone, laptop, reply, r1, r2, d1, d2, d3, l1, msgs, boxNote, phoneSub }: {
+  app: Box; msa: Box; dns: Box; mx: Box; box: Box; phone: Box; laptop: Box; reply: Box;
   r1: Rail; r2: Rail; d1: Rail; d2: Rail; d3: Rail; l1: Rail;
   msgs: Msg[]; boxNote: string; phoneSub: string;
 }) {
@@ -106,9 +117,20 @@ export default function MailMap({ app, msa, mx, box, phone, laptop, reply, r1, r
       <RailX rail={r1} area="r1" />
       <Node box={msa} area="msa" title="Alice’s outgoing server" addr="smtp.example.com · port 587"
         icon={<HardDrives weight="duotone" size={27} />} />
-      <RailX rail={r2} area="r2" />
-      <Node box={mx} area="mx" title="Bob’s mail server" addr="mx.corp.net · port 25"
+      <RailX rail={r2} area="r2" internet />
+      <Node box={mx} area="mx" title="Bob’s incoming server" addr="mx.corp.net · port 25"
         icon={<Buildings weight="duotone" size={27} />} />
+
+      {/* the question the outgoing server has to ask before it can relay: it
+          hangs off that server because nothing else in the journey talks to it */}
+      <div className={styles.dns} style={{ '--bd': dns.lit ? dns.tone : 'var(--line)' } as Vars} data-lit={dns.lit}>
+        <span className={styles.dnsLink} />
+        <div className={styles.dnsChip}>
+          <AddressBook weight="duotone" size={17} />
+          <strong>DNS</strong>
+          <span>{dns.chip}</span>
+        </div>
+      </div>
 
       <RailY rail={d1} area="d1" />
 
@@ -139,11 +161,11 @@ export default function MailMap({ app, msa, mx, box, phone, laptop, reply, r1, r
         </div>
       </div>
 
-      <RailY rail={d2} area="d2" />
-      <RailY rail={d3} area="d3" />
+      <RailY rail={d2} area="d2" both />
+      <RailY rail={d3} area="d3" both />
 
-      <Node box={reply} area="reply" title="Bob replies" addr="out via smtp.corp.net · 587" dashed
-        icon={<ArrowUUpLeft weight="duotone" size={27} />} />
+      <Node box={reply} area="reply" title="Bob’s outgoing server" addr="smtp.corp.net · port 587"
+        icon={<HardDrives weight="duotone" size={27} />} />
       <RailX rail={l1} area="l1" back />
       <Node box={phone} area="phone" title="Bob’s phone" addr={phoneSub}
         icon={<DeviceMobile weight="duotone" size={27} />} />
