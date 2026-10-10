@@ -1,11 +1,11 @@
 .labHeader {
-  --lh-bg: #edf1f4;
-  --lh-surface: #f4f7f9;
-  --lh-line: #c9d3db;
-  --lh-text: #182027;
-  --lh-text-2: #3e4c57;
-  --lh-text-3: #6e8090;
-  --lh-cyan: #0b6b80;
+  --lh-bg: var(--color-bg);
+  --lh-surface: var(--color-neutral-100);
+  --lh-line: var(--color-neutral-300);
+  --lh-text: var(--color-text);
+  --lh-text-2: var(--color-neutral-800);
+  --lh-text-3: var(--color-neutral-700);
+  --lh-cyan: var(--color-accent);
   --lh-orange: #9a5f02;
   --lh-purple: #5b3fd6;
 
@@ -146,15 +146,15 @@
 }
 
 .lab {
-  --lab-bg: #edf1f4;
+  --lab-bg: var(--color-bg);
   --lab-surface: #ffffff;
-  --lab-surface-2: #f4f7f9;
-  --lab-line: #c9d3db;
-  --lab-text: #182027;
-  --lab-text-2: #3e4c57;
-  --lab-text-3: #6e8090;
-  --lab-cyan: #0b6b80;
-  --lab-cyan-dim: #56c7dc;
+  --lab-surface-2: var(--color-neutral-100);
+  --lab-line: var(--color-neutral-300);
+  --lab-text: var(--color-text);
+  --lab-text-2: var(--color-neutral-800);
+  --lab-text-3: var(--color-neutral-700);
+  --lab-cyan: var(--color-accent);
+  --lab-cyan-dim: var(--color-accent-400);
   --lab-orange: #9a5f02;
   --lab-purple: #5b3fd6;
   --lab-green: #22874e;
@@ -982,6 +982,8 @@
   animation: scopeSignal 1.3s ease-in-out infinite;
 }
 
+.scopeNodeIcon { margin-bottom: 2px; color: var(--scope-tone); }
+
 .scopeNode strong {
   color: var(--scope-tone);
   font-family: ui-monospace, Consolas, monospace;
@@ -1304,6 +1306,47 @@
   .scopePacket { top: 28px; padding: 2px 3px; font-size: 6px; }
   .honestySection { grid-template-columns: 1fr; margin-inline: 15px; }
   .finalCta h2 { font-size: 34px; }
+}
+
+/* ---------- arriving on scroll ----------
+   LabReveal marks the page ready and each card shown; until it has, nothing
+   here applies and every card is simply there. The fill is backwards only, so
+   once a card has arrived its own hover transform is its own again. */
+@media (prefers-reduced-motion: no-preference) {
+  .lab[data-reveal-ready] [data-reveal]:not([data-shown]) { opacity: 0; }
+
+  .lab[data-reveal-ready] [data-reveal][data-shown='true'] {
+    animation: revealUp 350ms var(--ease) backwards;
+    animation-delay: calc(var(--reveal-i, 0) * 70ms);
+  }
+
+  /* the scope diagrams assemble the way they are read: a node, the link out
+     of it, the next node. The node keeps its pulse as the second animation. */
+  .lab[data-reveal-ready] .scopeCard[data-shown='true'] .scopeNode {
+    animation: scopeNodeIn 300ms var(--ease) backwards, scopeNodePulse 3.9s ease-in-out infinite;
+    animation-delay: 150ms, 0s;
+  }
+  .lab[data-reveal-ready] .scopeCard[data-shown='true'] .scopeStage:nth-child(2) .scopeNode { animation-delay: 650ms, 1.3s; }
+  .lab[data-reveal-ready] .scopeCard[data-shown='true'] .scopeStage:nth-child(3) .scopeNode { animation-delay: 1150ms, 2.6s; }
+
+  .lab[data-reveal-ready] .scopeCard[data-shown='true'] .scopeLink {
+    animation: scopeLinkIn 350ms var(--ease) backwards;
+    animation-delay: 400ms;
+  }
+  .lab[data-reveal-ready] .scopeCard[data-shown='true'] .scopeStage:nth-child(2) .scopeLink { animation-delay: 900ms; }
+}
+
+@keyframes revealUp {
+  from { opacity: 0; transform: translateY(14px); }
+}
+
+@keyframes scopeNodeIn {
+  from { opacity: 0; transform: translateX(-10px); }
+}
+
+@keyframes scopeLinkIn {
+  from { opacity: 0; clip-path: inset(-12px 100% -12px -12px); }
+  to { opacity: 1; clip-path: inset(-12px); }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,11 +1,23 @@
 import { pageMeta } from '@/lib/seo';
 import Link from 'next/link';
+import {
+  Buildings,
+  CellTower,
+  Globe,
+  Handshake,
+  HardDrives,
+  Laptop,
+  Network,
+  ShieldCheck,
+  User,
+} from '@phosphor-icons/react/ssr';
 import { labs } from '@/lib/lab-data';
 import LabsHeader from './LabsHeader';
 import LabsFooter from './LabsFooter';
 import LabAmbientCanvas from './LabAmbientCanvas';
 import LabTopology from './LabTopology';
 import LabHeroStats from './LabHeroStats';
+import LabReveal from './LabReveal';
 import shell from '../shell.module.css';
 import styles from './lab.module.css';
 
@@ -48,9 +60,9 @@ const networkScopes = [
     access: 'Public',
     tone: 'cyan',
     nodes: [
-      ['YOU', 'Your device'],
-      ['ISP', 'Internet provider'],
-      ['WWW', 'Public website'],
+      ['YOU', 'Your device', Laptop],
+      ['ISP', 'Internet provider', CellTower],
+      ['WWW', 'Public website', Globe],
     ],
     links: ['Public route', 'Web request'],
     definition: 'A public worldwide network that anyone with an internet connection can access.',
@@ -60,9 +72,9 @@ const networkScopes = [
     access: 'Private',
     tone: 'green',
     nodes: [
-      ['STAFF', 'Employee'],
-      ['LAN', 'Private network'],
-      ['SRV', 'Company server'],
+      ['STAFF', 'Employee', User],
+      ['LAN', 'Private network', Network],
+      ['SRV', 'Company server', HardDrives],
     ],
     links: ['Staff only', 'Internal traffic'],
     definition: 'A private internal network used only by an organization’s authorized members.',
@@ -72,9 +84,9 @@ const networkScopes = [
     access: 'Trusted access',
     tone: 'orange',
     nodes: [
-      ['PARTNER', 'Outside user'],
-      ['LOCK', 'Secure gateway'],
-      ['ORG', 'Company services'],
+      ['PARTNER', 'Outside user', Handshake],
+      ['LOCK', 'Secure gateway', ShieldCheck],
+      ['ORG', 'Company services', Buildings],
     ],
     links: ['Verified login', 'Limited access'],
     definition: 'A protected part of an intranet shared with trusted external users.',
@@ -87,6 +99,7 @@ export default function LabPage() {
       <LabsHeader />
 
       <main className={styles.lab}>
+        <LabReveal />
         <div className={styles.instrumentGrid} aria-hidden="true" />
         <LabAmbientCanvas />
 
@@ -125,6 +138,7 @@ export default function LabPage() {
               <Link
                 href={lab.href}
                 className={styles.labCard}
+                data-reveal=""
                 data-ready={lab.status === 'Ready'}
                 key={lab.abbr}
               >
@@ -170,7 +184,7 @@ export default function LabPage() {
           </div>
           <div className={styles.modeGrid}>
             {modes.map((mode) => (
-              <article className={styles.modeCard} data-tone={mode.tone} key={mode.name}>
+              <article className={styles.modeCard} data-reveal="" data-tone={mode.tone} key={mode.name}>
                 <div>{mode.name}</div>
                 <strong data-kind={mode.kind}>{mode.sample}</strong>
                 <p>{mode.note}</p>
@@ -188,17 +202,18 @@ export default function LabPage() {
 
           <div className={styles.scopeGrid}>
             {networkScopes.map((scope) => (
-              <article className={styles.scopeCard} data-tone={scope.tone} key={scope.name}>
+              <article className={styles.scopeCard} data-reveal="" data-tone={scope.tone} key={scope.name}>
                 <div className={styles.scopeCardTop}>
                   <h3>{scope.name}</h3>
                   <span>{scope.access}</span>
                 </div>
 
                 <div className={styles.scopeDiagram} aria-label={`${scope.name} connection diagram`}>
-                  {scope.nodes.map(([code, label], index) => (
+                  {scope.nodes.map(([code, label, Icon], index) => (
                     <div className={styles.scopeStage} key={code}>
                       <div className={styles.scopeNode}>
                         <span className={styles.scopeNodeSignal} aria-hidden="true" />
+                        <Icon className={styles.scopeNodeIcon} size={30} weight="duotone" aria-hidden="true" />
                         <strong>{code}</strong>
                         <small>{label}</small>
                       </div>
