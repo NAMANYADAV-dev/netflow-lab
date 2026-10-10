@@ -3,21 +3,7 @@
    Same palette and token names as the other labs — the topology sets its
    colours from JavaScript and reads them out of this cascade. */
 .lab {
-  --bg: #edf1f4;
-  --surface: #ffffff;
-  --surface2: #f4f7f9;
-  --line: #c9d3db;
-  --text: #182027;
-  --text2: #3e4c57;
-  --text3: #6e8090;
-  --a: #9a5f02;
-  --b: #0b6b80;
-  --rst: #b8322a;
-  --sim: #5b3fd6;
-  --ok: #22874e;
-
-  --sans: var(--font-furniture);
-  --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  composes: tokens from "../lab-tokens.module.css";
 
   min-height: 100vh;
   position: relative;

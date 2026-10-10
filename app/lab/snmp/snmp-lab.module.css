@@ -5,20 +5,7 @@
    worth remembering. Everything a specialist wants — header fields, variable
    bindings, the capture line — waits behind "See the real packet". */
 .lab {
-  --bg: #edf1f4;
-  --surface: #ffffff;
-  --surface2: #f4f7f9;
-  --line: #c9d3db;
-  --text: #182027;
-  --text2: #3e4c57;
-  --text3: #5f7080;
-  --a: #9a5f02;
-  --b: #0b6b80;
-  --rst: #b8322a;
-  --ok: #22874e;
-
-  --sans: var(--font-furniture);
-  --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  composes: tokens from "../lab-tokens.module.css";
   --tone: var(--text3);
 
   min-height: 100vh;
