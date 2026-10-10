@@ -19,6 +19,8 @@ import {
 } from '@phosphor-icons/react';
 import HintLayer from '../HintLayer';
 import LabTour, { type TourStep } from '../LabTour';
+import { AfterLab } from '../LabMission';
+import { markLabDone } from '../lab-progress';
 import MissionBriefing from '../MissionBriefing';
 import StepHints, { type StepHint } from '../StepHints';
 import { AttackDiagram, NormalDiagram } from './ArpDiagram';
@@ -267,6 +269,9 @@ export default function ArpLab() {
   const [fDst, setFDst] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
   const [tried, setTried] = useState(false);
+  /* the reader asked to see the exchange before building it: the frame was
+     filled in for them, so nothing about it may be scored as their own work */
+  const [watched, setWatched] = useState(false);
 
   const [showInspect, setShowInspect] = useState(false);
   /* a step the reader has asked to go back to, so a wrong answer can be put
@@ -340,12 +345,41 @@ export default function ArpLab() {
     setBeat(0);
     setAnswer(null);
     setHintLevel([0, 0, 0, 0]);
+    // a watched frame was never theirs: hand back an empty builder
+    if (watched) {
+      setWatched(false);
+      setFEth(null);
+      setFOp(null);
+      setFTip('');
+      setFDst(null);
+    }
+  };
+
+  /* The first field asks for an EtherType, which is the lesson and not
+     something a newcomer arrives knowing. So the whole exchange can be seen
+     once first — the correct frame, sent, from the empty cache onward — and
+     then built by hand on the second pass. */
+  const watchFirst = () => {
+    window.clearTimeout(startTimer.current);
+    setBriefing(false);
+    setWatched(true);
+    setFEth('0x0806');
+    setFOp('1');
+    setFTip('192.168.1.7');
+    setFDst('bc');
+    setRedo(null);
+    setTried(false);
+    setAnswer(null);
+    setSent(true);
+    setBeat(0);
+    startTimer.current = window.setTimeout(() => setPlaying(true), 420);
   };
 
   const chooseScenario = (next: Scenario) => {
     if (next === scenario) return;
     window.clearTimeout(startTimer.current);
     setScenario(next);
+    setWatched(false);
     setBriefing(true);
     setBeat(0);
     setPlaying(false);
@@ -366,6 +400,8 @@ export default function ArpLab() {
 
   const pick = (index: number) => {
     setAnswer(index);
+    // the challenge is this lab's mission check: answering it is finishing it
+    if (answers[index]?.ok) markLabDone('/lab/arp');
   };
 
   /* One sentence, used twice: the challenge asks it at the end, and the
@@ -477,7 +513,14 @@ export default function ArpLab() {
 
           {!attack && !sent && (
             <div className={styles.builderBody}>
-              <p className={styles.helper}>Assemble the request field by field. Nothing is filled for you.</p>
+              <p className={styles.helper}>
+                Assemble the request field by field. Nothing is filled for you.{' '}
+                <button type="button" className={styles.watchLink}
+                  data-hint="Click to see the finished frame sent and answered, then build it yourself."
+                  onClick={watchFirst}>
+                  New to ARP? Watch it first
+                </button>
+              </p>
 
               {/* Where you are, and a way back. Getting a field wrong should not
                   mean starting the frame over — click the step and the builder
@@ -606,8 +649,10 @@ export default function ArpLab() {
           {!attack && sent && (
             <div className={styles.sentBody}>
               <div className={styles.sentLabel}><CheckCircle weight="fill" size={15} /> Frame sent</div>
-              <p className={styles.hintScore} data-clean={hintsUsed === 0}>
-                {hintsUsed === 0
+              <p className={styles.hintScore} data-clean={!watched && hintsUsed === 0}>
+                {watched
+                  ? 'This frame was built for you. Watch the beats, then reset and build it yourself.'
+                  : hintsUsed === 0
                   ? '★ Built with no hints'
                   : answersShown > 0
                     ? `Built with ${hintsUsed} hint${hintsUsed === 1 ? '' : 's'}, ${answersShown} answer${answersShown === 1 ? '' : 's'} shown. Reset and try it without them.`
@@ -639,7 +684,7 @@ export default function ArpLab() {
               </div>
 
               <button type="button" className={styles.resetButton} data-hint="Click to clear the frame and build it again from scratch." onClick={replay}>
-                <ArrowCounterClockwise weight="duotone" size={14} /> Reset &amp; build again
+                <ArrowCounterClockwise weight="duotone" size={14} /> {watched ? 'Now build it yourself' : 'Reset & build again'}
               </button>
             </div>
           )}
@@ -784,6 +829,13 @@ export default function ArpLab() {
             </div>
           )}
 
+          {beat >= LAST_BEAT && answer !== null && answers[answer]?.ok && (
+            <AfterLab another={{
+              label: attack ? 'Normal' : 'ARP spoofing',
+              onPick: () => chooseScenario(attack ? 'normal' : 'attack'),
+            }} />
+          )}
+
           <Link href="/lab#labs" className={styles.backLink}>← back to all labs</Link>
           <Link href="/protocols/arp" className={styles.backLink}>read the ARP entry →</Link>
         </div>
@@ -810,8 +862,8 @@ export default function ArpLab() {
                 </div>
               ))}
               <p className={styles.inspectorNote}>
-                Every field traces to <b>RFC 826</b>. This is a model of the frame, not a real capture — see the
-                Wireshark view when the lab ends.
+                Every field traces to <b>RFC 826</b>. This is a model of the frame, not a real capture — the
+                lab ends with the command and Wireshark filter that show the real one.
               </p>
             </div>
           </aside>
@@ -834,6 +886,12 @@ export default function ArpLab() {
         tag={attack ? 'Threat' : 'Mission'}
         mission={missionLine}
         questions={[challengeQuestion]}
+        startLabel={attack ? undefined : 'Got it, I’ll build the frame'}
+        watch={attack ? undefined : {
+          label: 'Watch it first',
+          note: 'New to ARP? See the whole exchange once, then come back and build it.',
+          onWatch: watchFirst,
+        }}
       />
     </main>
   );

@@ -18,6 +18,7 @@ import LabAmbientCanvas from './LabAmbientCanvas';
 import LabTopology from './LabTopology';
 import LabHeroStats from './LabHeroStats';
 import LabReveal from './LabReveal';
+import { LabDoneCount, LabDoneTag } from './LabDone';
 import shell from '../shell.module.css';
 import styles from './lab.module.css';
 
@@ -131,6 +132,7 @@ export default function LabPage() {
               Each lab shares familiar reading modes, step-by-step controls, packet detail and clear
               simulation labels. Protocol-specific tools appear where they help the lesson.
             </p>
+            <LabDoneCount hrefs={labs.map((lab) => lab.href)} />
           </div>
 
           <div className={styles.labGrid}>
@@ -149,6 +151,7 @@ export default function LabPage() {
                   </div>
                   <div className={styles.statusRow}>
                     {lab.start && <span className={styles.startTag}>Start here</span>}
+                    <LabDoneTag href={lab.href} />
                   </div>
                 </div>
                 <div className={styles.layer}>{lab.layer}</div>
@@ -245,7 +248,7 @@ export default function LabPage() {
           <div>
             <h2>This is a simulation—and it says so</h2>
             <p>Your browser is not putting real packets or frames on a wire. Each lab is a standards-based teaching model: field values and protocol behaviour follow the cited specifications, while topology, timing and edge cases are intentionally simplified. Every lab is clearly marked <strong>Simulated</strong>.</p>
-            <p>Each lab ends with a <code>Wireshark view</code>—the same exchange as you would actually capture it, so the model lines up with the real world.</p>
+            <p>Each lab ends with the real command and the <code>Wireshark</code> filter that show the same exchange on a network of your own, so the model lines up with the real world.</p>
           </div>
         </section>
 

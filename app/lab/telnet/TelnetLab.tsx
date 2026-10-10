@@ -52,6 +52,14 @@ export default function TelnetLab() {
 
   const reset = () => { setStep(0); setTick((value) => value + 1); };
 
+  /* one step back, so a step that went by too fast can be watched again
+     without starting the whole exchange over */
+  const back = () => {
+    if (step === 0) return;
+    setStep(step - 1);
+    setTick((value) => value + 1);
+  };
+
   const done = step >= maxStep;
   const secretSeen = step >= secretStep(mm);
 
@@ -211,8 +219,16 @@ export default function TelnetLab() {
                 )}
                 {advanceLabel}
               </button>
-              <button type="button" className={styles.reset} onClick={reset}>Close session</button>
-              <MissionPanel key={mm} mission={mission} step={step} total={maxStep} next={steps[step]?.at} />
+              <div className={hints.stepRow}>
+                <button type="button" className={styles.reset} disabled={step === 0} onClick={back}>&larr; Back</button>
+                <button type="button" className={styles.reset} onClick={reset}>Close session</button>
+              </div>
+              <MissionPanel key={mm} mission={mission} step={step} total={maxStep} next={steps[step]?.at}
+                another={{
+                  label: mm === 'char' ? 'Line mode' : 'Character mode',
+                  onPick: () => chooseMode(mm === 'char' ? 'line' : 'char'),
+                }}
+                />
             </div>
           </div>
 

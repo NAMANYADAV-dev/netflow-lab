@@ -71,6 +71,14 @@ export default function HttpLab() {
 
   const reset = () => { setStep(0); setTick((value) => value + 1); };
 
+  /* one step back, so a step that went by too fast can be watched again
+     without starting the whole exchange over */
+  const back = () => {
+    if (step === 0) return;
+    setStep(step - 1);
+    setTick((value) => value + 1);
+  };
+
   const done = step >= maxStep;
 
   const stateText = step === 0
@@ -236,8 +244,16 @@ export default function HttpLab() {
                 )}
                 {advanceLabels[visit][Math.min(step, maxStep)]}
               </button>
-              <button type="button" className={styles.reset} onClick={reset}>Reset exchange</button>
-              <MissionPanel key={visit} mission={mission} step={step} total={maxStep} next={steps[step]?.at} />
+              <div className={hints.stepRow}>
+                <button type="button" className={styles.reset} disabled={step === 0} onClick={back}>&larr; Back</button>
+                <button type="button" className={styles.reset} onClick={reset}>Reset exchange</button>
+              </div>
+              <MissionPanel key={visit} mission={mission} step={step} total={maxStep} next={steps[step]?.at}
+                another={{
+                  label: visit === 'first' ? 'Revisit' : 'First visit',
+                  onPick: () => chooseVisit(visit === 'first' ? 'revisit' : 'first'),
+                }}
+                />
             </div>
           </div>
 

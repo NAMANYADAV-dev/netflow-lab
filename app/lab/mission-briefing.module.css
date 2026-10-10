@@ -102,6 +102,29 @@
 }
 
 .start:hover { filter: brightness(1.08); }
+
+/* the quieter way in: same width as the main button, outlined rather than filled */
+.watch {
+  margin-top: 8px;
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid var(--line, #d7d3d3);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text, #1a1817) !important;
+  font-size: 14px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: var(--motion-ui);
+}
+.watch:hover { border-color: var(--tone); color: var(--tone) !important; }
+.watch:focus-visible { outline: 2px solid var(--b, #007596); outline-offset: 3px; }
+
+.watchNote { margin: 8px 0 0; color: var(--text3, #605d5d); font-size: 12px; line-height: 1.45; text-align: center; }
 .start:focus-visible { outline: 2px solid var(--b, #007596); outline-offset: 3px; }
 
 @keyframes fadeIn { from { opacity: 0; } }

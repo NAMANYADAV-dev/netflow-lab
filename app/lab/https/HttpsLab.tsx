@@ -71,6 +71,14 @@ export default function HttpsLab() {
 
   const reset = () => { setStep(0); setTick((value) => value + 1); };
 
+  /* one step back, so a step that went by too fast can be watched again
+     without starting the whole exchange over */
+  const back = () => {
+    if (step === 0) return;
+    setStep(step - 1);
+    setTick((value) => value + 1);
+  };
+
   const done = step >= maxStep;
   const tapTone = plain ? 'rst' : 'ok';
 
@@ -238,8 +246,16 @@ export default function HttpsLab() {
                 )}
                 {advanceLabels[wire][Math.min(step, maxStep)]}
               </button>
-              <button type="button" className={styles.reset} onClick={reset}>Reset session</button>
-              <MissionPanel key={wire} mission={mission} step={step} total={maxStep} next={steps[step]?.at} />
+              <div className={hints.stepRow}>
+                <button type="button" className={styles.reset} disabled={step === 0} onClick={back}>&larr; Back</button>
+                <button type="button" className={styles.reset} onClick={reset}>Reset session</button>
+              </div>
+              <MissionPanel key={wire} mission={mission} step={step} total={maxStep} next={steps[step]?.at}
+                another={{
+                  label: wire === 'tls' ? 'HTTP · 80' : 'HTTPS · 443',
+                  onPick: () => chooseWire(wire === 'tls' ? 'plain' : 'tls'),
+                }}
+                />
             </div>
           </div>
 

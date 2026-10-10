@@ -364,7 +364,12 @@ export default function SnmpLab() {
           </button>
         </div>
         <div className={styles.missionPanel}>
-          <MissionPanel key={sc} mission={mission} step={step} total={maxStep} next={steps[step]?.walkLabel} />
+          <MissionPanel key={sc} mission={mission} step={step} total={maxStep} next={steps[step]?.walkLabel}
+            another={{
+              label: poll ? 'Keep it private · v3' : 'Watch a router · v2c',
+              onPick: () => choose(poll ? 'secure' : 'poll'),
+            }}
+          />
         </div>
 
         {/* ---------------------------------------------------- key idea */}

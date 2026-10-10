@@ -151,6 +151,19 @@
 .builderBody { padding: 16px 16px 18px; }
 .helper { margin: 0 0 16px; color: var(--text3); font-size: 12.5px; line-height: 1.5; }
 
+/* a link in the sentence, not another button in a panel already full of them */
+.lab .watchLink {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--b);
+  font-weight: 650;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.lab .watchLink:hover { color: var(--text); }
+
 .context {
   margin-bottom: 16px;
   padding: 2px 0 2px 10px;

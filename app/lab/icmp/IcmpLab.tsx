@@ -91,6 +91,14 @@ export default function IcmpLab() {
 
   const reset = () => { setStep(0); setTick((value) => value + 1); };
 
+  /* one step back, so a step that went by too fast can be watched again
+     without starting the whole exchange over */
+  const back = () => {
+    if (step === 0) return;
+    setStep(step - 1);
+    setTick((value) => value + 1);
+  };
+
   let stateText = 'IDLE';
   let stateColor = 'var(--text3)';
   if (isPing) {
@@ -263,8 +271,16 @@ export default function IcmpLab() {
                 )}
                 {advanceLabels[tool][Math.min(step, maxStep)]}
               </button>
-              <button type="button" className={styles.reset} onClick={reset}>Reset</button>
-              <MissionPanel key={tool} mission={mission} step={step} total={maxStep} next={steps[step]?.simple} />
+              <div className={hints.stepRow}>
+                <button type="button" className={styles.reset} disabled={step === 0} onClick={back}>&larr; Back</button>
+                <button type="button" className={styles.reset} onClick={reset}>Reset</button>
+              </div>
+              <MissionPanel key={tool} mission={mission} step={step} total={maxStep} next={steps[step]?.simple}
+                another={{
+                  label: tool === 'ping' ? 'traceroute' : 'ping',
+                  onPick: () => chooseTool(tool === 'ping' ? 'trace' : 'ping'),
+                }}
+                />
             </div>
           </div>
 

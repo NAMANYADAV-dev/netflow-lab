@@ -59,6 +59,14 @@ export default function DhcpLab() {
 
   const reset = () => { setStep(0); setTick((value) => value + 1); };
 
+  /* one step back, so a step that went by too fast can be watched again
+     without starting the whole exchange over */
+  const back = () => {
+    if (step === 0) return;
+    setStep(step - 1);
+    setTick((value) => value + 1);
+  };
+
   const stateText = renew
     ? step === 0 ? 'bound · 12 h elapsed' : !done ? 'renewing' : 'bound · clock reset'
     : step === 0 ? 'init · no address' : !done ? 'selecting' : 'bound';
@@ -256,8 +264,16 @@ export default function DhcpLab() {
                 )}
                 {advanceLabels[sc][Math.min(step, maxStep)]}
               </button>
-              <button type="button" className={styles.reset} onClick={reset}>Release lease</button>
-              <MissionPanel key={sc} mission={mission} step={step} total={maxStep} next={steps[step]?.walkLabel} />
+              <div className={hints.stepRow}>
+                <button type="button" className={styles.reset} disabled={step === 0} onClick={back}>&larr; Back</button>
+                <button type="button" className={styles.reset} onClick={reset}>Release lease</button>
+              </div>
+              <MissionPanel key={sc} mission={mission} step={step} total={maxStep} next={steps[step]?.walkLabel}
+                another={{
+                  label: sc === 'fresh' ? 'Renewal · T1' : 'Fresh boot · DORA',
+                  onPick: () => chooseScenario(sc === 'fresh' ? 'renew' : 'fresh'),
+                }}
+                />
             </div>
           </div>
 

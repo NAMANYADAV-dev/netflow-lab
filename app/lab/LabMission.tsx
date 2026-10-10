@@ -1,7 +1,11 @@
 'use client';
 
-import { useCallback, useState, type ReactNode } from 'react';
-import { Brain, CheckCircle, Eye, Target, Trophy, XCircle } from '@phosphor-icons/react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
+import { ArrowRight, ArrowsClockwise, Brain, CheckCircle, Eye, Target, TerminalWindow, Trophy, XCircle } from '@phosphor-icons/react';
+import { labExtras, nextLab } from './lab-extras';
+import { markLabDone } from './lab-progress';
 import styles from './lab-mission.module.css';
 
 /* The mission kit for the step-through labs.
@@ -14,7 +18,9 @@ import styles from './lab-mission.module.css';
    - a "think first" prompt under the step button, which asks what the next
      step will be before the reader clicks, with the answer one click away;
    - the mission check at the end, where the briefing's questions come back
-     as multiple choice and each one explains itself once it is answered.
+     as multiple choice and each one explains itself once it is answered;
+   - what to do after that (AfterLab): run the lab's other scenario, try the
+     same exchange with a real command, and move on to the next lab.
 
    Each scenario gets its own mission, prompts and questions, because the same
    lab behaves differently in each: a warm cache skips the tree, active FTP
@@ -35,6 +41,9 @@ export type ScenarioMission = {
   nudges: string[];
   checks: MissionCheckItem[];
 };
+
+/** a lab's second story: what to call it, and how to switch to it */
+export type OtherScenario = { label: string; onPick: () => void };
 
 /** Whether the briefing is open. It opens for every scenario the reader has
     not yet dismissed it for, so switching scenario brings it back. */
@@ -58,14 +67,23 @@ export function BriefingButton({ onClick }: { onClick: () => void }) {
 /** Sits under the lab's step button: a prompt before each step, then the
     mission check once the last step has played. Give it key={scenario} so a
     new scenario starts with a clean check. */
-export default function MissionPanel({ mission, step, total, next }: {
+export default function MissionPanel({ mission, step, total, next, another }: {
   mission: ScenarioMission;
   step: number;
   total: number;
   /** what the next step turns out to be — the answer to the prompt */
   next?: string;
+  /** the lab's other scenario, offered once this one has been played */
+  another?: OtherScenario;
 }) {
-  if (step >= total) return <MissionCheck checks={mission.checks} />;
+  if (step >= total) {
+    return (
+      <>
+        <MissionCheck checks={mission.checks} />
+        <AfterLab another={another} />
+      </>
+    );
+  }
   const nudge = mission.nudges[step];
   if (!nudge || !next) return null;
   // keyed by step, so each prompt starts with its answer hidden
@@ -106,6 +124,13 @@ function MissionCheck({ checks }: { checks: MissionCheckItem[] }) {
 
   const solved = tries.map((list, i) => list.includes(checks[i].correct));
   const allSolved = solved.every(Boolean);
+
+  /* answering every question is what finishing a lab means here, so that is
+     the moment it earns its tick on the labs page */
+  const pathname = usePathname();
+  useEffect(() => {
+    if (allSolved) markLabDone(pathname);
+  }, [allSolved, pathname]);
   const firstTime = tries.filter((list, i) => list[0] === checks[i].correct).length;
 
   return (
@@ -150,6 +175,58 @@ function MissionCheck({ checks }: { checks: MissionCheckItem[] }) {
           <button type="button" onClick={() => setTries(checks.map(() => []))}>Try again</button>
         </div>
       )}
+    </section>
+  );
+}
+
+/* Where a finished lab points next. A run that simply stops leaves a newcomer
+   at a dead end, so three ways on are laid out in the order they are worth
+   taking: the lab's other story while this one is fresh, the same exchange on
+   a real machine, then the next lab. Exported for the ARP lab, which runs its
+   own challenge rather than the mission check. */
+export function AfterLab({ another }: { another?: OtherScenario }) {
+  const pathname = usePathname();
+  const extras = labExtras[pathname];
+  const next = nextLab(pathname);
+
+  return (
+    <section className={styles.after} aria-label="What to do next">
+      {another && (
+        <div className={styles.afterBlock}>
+          <div className={styles.afterHead}><ArrowsClockwise weight="bold" size={14} /> Now try the other story</div>
+          <button type="button" className={styles.afterAction} onClick={another.onPick}
+            data-hint="Click to run this lab again under the other conditions.">
+            Run it as “{another.label}” <ArrowRight weight="bold" size={13} />
+          </button>
+        </div>
+      )}
+
+      {extras && (
+        <div className={styles.afterBlock}>
+          <div className={styles.afterHead}><TerminalWindow weight="bold" size={14} /> {extras.real.length ? 'See it for real' : 'In a real capture'}</div>
+          {extras.real.map((item) => (
+            <div className={styles.real} key={item.cmd}>
+              <code>{item.cmd}</code>
+              <p>
+                {item.does}
+                {item.slug && <> <Link href={`/linux/${item.slug}`}>Read its output &rarr;</Link></>}
+              </p>
+            </div>
+          ))}
+          <p className={extras.real.length ? styles.filter : styles.filterAlone}>
+            In Wireshark, the display filter <code>{extras.filter}</code> shows only this exchange.
+          </p>
+        </div>
+      )}
+
+      <div className={styles.afterNav}>
+        {next && (
+          <Link href={next.href} className={styles.afterNext}>
+            Next lab: {next.abbr} <ArrowRight weight="bold" size={14} />
+          </Link>
+        )}
+        <Link href="/lab#labs" className={styles.afterAll}>All labs</Link>
+      </div>
     </section>
   );
 }

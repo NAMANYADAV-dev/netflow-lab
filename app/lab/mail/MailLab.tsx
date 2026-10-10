@@ -54,6 +54,13 @@ export default function MailLab() {
 
   const reset = () => setStep(0);
 
+  /* one step back, so a step that went by too fast can be watched again
+     without starting the whole exchange over */
+  const back = () => {
+    if (step === 0) return;
+    setStep(step - 1);
+  };
+
   /* This POP3 scenario sends DELE and QUIT after RETR, so the phone holds the
      only remaining copy. POP3 does not require clients to delete messages. */
   const drained = pop && s >= 6;
@@ -267,8 +274,16 @@ export default function MailLab() {
                 )}
                 {s === 0 ? 'Press Send' : done ? 'Journey complete' : `Next — ${steps[s].tag}`}
               </button>
-              <button type="button" className={styles.reset} onClick={reset}>Start over</button>
-              <MissionPanel key={pickup} mission={mission} step={step} total={maxStep} next={steps[step]?.at} />
+              <div className={hints.stepRow}>
+                <button type="button" className={styles.reset} disabled={step === 0} onClick={back}>&larr; Back</button>
+                <button type="button" className={styles.reset} onClick={reset}>Start over</button>
+              </div>
+              <MissionPanel key={pickup} mission={mission} step={step} total={maxStep} next={steps[step]?.at}
+                another={{
+                  label: pickup === 'imap' ? 'POP3 · delete-after-download' : 'IMAP · 143/993',
+                  onPick: () => choosePickup(pickup === 'imap' ? 'pop' : 'imap'),
+                }}
+                />
             </div>
           </div>
 

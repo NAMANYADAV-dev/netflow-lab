@@ -86,6 +86,14 @@ export default function IpLab() {
 
   const reset = () => { setStep(0); setTick((value) => value + 1); };
 
+  /* one step back, so a step that went by too fast can be watched again
+     without starting the whole exchange over */
+  const back = () => {
+    if (step === 0) return;
+    setStep(step - 1);
+    setTick((value) => value + 1);
+  };
+
   let stateText = 'IDLE';
   let stateColor = 'var(--text3)';
   if (isLocal) {
@@ -251,8 +259,16 @@ export default function IpLab() {
                 )}
                 {advanceLabels[dest][Math.min(step, maxStep)]}
               </button>
-              <button type="button" className={styles.reset} onClick={reset}>Reset datagram</button>
-              <MissionPanel key={dest} mission={mission} step={step} total={maxStep} next={steps[step]?.simple} />
+              <div className={hints.stepRow}>
+                <button type="button" className={styles.reset} disabled={step === 0} onClick={back}>&larr; Back</button>
+                <button type="button" className={styles.reset} onClick={reset}>Reset datagram</button>
+              </div>
+              <MissionPanel key={dest} mission={mission} step={step} total={maxStep} next={steps[step]?.simple}
+                another={{
+                  label: dest === 'remote' ? 'To PC-3 (local)' : 'To web server (remote)',
+                  onPick: () => chooseDest(dest === 'remote' ? 'local' : 'remote'),
+                }}
+                />
             </div>
           </div>
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, type ReactNode } from 'react';
-import { ArrowRight, Question as QuestionIcon, Skull, Target } from '@phosphor-icons/react';
+import { ArrowRight, Play, Question as QuestionIcon, Skull, Target } from '@phosphor-icons/react';
 import styles from './mission-briefing.module.css';
 
 /* The popup that opens with a lab, before anything else happens.
@@ -13,7 +13,7 @@ import styles from './mission-briefing.module.css';
 
    It is rendered inside the lab's own <main>, so the lab's colour tokens
    reach it without being passed across. */
-export default function MissionBriefing({ open, onStart, tone = 'a', tag, mission, questions }: {
+export default function MissionBriefing({ open, onStart, tone = 'a', tag, mission, questions, startLabel, watch }: {
   open: boolean;
   onStart: () => void;
   tone?: 'a' | 'rst';
@@ -21,6 +21,11 @@ export default function MissionBriefing({ open, onStart, tone = 'a', tag, missio
   tag: string;
   mission: ReactNode;
   questions: string[];
+  /** what the main button says, where "start the lab" would be too vague */
+  startLabel?: string;
+  /* A second way in, for a lab whose first move asks for something a newcomer
+     cannot know yet: see the whole exchange once, then come back and do it. */
+  watch?: { label: string; note: string; onWatch: () => void };
 }) {
   const startRef = useRef<HTMLButtonElement>(null);
 
@@ -55,8 +60,17 @@ export default function MissionBriefing({ open, onStart, tone = 'a', tag, missio
         </div>
 
         <button ref={startRef} type="button" className={styles.start} onClick={onStart}>
-          Got it, start the lab <ArrowRight weight="bold" size={15} />
+          {startLabel ?? 'Got it, start the lab'} <ArrowRight weight="bold" size={15} />
         </button>
+
+        {watch && (
+          <>
+            <button type="button" className={styles.watch} onClick={watch.onWatch}>
+              <Play weight="fill" size={13} /> {watch.label}
+            </button>
+            <p className={styles.watchNote}>{watch.note}</p>
+          </>
+        )}
       </div>
     </div>
   );

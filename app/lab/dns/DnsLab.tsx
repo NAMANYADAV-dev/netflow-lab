@@ -96,6 +96,14 @@ export default function DnsLab() {
 
   const reset = () => { setStep(0); setTick((value) => value + 1); };
 
+  /* one step back, so a step that went by too fast can be watched again
+     without starting the whole exchange over */
+  const back = () => {
+    if (step === 0) return;
+    setStep(step - 1);
+    setTick((value) => value + 1);
+  };
+
   let stateText = 'IDLE';
   let stateColor = 'var(--text3)';
   if (step > 0 && step < 4) { stateText = 'CHECKING CACHES'; stateColor = 'var(--b)'; }
@@ -278,8 +286,16 @@ export default function DnsLab() {
                 )}
                 {advanceLabels[cache][Math.min(step, maxStep)]}
               </button>
-              <button type="button" className={styles.reset} onClick={reset}>Reset lookup</button>
-              <MissionPanel key={cache} mission={mission} step={step} total={maxStep} next={walkLabels[cache][step]} />
+              <div className={hints.stepRow}>
+                <button type="button" className={styles.reset} disabled={step === 0} onClick={back}>&larr; Back</button>
+                <button type="button" className={styles.reset} onClick={reset}>Reset lookup</button>
+              </div>
+              <MissionPanel key={cache} mission={mission} step={step} total={maxStep} next={walkLabels[cache][step]}
+                another={{
+                  label: cache === 'cold' ? 'warm cache' : 'cold cache',
+                  onPick: () => chooseCache(cache === 'cold' ? 'warm' : 'cold'),
+                }}
+                />
             </div>
           </div>
 

@@ -57,6 +57,14 @@ export default function UdpLab() {
 
   const reset = () => { setStep(0); setTick((value) => value + 1); };
 
+  /* one step back, so a step that went by too fast can be watched again
+     without starting the whole exchange over */
+  const back = () => {
+    if (step === 0) return;
+    setStep(step - 1);
+    setTick((value) => value + 1);
+  };
+
   const walkLabels = [
     'Socket opened — no handshake at all',
     'Datagram 1 sent and forgotten',
@@ -229,8 +237,16 @@ export default function UdpLab() {
                 )}
                 {advanceLabels[Math.min(step, MAX_STEP)]}
               </button>
-              <button type="button" className={styles.reset} onClick={reset}>Reset stream</button>
-              <MissionPanel key={wire} mission={mission} step={step} total={MAX_STEP} next={walkLabels[step]} />
+              <div className={hints.stepRow}>
+                <button type="button" className={styles.reset} disabled={step === 0} onClick={back}>&larr; Back</button>
+                <button type="button" className={styles.reset} onClick={reset}>Reset stream</button>
+              </div>
+              <MissionPanel key={wire} mission={mission} step={step} total={MAX_STEP} next={walkLabels[step]}
+                another={{
+                  label: wire === 'clean' ? 'one packet lost' : 'clean wire',
+                  onPick: () => chooseWire(wire === 'clean' ? 'lossy' : 'clean'),
+                }}
+                />
             </div>
           </div>
 

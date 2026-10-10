@@ -207,6 +207,119 @@
   font-weight: 650;
 }
 
+/* ---------- after the last step ---------- */
+.after {
+  margin-top: 14px;
+  display: grid;
+  gap: 10px;
+  animation: kitIn var(--motion-panel) var(--ease) both;
+}
+
+.afterBlock {
+  padding: 12px 13px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.afterHead {
+  margin-bottom: 9px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text2);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.afterAction {
+  width: 100%;
+  padding: 9px 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid var(--b);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--b) 8%, var(--surface));
+  color: var(--b) !important;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: var(--motion-ui);
+}
+.afterAction:hover { background: color-mix(in srgb, var(--b) 16%, var(--surface)); }
+
+.real + .real { margin-top: 10px; }
+.real code {
+  display: block;
+  padding: 7px 9px;
+  border-radius: 5px;
+  background: var(--color-text, #1a1817);
+  color: #f3f2f2;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+.real p { margin: 5px 0 0; color: var(--text2); font-size: 12px; line-height: 1.45; }
+.real a,
+.filter a { color: var(--b); font-weight: 650; white-space: nowrap; }
+
+.filter {
+  margin: 11px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  color: var(--text2);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.filterAlone { margin: 0; color: var(--text2); font-size: 12px; line-height: 1.5; }
+.filter code,
+.filterAlone code {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--surface2);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 11.5px;
+}
+
+.afterNav { display: flex; align-items: center; gap: 10px; }
+
+.afterNext {
+  flex: 1;
+  padding: 11px 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 6px;
+  background: var(--b);
+  color: var(--bg);
+  font-size: 13.5px;
+  font-weight: 650;
+  text-decoration: none;
+  transition: var(--motion-ui);
+}
+.afterNext:hover { filter: brightness(1.08); }
+
+.afterAll {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--text2);
+  font-size: 13px;
+  font-weight: 650;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: var(--motion-ui);
+}
+.afterAll:hover { border-color: var(--b); color: var(--b); }
+
 @keyframes kitIn { from { opacity: 0; transform: translateY(-4px); } }
 
 @media (prefers-reduced-motion: reduce) {

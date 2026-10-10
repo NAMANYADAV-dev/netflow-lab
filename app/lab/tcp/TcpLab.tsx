@@ -99,6 +99,14 @@ export default function TcpLab() {
     setTick((value) => value + 1);
   };
 
+  /* one step back, so a step that went by too fast can be watched again
+     without starting the whole exchange over */
+  const back = () => {
+    if (phase === 0) return;
+    setPhase(phase - 1);
+    setTick((value) => value + 1);
+  };
+
   let stateText = 'CLOSED';
   let stateColor = 'var(--text3)';
   if (phase > 0 && phase < 3) { stateText = 'HANDSHAKING'; stateColor = 'var(--a)'; }
@@ -168,7 +176,10 @@ export default function TcpLab() {
               )}
               {controlLabels[Math.min(phase, LAST_PHASE)]}
             </button>
-            <button type="button" className={styles.reset} onClick={reset}>Reset connection</button>
+            <div className={hints.stepRow}>
+              <button type="button" className={styles.reset} disabled={phase === 0} onClick={back}>&larr; Back</button>
+              <button type="button" className={styles.reset} onClick={reset}>Reset connection</button>
+            </div>
             <MissionPanel mission={mission} step={phase} total={LAST_PHASE} next={segments[phase]?.simple} />
           </div>
         </div>

@@ -706,6 +706,33 @@
   color: var(--lab-bg);
 }
 
+/* a lab finished in this browser: outlined, so it never competes with the
+   filled "start here" on a lab that carries both */
+.doneTag {
+  margin-left: 6px;
+  padding: 2px 6px 2px 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  border: 1px solid var(--lab-green);
+  border-radius: 3px;
+  color: var(--lab-green);
+  font-size: 9.5px;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.doneCount {
+  margin: 12px 0 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--lab-green);
+  font-size: 13.5px;
+  font-weight: 650;
+}
+
 .layer {
   margin-top: 7px;
   color: var(--lab-text-3);

@@ -46,6 +46,15 @@
 /* ---------- start here ---------- */
 .cueHost { position: relative; }
 
+/* While the cue is up it needs somewhere to stand: without this it sits on top
+   of the last line of the checklist above the button. */
+.cueHost:has(.startCue) { margin-top: 42px; }
+
+/* ---------- back and reset, side by side ---------- */
+.stepRow { display: flex; gap: 8px; }
+.stepRow > button { flex: 1; min-width: 0; }
+.stepRow > button:disabled { opacity: 0.45; cursor: default; pointer-events: none; }
+
 .startCue {
   position: absolute;
   left: 50%;
