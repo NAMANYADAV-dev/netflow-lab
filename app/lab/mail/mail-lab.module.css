@@ -356,8 +356,9 @@
 
 .pickups button {
   flex: 1;
-  height: 30px;
-  padding: 0 12px;
+  min-height: 30px;
+  padding: 5px 12px;
+  line-height: 1.25;
   border: 1px solid var(--line);
   border-radius: 5px;
   background: transparent;
