@@ -132,7 +132,7 @@
 .idleNote { font: 400 13px var(--sans); }
 .idleSub { font: 400 12px var(--mono); }
 
-.draw { animation: draw 500ms ease both; }
+.draw { animation: draw var(--motion-flow) var(--ease) both; }
 
 /* ---------- the tap ---------- */
 .tapPanel {
@@ -170,7 +170,7 @@
   line-height: 1.8;
 }
 
-.tapBody > div { white-space: pre-wrap; animation: rowIn 300ms ease both; }
+.tapBody > div { white-space: pre-wrap; animation: rowIn var(--motion-panel) var(--ease) both; }
 .tapEmpty { color: var(--text3); }
 
 /* ---------- counters ---------- */
@@ -326,7 +326,7 @@
   line-height: 1.75;
 }
 
-.screen > div { white-space: pre-wrap; animation: fade 250ms ease both; }
+.screen > div { white-space: pre-wrap; animation: fade var(--motion-panel) var(--ease) both; }
 
 .caret {
   display: inline-block;
@@ -378,7 +378,7 @@
   padding: 16px 20px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  animation: pop 400ms ease both;
+  animation: pop var(--motion-flow) var(--ease) both;
 }
 
 .win[data-tone='b'] { border-color: var(--b); background: color-mix(in srgb, var(--b) 10%, transparent); }

@@ -126,11 +126,11 @@
 .nodeNote { font: 400 10px var(--mono); }
 .switchName { font: 650 11px var(--sans); letter-spacing: 0.12em; }
 .switchNote { font: 400 10px var(--mono); }
-.chipLabel { font: 650 12px var(--mono); letter-spacing: 0.06em; animation: fade 300ms 300ms ease both; }
-.chipSub { font: 400 9.5px var(--mono); animation: fade 300ms 340ms ease both; }
+.chipLabel { font: 650 12px var(--mono); letter-spacing: 0.06em; animation: fade var(--motion-panel) 300ms var(--ease) both; }
+.chipSub { font: 400 9.5px var(--mono); animation: fade var(--motion-panel) 340ms var(--ease) both; }
 /* scaling an SVG rect needs its own box as the origin, or it grows out of the
    viewBox corner and flies across the canvas mid-animation */
-.chipBox { transform-box: fill-box; transform-origin: center; animation: pop 400ms 220ms ease both; }
+.chipBox { transform-box: fill-box; transform-origin: center; animation: pop var(--motion-flow) 220ms var(--ease) both; }
 .castTag { font: 650 12.5px var(--mono); letter-spacing: 0.1em; }
 .addrLine { font: 400 11px var(--mono); }
 .idleNote { font: 400 13px var(--sans); }
@@ -139,7 +139,7 @@
 .clockLabel { font: 650 11px var(--mono); }
 
 .draw { animation: draw 550ms var(--delay, 0ms) ease both; }
-.fade { animation: fade 400ms ease both; }
+.fade { animation: fade var(--motion-flow) var(--ease) both; }
 .port { transform-box: fill-box; transform-origin: center; animation: pop 350ms var(--delay, 0ms) ease both; }
 
 /* ---------- the wire ---------- */
@@ -151,7 +151,7 @@
   line-height: 1.8;
 }
 
-.wireBody > div { white-space: pre-wrap; animation: rowIn 300ms ease both; }
+.wireBody > div { white-space: pre-wrap; animation: rowIn var(--motion-panel) var(--ease) both; }
 .wireEmpty { color: var(--text3); }
 
 /* ---------- packet fields ---------- */
@@ -434,7 +434,7 @@
   border: 1px solid var(--ok);
   border-radius: 8px;
   background: color-mix(in srgb, var(--ok) 10%, transparent);
-  animation: pop 400ms ease both;
+  animation: pop var(--motion-flow) var(--ease) both;
 }
 
 .win strong { display: block; font-size: 15px; font-weight: 650; color: var(--text); }

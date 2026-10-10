@@ -165,7 +165,7 @@
   color: var(--bd);
   font-size: 12px;
   font-weight: 650;
-  animation: pop 350ms ease;
+  animation: pop var(--motion-panel) var(--ease);
 }
 
 /* ---------- the mailbox, spanning the full width ---------- */
@@ -485,7 +485,7 @@
   line-height: 1.75;
 }
 
-.wireBody > div { white-space: pre-wrap; animation: fade 250ms ease both; }
+.wireBody > div { white-space: pre-wrap; animation: fade var(--motion-panel) var(--ease) both; }
 .wireEmpty { color: var(--text3); }
 
 /* ---------- the three mistakes ---------- */
@@ -523,7 +523,7 @@
   padding: 16px 20px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  animation: pop 400ms ease both;
+  animation: pop var(--motion-flow) var(--ease) both;
 }
 
 .win[data-tone='ok'] { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 10%, transparent); }

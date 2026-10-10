@@ -37,7 +37,7 @@
   border: 1px solid color-mix(in srgb, var(--b) 35%, var(--line));
   border-radius: 14px;
   background: linear-gradient(135deg, color-mix(in srgb, var(--b) 8%, var(--surface)), var(--surface) 62%);
-  animation: rise 350ms var(--ease) both;
+  animation: rise var(--motion-panel) var(--ease) both;
 }
 
 .guideKicker {
@@ -120,7 +120,7 @@
   border-radius: 12px;
   background: var(--surface);
   overflow: hidden;
-  animation: rise 350ms var(--ease) both;
+  animation: rise var(--motion-panel) var(--ease) both;
 }
 
 .tryHead {

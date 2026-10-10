@@ -37,7 +37,7 @@
   font-size: 12px;
   font-weight: 650;
   box-shadow: 0 8px 20px -8px rgb(0 0 0 / 55%);
-  animation: calloutPop 350ms ease;
+  animation: calloutPop var(--motion-panel) var(--ease);
 }
 
 /* a rotated square makes the tail: two of its borders show, so it reads as a

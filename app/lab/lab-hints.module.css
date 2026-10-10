@@ -23,7 +23,7 @@
   pointer-events: none;
   box-shadow: 0 12px 28px -12px rgb(0 0 0 / 60%);
   transform: translate(-50%, calc(-100% - 12px));
-  animation: hintIn 150ms ease-out both;
+  animation: hintIn var(--motion) var(--ease) both;
 }
 
 .bubble[data-below='true'] { transform: translate(-50%, 12px); }

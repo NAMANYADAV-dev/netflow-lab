@@ -81,6 +81,11 @@
      Anything that moves must also be able to not move: the reduced-motion
      block at the foot of this file stands the whole thing down. */
   --motion: 160ms;
+  /* The two slower rates the labs add: a panel, card or label taking its place,
+     and a line or arrow being drawn in a diagram. Journeys longer than that —
+     a packet crossing the wire — keep their own timing, set by the lesson. */
+  --motion-panel: 280ms;
+  --motion-flow: 450ms;
   --ease: cubic-bezier(0.2, 0, 0, 1);
   --motion-ui:
     color var(--motion) var(--ease),

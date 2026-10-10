@@ -310,7 +310,7 @@
   line-height: 1.8;
 }
 
-.appLog > div { animation: rowIn 300ms ease both; }
+.appLog > div { animation: rowIn var(--motion-panel) var(--ease) both; }
 .logEmpty { color: var(--text3); }
 
 /* ---------- explain ---------- */
@@ -342,7 +342,7 @@
   padding: 16px 20px;
   border: 1px solid var(--ok);
   border-radius: 8px;
-  animation: pop 400ms ease both;
+  animation: pop var(--motion-flow) var(--ease) both;
 }
 
 .win strong { display: block; font-size: 15px; font-weight: 650; color: var(--text); }
@@ -352,8 +352,8 @@
 .travel { offset-rotate: 0deg; animation: travel 1.1s ease-out both; }
 /* the lost one fades out where it dies rather than landing anywhere */
 .lost { offset-rotate: 0deg; animation: lost 1.1s ease-in both; }
-.dropMark { animation: pop 400ms 950ms ease both; }
-.dropNote { animation: pop 400ms 1s ease both; }
+.dropMark { animation: pop var(--motion-flow) 950ms var(--ease) both; }
+.dropNote { animation: pop var(--motion-flow) 1s var(--ease) both; }
 
 @keyframes travel { 0% { offset-distance: 0%; opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { offset-distance: 100%; opacity: 1; } }
 @keyframes lost { 0% { offset-distance: 0%; opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { offset-distance: 100%; opacity: 0; } }

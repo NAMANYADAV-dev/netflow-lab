@@ -14,7 +14,7 @@
   padding: 16px;
   background: rgb(14 20 26 / 55%);
   backdrop-filter: blur(3px);
-  animation: fadeIn 180ms ease both;
+  animation: fadeIn var(--motion) var(--ease) both;
 }
 
 .backdrop[data-tone='rst'] { --tone: var(--rst, #b8322a); }
@@ -31,7 +31,7 @@
   background: var(--surface, #fff);
   color: var(--text, #1a1817);
   box-shadow: 0 24px 60px -20px rgb(0 0 0 / 55%);
-  animation: rise 240ms 60ms ease both;
+  animation: rise var(--motion-panel) 60ms var(--ease) both;
 }
 
 .tag {

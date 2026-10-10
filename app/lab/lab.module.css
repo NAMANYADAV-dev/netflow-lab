@@ -281,7 +281,7 @@
   font-size: 15px;
   font-weight: 700;
   text-decoration: none;
-  transition: background 150ms ease, border-color 150ms ease, transform 150ms ease;
+  transition: background var(--motion) var(--ease), border-color var(--motion) var(--ease), transform var(--motion) var(--ease);
 }
 
 .primaryButton {
@@ -348,7 +348,7 @@
   border-radius: 10px;
   background: var(--lab-surface);
   box-shadow: 0 14px 40px color-mix(in srgb, var(--lab-bg) 55%, transparent);
-  transition: border-color 150ms ease, box-shadow 150ms ease;
+  transition: border-color var(--motion) var(--ease), box-shadow var(--motion) var(--ease);
 }
 
 .topologyCard:hover {
@@ -584,7 +584,7 @@
   border: 0;
   border-radius: 3px;
   cursor: pointer;
-  transition: width 180ms ease, background 180ms ease;
+  transition: width var(--motion) var(--ease), background var(--motion) var(--ease);
 }
 
 .sceneDot { width: 6px; background: var(--lab-line); }
@@ -638,8 +638,8 @@
   background: var(--lab-surface);
   color: inherit;
   text-decoration: none;
-  transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease,
-    opacity 150ms ease;
+  transition: transform var(--motion) var(--ease), border-color var(--motion) var(--ease), box-shadow var(--motion) var(--ease),
+    opacity var(--motion) var(--ease);
 }
 
 .labCard[data-ready='true'] {
@@ -810,7 +810,7 @@
   border-top: 2px solid var(--mode-tone);
   border-radius: 0 0 6px 6px;
   background: var(--lab-surface);
-  transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+  transition: transform var(--motion) var(--ease), border-color var(--motion) var(--ease), box-shadow var(--motion) var(--ease);
 }
 
 .modeCard:hover {
@@ -874,7 +874,7 @@
   border-top: 3px solid var(--scope-tone);
   border-radius: 0 0 8px 8px;
   background: var(--lab-surface);
-  transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+  transition: transform var(--motion) var(--ease), border-color var(--motion) var(--ease), box-shadow var(--motion) var(--ease);
 }
 
 .scopeCard[data-tone='green'] { --scope-tone: var(--lab-green); }
@@ -1109,7 +1109,7 @@
   border: 1px solid var(--lab-purple);
   border-radius: 8px;
   background: color-mix(in srgb, var(--lab-purple) 8%, transparent);
-  transition: border-color 150ms ease, box-shadow 150ms ease;
+  transition: border-color var(--motion) var(--ease), box-shadow var(--motion) var(--ease);
 }
 
 .honestySection:hover {
@@ -1316,7 +1316,7 @@
   .lab[data-reveal-ready] [data-reveal]:not([data-shown]) { opacity: 0; }
 
   .lab[data-reveal-ready] [data-reveal][data-shown='true'] {
-    animation: revealUp 350ms var(--ease) backwards;
+    animation: revealUp var(--motion-panel) var(--ease) backwards;
     animation-delay: calc(var(--reveal-i, 0) * 70ms);
   }
 
@@ -1330,7 +1330,7 @@
   .lab[data-reveal-ready] .scopeCard[data-shown='true'] .scopeStage:nth-child(3) .scopeNode { animation-delay: 1150ms, 2.6s; }
 
   .lab[data-reveal-ready] .scopeCard[data-shown='true'] .scopeLink {
-    animation: scopeLinkIn 350ms var(--ease) backwards;
+    animation: scopeLinkIn var(--motion-panel) var(--ease) backwards;
     animation-delay: 400ms;
   }
   .lab[data-reveal-ready] .scopeCard[data-shown='true'] .scopeStage:nth-child(2) .scopeLink { animation-delay: 900ms; }

@@ -93,7 +93,7 @@
   cursor: pointer;
   font-size: 12px;
   font-weight: 650;
-  transition: all 120ms ease;
+  transition: all var(--motion) var(--ease);
 }
 
 .scenarioTabs button[data-active='true'][data-tone='b'] {
@@ -186,7 +186,7 @@
   letter-spacing: 0.01em;
   line-height: 1.35;
   box-shadow: 0 8px 20px -8px rgb(0 0 0 / 55%);
-  animation: pop 350ms ease both;
+  animation: pop var(--motion-panel) var(--ease) both;
 }
 
 .coach span { flex: 1; min-width: 0; }
@@ -236,7 +236,7 @@
   cursor: pointer;
   font-family: var(--mono);
   font-size: 12px;
-  transition: all 120ms ease;
+  transition: all var(--motion) var(--ease);
 }
 
 .chip[data-active='true'] {
@@ -257,7 +257,7 @@
   background: var(--surface2);
   color: var(--text2);
   cursor: pointer;
-  transition: all 120ms ease;
+  transition: all var(--motion) var(--ease);
 }
 
 .macOption[data-active='true'] {
@@ -313,7 +313,7 @@
   cursor: not-allowed;
   font-size: 15px;
   font-weight: 650;
-  transition: all 150ms ease;
+  transition: all var(--motion) var(--ease);
 }
 
 .sendButton[data-valid='true'] { background: var(--b); color: var(--bg); cursor: pointer; }
@@ -388,7 +388,7 @@
   overflow: hidden;
   font-family: var(--mono);
   font-size: 11px;
-  animation: rowIn 400ms ease;
+  animation: rowIn var(--motion-flow) var(--ease);
 }
 
 .cacheTable[data-tone='rst'] { border-color: color-mix(in srgb, var(--rst) 50%, var(--line)); }
@@ -488,7 +488,7 @@
   cursor: pointer;
   font-size: 15px;
   font-weight: 650;
-  transition: all 150ms ease;
+  transition: all var(--motion) var(--ease);
 }
 
 .launchButton:hover { filter: brightness(1.08); }
@@ -515,7 +515,7 @@
   border-radius: 3px;
   background: var(--line);
   cursor: pointer;
-  transition: all 200ms ease;
+  transition: all var(--motion) var(--ease);
 }
 
 .controls { display: flex; align-items: center; gap: 10px; }
@@ -629,7 +629,7 @@
   border: 1px solid var(--sim);
   border-radius: 8px;
   background: color-mix(in srgb, var(--sim) 8%, transparent);
-  animation: slideIn 400ms ease;
+  animation: slideIn var(--motion-flow) var(--ease);
 }
 
 .challengeLabel {
@@ -654,7 +654,7 @@
   cursor: pointer;
   font-size: 12.5px;
   line-height: 1.45;
-  transition: all 120ms ease;
+  transition: all var(--motion) var(--ease);
 }
 
 .answers button[data-state='correct'] { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 14%, transparent); color: var(--ok); }
@@ -695,7 +695,7 @@
   border-left: 1px solid var(--line);
   background: var(--surface);
   box-shadow: -24px 0 60px rgb(0 0 0 / 40%);
-  animation: slideIn 280ms ease;
+  animation: slideIn var(--motion-panel) var(--ease);
 }
 
 .inspectorHead {
@@ -773,7 +773,7 @@
   gap: 6px;
   border-radius: 12px;
   background: var(--surface2);
-  transition: border-color 250ms ease, box-shadow 250ms ease, opacity 250ms ease;
+  transition: border-color var(--motion-panel) var(--ease), box-shadow var(--motion-panel) var(--ease), opacity var(--motion-panel) var(--ease);
 }
 
 /* the six hosts sit 74px apart, too close for a stacked card, so theirs lies
@@ -820,7 +820,7 @@
   font-weight: 650;
   letter-spacing: 0.01em;
   box-shadow: 0 8px 20px -8px rgb(0 0 0 / 55%);
-  animation: pop 350ms ease;
+  animation: pop var(--motion-panel) var(--ease);
 }
 
 .calloutTip {
@@ -915,7 +915,7 @@
   font-size: 12px;
   font-weight: 650;
   white-space: nowrap;
-  transition: border-color 120ms ease, color 120ms ease;
+  transition: border-color var(--motion) var(--ease), color var(--motion) var(--ease);
 }
 
 .tourButton:hover { border-color: var(--b); color: var(--b); }
@@ -944,7 +944,7 @@
   font-size: 11px;
   font-weight: 650;
   white-space: nowrap;
-  transition: border-color 120ms ease, color 120ms ease;
+  transition: border-color var(--motion) var(--ease), color var(--motion) var(--ease);
 }
 
 .stepChip b {

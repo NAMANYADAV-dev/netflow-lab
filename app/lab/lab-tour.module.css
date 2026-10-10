@@ -15,7 +15,7 @@
 .shade {
   position: absolute;
   background: rgb(14 20 26 / 46%);
-  transition: opacity 160ms var(--ease);
+  transition: opacity var(--motion) var(--ease);
 }
 
 /* the ring takes the colour of the step's own mark, so the lit area reads as
@@ -27,7 +27,7 @@
   box-shadow:
     0 0 0 5px color-mix(in srgb, var(--tour-tone, var(--a)) 16%, transparent),
     0 10px 30px -14px color-mix(in srgb, var(--tour-tone, var(--a)) 70%, transparent);
-  transition: top 200ms var(--ease), left 200ms var(--ease), width 200ms var(--ease), height 200ms var(--ease);
+  transition: top var(--motion) var(--ease), left var(--motion) var(--ease), width var(--motion) var(--ease), height var(--motion) var(--ease);
 }
 
 /* a reader who prefers no movement gets the light placed, not slid */
@@ -48,7 +48,7 @@
   color: #f4efe6;
   pointer-events: auto;
   box-shadow: 0 16px 34px -16px rgb(0 0 0 / 65%);
-  animation: tourIn 240ms 120ms var(--ease) both;
+  animation: tourIn var(--motion-panel) 120ms var(--ease) both;
 }
 
 .questionHead {

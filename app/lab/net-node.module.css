@@ -1,6 +1,6 @@
 /* The machine cards drawn by NetNode, inside each lab's SVG diagram. */
 
-.node { transition: opacity 220ms ease; }
+.node { transition: opacity var(--motion) var(--ease); }
 
 /* the machine this step is about glows in its own colour */
 .node[data-lit] > rect:first-child {

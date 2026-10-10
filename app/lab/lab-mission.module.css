@@ -28,7 +28,7 @@
   border: 1px solid color-mix(in srgb, var(--a) 35%, var(--line));
   border-radius: 8px;
   background: color-mix(in srgb, var(--a) 6%, var(--surface));
-  animation: kitIn 220ms ease both;
+  animation: kitIn var(--motion) var(--ease) both;
 }
 
 .thinkHead {
@@ -77,7 +77,7 @@
   color: var(--text);
   font-size: 12.5px;
   line-height: 1.5;
-  animation: kitIn 200ms ease both;
+  animation: kitIn var(--motion) var(--ease) both;
 }
 
 .thinkAnswer b {
@@ -98,7 +98,7 @@
   border-top: 3px solid var(--a);
   border-radius: 8px;
   background: var(--surface);
-  animation: kitIn 260ms ease both;
+  animation: kitIn var(--motion-panel) var(--ease) both;
 }
 
 .checkHead {
@@ -135,7 +135,7 @@
   font-size: 12.5px;
   line-height: 1.45;
   text-align: left;
-  transition: border-color 140ms ease, background 140ms ease;
+  transition: border-color var(--motion) var(--ease), background var(--motion) var(--ease);
 }
 
 .options button svg { flex: none; margin-top: 1px; }
@@ -170,7 +170,7 @@
   color: var(--text2);
   font-size: 12.5px;
   line-height: 1.5;
-  animation: kitIn 200ms ease both;
+  animation: kitIn var(--motion) var(--ease) both;
 }
 
 .retry { margin: 8px 0 0; color: var(--rst); font-size: 12px; }

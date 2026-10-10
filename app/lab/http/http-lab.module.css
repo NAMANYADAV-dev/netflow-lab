@@ -127,8 +127,8 @@
 .arrowPacket { font: 400 10.5px var(--mono); }
 .idleNote { font: 400 13px var(--sans); }
 
-.draw { animation: draw 500ms ease both; }
-.fade { animation: fade 400ms ease both; }
+.draw { animation: draw var(--motion-flow) var(--ease) both; }
+.fade { animation: fade var(--motion-flow) var(--ease) both; }
 
 /* ---------- raw bytes ---------- */
 .wireBody {
@@ -139,7 +139,7 @@
   line-height: 1.8;
 }
 
-.wireBody > div { white-space: pre-wrap; animation: rowIn 300ms ease both; }
+.wireBody > div { white-space: pre-wrap; animation: rowIn var(--motion-panel) var(--ease) both; }
 .wireEmpty { color: var(--text3); }
 
 /* ---------- header fields ---------- */
@@ -328,7 +328,7 @@
   padding: 16px 20px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  animation: pop 400ms ease both;
+  animation: pop var(--motion-flow) var(--ease) both;
 }
 
 .win[data-tone='a'] { border-color: var(--a); background: color-mix(in srgb, var(--a) 10%, transparent); }

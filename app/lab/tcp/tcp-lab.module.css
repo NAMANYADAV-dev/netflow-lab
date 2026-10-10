@@ -215,7 +215,7 @@
   border: 1px solid var(--line);
   border-radius: 6px;
   background: var(--surface2);
-  animation: rowIn 300ms ease both;
+  animation: rowIn var(--motion-panel) var(--ease) both;
 }
 
 .segHead { margin-bottom: 7px; display: flex; align-items: center; gap: 6px; }
@@ -268,7 +268,7 @@
   border: 1px solid var(--ok);
   border-radius: 8px;
   background: color-mix(in srgb, var(--ok) 10%, transparent);
-  animation: pop 400ms ease both;
+  animation: pop var(--motion-flow) var(--ease) both;
 }
 
 .win strong { display: block; font-size: 15px; font-weight: 650; color: var(--text); }

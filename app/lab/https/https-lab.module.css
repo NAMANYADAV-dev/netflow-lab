@@ -129,8 +129,8 @@
 .tapLabel { font: 400 10px var(--mono); }
 .idleNote { font: 400 13px var(--sans); }
 
-.draw { animation: draw 500ms ease both; }
-.fade { animation: fade 400ms ease both; }
+.draw { animation: draw var(--motion-flow) var(--ease) both; }
+.fade { animation: fade var(--motion-flow) var(--ease) both; }
 
 /* ---------- the tap ---------- */
 .tapPanel {
@@ -172,7 +172,7 @@
   line-height: 1.8;
 }
 
-.tapBody > div { white-space: pre-wrap; animation: rowIn 300ms ease both; }
+.tapBody > div { white-space: pre-wrap; animation: rowIn var(--motion-panel) var(--ease) both; }
 .tapEmpty { color: var(--text3); }
 
 .tapNote {
@@ -381,7 +381,7 @@
   padding: 16px 20px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  animation: pop 400ms ease both;
+  animation: pop var(--motion-flow) var(--ease) both;
 }
 
 .win[data-tone='ok'] { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 10%, transparent); }

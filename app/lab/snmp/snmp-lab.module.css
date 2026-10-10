@@ -184,7 +184,7 @@
 .device[data-active] .deviceIcon {
   color: var(--tone);
   box-shadow: inset 0 0 0 1.5px var(--tone);
-  animation: nudge 500ms var(--ease) both;
+  animation: nudge var(--motion-flow) var(--ease) both;
 }
 
 .deviceName { font-size: 15px; font-weight: 650; }
@@ -206,7 +206,7 @@
   font-family: var(--mono);
   font-size: 11px;
   font-weight: 650;
-  animation: pop 400ms ease both;
+  animation: pop var(--motion-flow) var(--ease) both;
 }
 
 /* the speech bubble sits above whichever machine is talking */
@@ -226,7 +226,7 @@
   line-height: 1.35;
   box-shadow: 0 8px 20px -10px rgb(0 0 0 / 45%);
   transform: translateX(-50%);
-  animation: bubbleIn 360ms var(--ease) both;
+  animation: bubbleIn var(--motion-panel) var(--ease) both;
 }
 
 .bubble::after {
@@ -455,7 +455,7 @@
   border-radius: 12px;
   background: var(--surface);
   overflow: hidden;
-  animation: rise 350ms var(--ease) both;
+  animation: rise var(--motion-panel) var(--ease) both;
 }
 
 .ideaHead {
@@ -522,7 +522,7 @@
   border-radius: 12px;
   background: color-mix(in srgb, var(--ok) 10%, var(--surface));
   color: var(--ok);
-  animation: pop 400ms ease both;
+  animation: pop var(--motion-flow) var(--ease) both;
 }
 
 .win svg { flex: none; }
