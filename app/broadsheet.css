@@ -112,6 +112,14 @@
   --shadow-lg: 0 12px 32px color-mix(in srgb, #2d2b2b 22%, transparent);
 }
 
+/* Anything with an id can be arrived at — from a link, or from search — and
+   the nav is stuck to the top of the window, so every target stops short of
+   it. :where() keeps this at zero specificity: a section that sets its own
+   margin still wins. */
+:where([id]) {
+  scroll-margin-top: 84px;
+}
+
 body {
   background: var(--color-bg);
   color: var(--color-text);

@@ -2,6 +2,18 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
+import {
+  ArrowsLeftRight,
+  BookOpenText,
+  Flask,
+  FolderSimple,
+  HardDrives,
+  Hash,
+  Plug,
+  Plugs,
+  TerminalWindow,
+  type Icon,
+} from '@phosphor-icons/react';
 import type { SearchEntry, SearchKind } from '@/lib/search-index';
 import styles from '@/components/site-search.module.css';
 
@@ -19,13 +31,28 @@ const KIND_LABEL: Record<SearchKind, string> = {
   command: 'Command',
   directory: 'Directory',
   lab: 'Lab',
+  topic: 'Topic',
   section: 'Section',
+};
+
+/* One glyph per shelf, so a mixed list can be read down its left edge before
+   a single word of it has been. */
+const KIND_ICON: Record<SearchKind, Icon> = {
+  protocol: ArrowsLeftRight,
+  device: HardDrives,
+  cable: Plugs,
+  connector: Plug,
+  command: TerminalWindow,
+  directory: FolderSimple,
+  lab: Flask,
+  topic: Hash,
+  section: BookOpenText,
 };
 
 /* The order groups come in when a query matches several kinds at once.
    Protocols first because they are what most queries are reaching for; the
    section fronts last because they are the broadest answer to any question. */
-const KIND_ORDER: SearchKind[] = ['protocol', 'lab', 'device', 'cable', 'connector', 'command', 'directory', 'section'];
+const KIND_ORDER: SearchKind[] = ['protocol', 'lab', 'device', 'cable', 'connector', 'command', 'directory', 'topic', 'section'];
 
 const KIND_PLURAL: Record<SearchKind, string> = {
   protocol: 'Protocols',
@@ -35,10 +62,45 @@ const KIND_PLURAL: Record<SearchKind, string> = {
   command: 'Commands',
   directory: 'Directories',
   lab: 'Labs',
+  topic: 'Topics',
   section: 'Sections',
 };
 
 type Group = { label: string; entries: SearchEntry[] };
+
+/* The pages' own words, keyed by destination. Fetched once, the first time the
+   palette opens, and kept for the life of the tab: it is a few hundred
+   kilobytes that most page views never need. `lower` is the same text folded
+   for matching, made once rather than on every keystroke. */
+type Deep = Map<string, { text: string; lower: string }>;
+let deepRequest: Promise<Deep> | null = null;
+function loadDeep(): Promise<Deep> {
+  if (!deepRequest) {
+    deepRequest = fetch('/search-index.json')
+      .then((res): Promise<Record<string, string>> => (res.ok ? res.json() : Promise.resolve({})))
+      .then((data): Deep => new Map(Object.entries(data).map(([href, text]) => [href, { text, lower: text.toLowerCase() }])))
+      .catch((): Deep => {
+        // offline or blocked: names and headings still search; try again next time
+        deepRequest = null;
+        return new Map();
+      });
+  }
+  return deepRequest;
+}
+
+/** below every match on a name or a heading: the words are only in the page's body */
+const DEEP_SCORE = 5;
+
+/* Whether `word` begins a word somewhere in `hay`. Names are short and are
+   matched anywhere — "v6" should find IPv6 — but prose is not: matched
+   anywhere, "dora" finds Fedora and "ls" finds every page that mentions TLS. */
+const ALNUM = /[a-z0-9]/;
+function startsWord(hay: string, word: string): boolean {
+  for (let at = hay.indexOf(word); at >= 0; at = hay.indexOf(word, at + 1)) {
+    if (at === 0 || !ALNUM.test(hay[at - 1])) return true;
+  }
+  return false;
+}
 
 /* How well one entry answers one query.
 
@@ -53,8 +115,8 @@ function score(entry: SearchEntry, query: string, words: string[]): number {
   const alt = entry.alt.map((a) => a.toLowerCase());
 
   // every word has to land somewhere, or a two-word query matches half of it
-  const hay = [title, detail, ...alt].join(' ');
-  if (!words.every((w) => hay.includes(w))) return 0;
+  const hay = [detail, ...alt].join(' ');
+  if (!words.every((w) => title.includes(w) || startsWord(hay, w))) return 0;
 
   let best = 0;
   if (title === query) best = 100;
@@ -64,13 +126,39 @@ function score(entry: SearchEntry, query: string, words: string[]): number {
   for (const a of alt) {
     if (a === query) best = Math.max(best, 70);
     else if (a.startsWith(query)) best = Math.max(best, 60);
-    else if (a.includes(query)) best = Math.max(best, 30);
+    else if (startsWord(a, query)) best = Math.max(best, 30);
   }
 
-  if (detail.includes(query)) best = Math.max(best, 25);
+  if (startsWord(detail, query)) best = Math.max(best, 25);
   if (best === 0) best = 10; // every word landed, just not contiguously
 
   return best - Math.min(title.length, 20) / 100;
+}
+
+/* Why a row is in the list when neither line of it says so. Entries are also
+   filed under words that are never printed — a step of the handshake, a flag
+   of a command — and a match on one of those would otherwise look like a
+   mistake. This is the filed-under string the query landed on, shown in place
+   of the usual detail. */
+function landedOn(entry: SearchEntry, words: string[], deep: Deep | null): string | undefined {
+  if (!words.length) return undefined;
+  const title = entry.title.toLowerCase();
+  const detail = entry.detail.toLowerCase();
+  const missing = words.filter((w) => !title.includes(w) && !startsWord(detail, w));
+  if (!missing.length) return undefined;
+  const filed = entry.alt.find((a) => missing.some((w) => startsWord(a.toLowerCase(), w)));
+  if (filed) return filed;
+
+  // not in anything it is filed under either — quote the page where it says it
+  const body = deep?.get(entry.href);
+  if (!body) return undefined;
+  const at = Math.min(
+    ...missing.map((w) => body.lower.search(new RegExp(`(?<![a-z0-9])${escapeRx(w)}`))).filter((i) => i >= 0),
+  );
+  if (!Number.isFinite(at)) return undefined;
+  const from = Math.max(0, body.text.lastIndexOf(' ', Math.max(0, at - 40)) + 1);
+  const to = Math.min(body.text.length, at + 90);
+  return `${from > 0 ? '…' : ''}${body.text.slice(from, to).trim()}${to < body.text.length ? '…' : ''}`;
 }
 
 const escapeRx = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -133,6 +221,7 @@ export default function SiteSearch({
   const [kind, setKind] = useState<SearchKind | null>(null);
   const [cursor, setCursor] = useState(0);
   const [recentHrefs, setRecentHrefs] = useState<string[]>([]);
+  const [deep, setDeep] = useState<Deep | null>(null);
   const isMac = useSyncExternalStore(noSubscribe, readIsMac, notMac);
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -152,12 +241,23 @@ export default function SiteSearch({
   const matches = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return null;
+    /* A row that fails on its name and headings gets a second reading against
+       the page itself, where each word may be met by either. */
+    const inBody = (e: SearchEntry) => {
+      const body = deep?.get(e.href);
+      if (!body) return 0;
+      const title = e.title.toLowerCase();
+      const filed = `${e.detail} ${e.alt.join(' ')}`.toLowerCase();
+      return words.every((w) => title.includes(w) || startsWord(filed, w) || startsWord(body.lower, w))
+        ? DEEP_SCORE
+        : 0;
+    };
     return entries
-      .map((e) => ({ e, s: score(e, q, words) }))
+      .map((e) => ({ e, s: score(e, q, words) || inBody(e) }))
       .filter((r) => r.s > 0)
       .sort((a, b) => b.s - a.s)
       .map((r) => r.e);
-  }, [entries, query, words]);
+  }, [entries, query, words, deep]);
 
   const counts = useMemo(() => {
     const source = matches ?? entries;
@@ -191,10 +291,15 @@ export default function SiteSearch({
     }
 
     const shown = (kind ? matches.filter((e) => e.kind === kind) : matches).slice(0, LIMIT);
+    /* Rows stay gathered under their shelves, but the shelf holding the best
+       answer comes first — otherwise an exact hit on a command sits under a
+       screenful of protocols that merely mention the word. */
     return KIND_ORDER.map((k) => ({
       label: KIND_PLURAL[k],
       entries: shown.filter((e) => e.kind === k),
-    })).filter((g) => g.entries.length);
+    }))
+      .filter((g) => g.entries.length)
+      .sort((a, b) => shown.indexOf(a.entries[0]) - shown.indexOf(b.entries[0]));
   }, [matches, kind, entries, defaults, recents]);
 
   const flat = useMemo(() => groups.flatMap((g) => g.entries), [groups]);
@@ -210,6 +315,7 @@ export default function SiteSearch({
   const openPalette = useCallback(() => {
     setRecentHrefs(readRecents());
     setOpen(true);
+    void loadDeep().then(setDeep);
   }, []);
 
   const close = useCallback(() => {
@@ -403,7 +509,7 @@ export default function SiteSearch({
                 aria-autocomplete="list"
                 autoComplete="off"
                 spellCheck={false}
-                placeholder="Protocols, devices, cables, labs…"
+                placeholder="Search protocols, labs, devices, commands…"
                 value={query}
                 onChange={(e) => {
                   setQuery(e.target.value);
@@ -471,6 +577,8 @@ export default function SiteSearch({
                   </div>
                   {group.entries.map((r) => {
                     const i = flat.indexOf(r);
+                    const KindIcon = KIND_ICON[r.kind];
+                    const reason = landedOn(r, words, deep);
                     return (
                       <div
                         key={r.href}
@@ -485,11 +593,23 @@ export default function SiteSearch({
                         }}
                         onClick={() => go(r)}
                       >
-                        <span className={styles.resultTitle}>
-                          <Marked text={r.title} words={words} />
+                        <span className={styles.resultIcon} aria-hidden="true">
+                          <KindIcon size={17} weight="duotone" />
                         </span>
-                        <span className={styles.resultDetail}>
-                          <Marked text={r.detail} words={words} />
+                        <span className={styles.resultText}>
+                          <span className={styles.resultTitle}>
+                            <Marked text={r.title} words={words} />
+                          </span>
+                          <span className={styles.resultDetail}>
+                            {reason ? (
+                              <>
+                                <span className={styles.resultVia}>mentions</span>{' '}
+                                <Marked text={reason} words={words} />
+                              </>
+                            ) : (
+                              <Marked text={r.detail} words={words} />
+                            )}
+                          </span>
                         </span>
                         <span className={styles.resultKind}>{KIND_LABEL[r.kind]}</span>
                         <span className={styles.resultGo} aria-hidden="true">

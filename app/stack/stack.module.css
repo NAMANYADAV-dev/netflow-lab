@@ -209,6 +209,8 @@
 
 .detailRow {
   --focus-wash: transparent;
+  /* a search result can land on one layer; keep it clear of the stuck nav */
+  scroll-margin-top: 84px;
   display: grid;
   grid-template-columns: 150px 1fr;
   gap: 28px;

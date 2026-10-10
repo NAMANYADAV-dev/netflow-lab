@@ -108,7 +108,7 @@ export default function StackPage() {
 
         <div className={styles.detailList}>
           {layerDetails.map((L) => (
-            <div className={styles.detailRow} data-layers={L.n} key={L.n}>
+            <div className={styles.detailRow} id={`layer-${L.n}`} data-layers={L.n} key={L.n}>
               <div>
                 <div className={styles.detailName}>
                   <span className={styles.detailNum}>{L.n}</span>&nbsp; {L.name}
